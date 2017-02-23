@@ -36,7 +36,7 @@
     "generate": "plop --plopfile internals/generators/index.js",
     "lint": "npm run lint:js",
     "lint:eslint": "eslint --ignore-path .gitignore --ignore-pattern internals/scripts",
-    "lint:js": "npm run lint:eslint -- . ",
+    "lint:js": "npm run lint:eslint -- . --fix",
     "lint:staged": "lint-staged",
     "pretest": "npm run test:clean && npm run lint",
     "test:clean": "rimraf ./coverage",
@@ -49,6 +49,7 @@
   },
   "pre-commit": "lint:staged",
   "babel": {
+    "plugins": ["react-relay"],
     "presets": [
       [
         "latest",
@@ -226,8 +227,10 @@
     "react-helmet": "3.2.2",
     "react-intl": "2.1.5",
     "react-redux": "4.4.6",
+    "react-relay": "^0.10.0",
     "react-router": "3.0.0",
     "react-router-redux": "4.0.6",
+    "react-router-relay": "^0.13.5",
     "react-router-scroll": "0.4.1",
     "redux": "3.6.0",
     "redux-immutable": "3.0.8",
@@ -291,5 +294,10 @@
     "webpack": "2.2.0-rc.3",
     "webpack-dev-middleware": "1.9.0",
     "webpack-hot-middleware": "2.15.0"
+  },
+  "graphql": {
+    "request": {
+      "url": "http://localhost:9000/graphql"
+    }
   }
 }

@@ -11,6 +11,8 @@ import 'babel-polyfill';
 // Import all the third party stuff
 import React from 'react';
 import ReactDOM from 'react-dom';
+import Relay from 'react-relay';
+import useRelay from 'react-router-relay';
 import { Provider } from 'react-redux';
 import { applyRouterMiddleware, Router, browserHistory } from 'react-router';
 import { syncHistoryWithStore } from 'react-router-redux';
@@ -64,17 +66,22 @@ const rootRoute = {
   childRoutes: createRoutes(store),
 };
 
+Relay.injectNetworkLayer(
+  new Relay.DefaultNetworkLayer('http://localhost:9000/graphql')
+);
+
 const render = (messages) => {
   ReactDOM.render(
     <Provider store={store}>
       <LanguageProvider messages={messages}>
         <Router
           history={history}
+          environment={Relay.Store}
           routes={rootRoute}
           render={
             // Scroll to top when going to a new page, imitating default browser
             // behaviour
-            applyRouterMiddleware(useScroll())
+            applyRouterMiddleware(useRelay, useScroll())
           }
         />
       </LanguageProvider>
