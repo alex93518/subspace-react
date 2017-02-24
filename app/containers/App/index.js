@@ -10,7 +10,7 @@ import Header from '../../components/shared/Header';
 class App extends React.PureComponent { // eslint-disable-line react/prefer-stateless-function
   static propTypes = {
     children: PropTypes.node,
-    auth: PropTypes.object,
+    auth: PropTypes.object.isRequired,
     actions: PropTypes.object.isRequired,
   };
 

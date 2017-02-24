@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
 import { FormControl, Button } from 'react-bootstrap';
 
-class EmailLoginForm extends React.Component {
+class EmailSignupForm extends React.Component {
   static propTypes = {
     onSubmit: PropTypes.func.isRequired,
   }
@@ -9,13 +9,21 @@ class EmailLoginForm extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      username: '',
       email: '',
       password: '',
+      verifyPassword: '',
     };
 
+    this.handleUsernameChange = this.handleUsernameChange.bind(this);
     this.handleEmailChange = this.handleEmailChange.bind(this);
     this.handlePasswordChange = this.handlePasswordChange.bind(this);
+    this.handleVerifyPasswordChange = this.handleVerifyPasswordChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+  }
+
+  handleUsernameChange(e) {
+    this.setState({ username: e.target.value });
   }
 
   handleEmailChange(e) {
@@ -26,14 +34,29 @@ class EmailLoginForm extends React.Component {
     this.setState({ password: e.target.value });
   }
 
+  handleVerifyPasswordChange(e) {
+    this.setState({ verifyPassword: e.target.value });
+  }
+
   handleSubmit(e) {
     e.preventDefault();
-    this.props.onSubmit(this.state.email, this.state.password);
+    if (this.state.password === this.state.verifyPassword) {
+      this.props.onSubmit(this.state.username, this.state.email, this.state.password);
+    }
   }
 
   render() {
     return (
       <form onSubmit={this.handleSubmit}>
+        <FormControl
+          id="formControlsUsername"
+          type="text"
+          label="Username"
+          placeholder="Enter username"
+          value={this.state.username}
+          onChange={this.handleUsernameChange}
+        />
+        <div style={{ height: 5 }}></div>
         <FormControl
           id="formControlsEmail"
           type="email"
@@ -52,12 +75,21 @@ class EmailLoginForm extends React.Component {
           onChange={this.handlePasswordChange}
         />
         <div style={{ height: 5 }}></div>
+        <FormControl
+          id="formControlsVerifyPassword"
+          label="VerifyPassword"
+          type="password"
+          placeholder="Verify password"
+          value={this.state.verifyPassword}
+          onChange={this.handleVerifyPasswordChange}
+        />
+        <div style={{ height: 5 }}></div>
         <Button type="submit">
-          Login
+          Sign Up
         </Button>
       </form>
     );
   }
 }
 
-export default EmailLoginForm;
+export default EmailSignupForm;

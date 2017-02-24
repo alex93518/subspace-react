@@ -29,27 +29,6 @@ export default function createRoutes(store) {
       },
     },
     {
-      path: '/login',
-      name: 'login',
-      getComponent(nextState, cb) {
-        const importModules = Promise.all([
-          import('containers/Login/reducer'),
-          import('containers/Login/sagas'),
-          import('containers/Login'),
-        ]);
-
-        const renderRoute = loadModule(cb);
-
-        importModules.then(([reducer, sagas, component]) => {
-          injectReducer('login', reducer.default);
-          injectSagas(sagas.default);
-          renderRoute(component);
-        });
-
-        importModules.catch(errorLoading);
-      },
-    },
-    {
       path: '/projects',
       name: 'projects',
       getComponent(nextState, cb) {
@@ -82,6 +61,13 @@ export default function createRoutes(store) {
       name: 'howItWorks',
       getComponent(location, cb) {
         import('containers/HowItWorks').then(loadModule(cb)).catch(errorLoading);
+      },
+    },
+    {
+      path: '/login',
+      name: 'login',
+      getComponent(location, cb) {
+        import('containers/Login').then(loadModule(cb)).catch(errorLoading);
       },
     },
     {

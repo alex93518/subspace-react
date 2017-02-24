@@ -1,35 +1,47 @@
 import React, { PropTypes } from 'react';
 import { Navbar, Nav, NavItem, Button } from 'react-bootstrap';
+import { Link } from 'react-router';
+import { LinkContainer } from 'react-router-bootstrap';
 
 const Header = ({ authenticated, displayName, signOut }) =>
   <Navbar>
     <Navbar.Header>
       <Navbar.Brand>
-        <a href="/">Terrella</a>
+        <Link to="/">Terrella</Link>
       </Navbar.Brand>
     </Navbar.Header>
     <Nav>
-      <NavItem href="/about">About Us</NavItem>
+      <LinkContainer to="/about">
+        <NavItem eventKey={1}>About Us</NavItem>
+      </LinkContainer>
     </Nav>
     <Nav>
-      <NavItem href="/howitworks">How It Works</NavItem>
+      <LinkContainer to="/howitworks">
+        <NavItem eventKey={2}>How It Works</NavItem>
+      </LinkContainer>
     </Nav>
     {authenticated ?
       <Nav pullRight>
         {
           displayName ? <NavItem href="/userprofile">{displayName}</NavItem> : null
         }
-        <NavItem href="/createproject">Create Project</NavItem>
+        <LinkContainer to="/createproject">
+          <NavItem eventKey={3}>Create Project</NavItem>
+        </LinkContainer>
         <NavItem>
           <Button onClick={signOut} style={{ display: 'inline', padding: 0 }}>Sign out</Button>
         </NavItem>
       </Nav> :
       <Nav pullRight>
-        <NavItem href="/login">Sign In</NavItem>
+        <LinkContainer to="/login">
+          <NavItem eventKey={4}>Sign In</NavItem>
+        </LinkContainer>
       </Nav>
     }
     <Nav pullRight>
-      <NavItem href="/projects">Projects</NavItem>
+      <LinkContainer to="/projects">
+        <NavItem eventKey={5}>Projects</NavItem>
+      </LinkContainer>
     </Nav>
   </Navbar>;
 

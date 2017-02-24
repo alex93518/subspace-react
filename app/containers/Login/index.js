@@ -1,18 +1,25 @@
 import React, { PropTypes } from 'react';
-import { connect } from 'react-redux';
 import Helmet from 'react-helmet';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 import { createStructuredSelector } from 'reselect';
-import makeSelectLogin from './selectors';
+import { authActions } from '../App/actions';
+import makeSelectAuth from '../App/selectors';
+import LoginWidget from '../../components/users/LoginWidget';
 
 export class Login extends React.Component { // eslint-disable-line react/prefer-stateless-function
   render() {
+    const { authenticated, showChooseUsername } = this.props.auth;
+    const { signInWithGoogle, signInWithGithub, signInWithEmailPassword } = this.props.actions;
     return (
       <div>
-        <Helmet
-          title="Login"
-          meta={[
-            { name: 'description', content: 'Description of Login' },
-          ]}
+        <Helmet title="Login" meta={[{ name: 'description', content: 'Description of Login' }]} />
+        <LoginWidget
+          authenticated={authenticated}
+          showChooseUsername={showChooseUsername}
+          signInWithGoogle={signInWithGoogle}
+          signInWithGithub={signInWithGithub}
+          signInWithEmailPassword={signInWithEmailPassword}
         />
       </div>
     );
@@ -20,17 +27,16 @@ export class Login extends React.Component { // eslint-disable-line react/prefer
 }
 
 Login.propTypes = {
-  dispatch: PropTypes.func.isRequired,
+  auth: PropTypes.object.isRequired,
+  actions: PropTypes.object.isRequired,
 };
 
 const mapStateToProps = createStructuredSelector({
-  Login: makeSelectLogin(),
+  auth: makeSelectAuth(),
 });
 
 function mapDispatchToProps(dispatch) {
-  return {
-    dispatch,
-  };
+  return { actions: bindActionCreators(authActions, dispatch) };
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Login);

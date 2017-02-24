@@ -5,11 +5,12 @@ import { Row, Col, Button } from 'react-bootstrap';
 import { createStructuredSelector } from 'reselect';
 import { authActions } from '../App/actions';
 import makeSelectAuth from '../App/selectors';
+import EmailSignupForm from '../../components/users/EmailSignupForm';
 
 class HomePage extends React.PureComponent { // eslint-disable-line react/prefer-stateless-function
   render() {
     const { authenticated } = this.props.auth;
-    const { signInWithGoogle, signInWithGithub } = this.props.actions;
+    const { signInWithGoogle, signInWithGithub, createUserWithEmailPassword } = this.props.actions;
     return (
       <Row>
         <Col md={8}>
@@ -27,6 +28,7 @@ class HomePage extends React.PureComponent { // eslint-disable-line react/prefer
           </div>
           <div style={{ height: 30 }}></div>
           <div className="text-right">
+            <EmailSignupForm onSubmit={(username, email, password) => createUserWithEmailPassword(username, email, password)} />
           </div>
         </Col>}
       </Row>
