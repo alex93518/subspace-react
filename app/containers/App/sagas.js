@@ -3,9 +3,17 @@ import { REHYDRATE } from 'redux-persist/constants';
 import { firebaseAuth } from '../../utils/firebase';
 import { authActions } from './actions';
 
+const localUser = (userId) => fetch(`http://localhost:9000/graphql?query=query%20FetchUser%20%7B%0A%20%20node(id%3A%20%22${userId}%22)%20%7B%0A%20%20%20%20id%0A%20%20%20%20...%20on%20User%20%7B%0A%20%20%20%20%20%20userName%0A%20%20%20%20%7D%0A%20%20%7D%0A%7D&variables=`)
+  .then((response) => response.json())
+  .catch(() => null);
+
 function* signIn(authProvider) {
   try {
     const authData = yield call([firebaseAuth, firebaseAuth.signInWithPopup], authProvider);
+    const localUserData = yield call(localUser, authData.user.uid);
+    if (!localUserData.data.node) {
+      console.log('insert new user');
+    }
     yield put(authActions.signInFulfilled(authData.user));
   } catch (error) {
     yield put(authActions.signInFailed(error));
