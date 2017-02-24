@@ -4,7 +4,7 @@ import Helmet from 'react-helmet';
 import { createStructuredSelector } from 'reselect';
 import Relay from 'react-relay';
 import makeSelectProjects from './selectors';
-import Project from '../../components/Project';
+import Project from '../../components/projects/Project';
 
 export class Projects extends React.Component { // eslint-disable-line react/prefer-stateless-function
   render() {
@@ -43,7 +43,7 @@ export default Relay.createContainer(
     fragments: {
       projects: () => Relay.QL`
         fragment on Project @relay(plural: true) {
-          projects(pageStart: 0, pageEnd:9) {
+          projects {
             ${Project.getFragment('project')}
           }
         }

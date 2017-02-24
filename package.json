@@ -49,7 +49,9 @@
   },
   "pre-commit": "lint:staged",
   "babel": {
-    "plugins": ["react-relay"],
+    "plugins": [
+      "react-relay"
+    ],
     "presets": [
       [
         "latest",
@@ -215,6 +217,7 @@
     "compression": "1.6.2",
     "cross-env": "3.1.3",
     "express": "4.14.0",
+    "firebase": "^3.6.10",
     "fontfaceobserver": "2.0.7",
     "immutable": "3.8.1",
     "intl": "1.2.5",
@@ -223,6 +226,7 @@
     "lodash": "4.17.2",
     "minimist": "1.2.0",
     "react": "15.4.1",
+    "react-bootstrap": "^0.30.7",
     "react-dom": "15.4.1",
     "react-helmet": "3.2.2",
     "react-intl": "2.1.5",
@@ -234,6 +238,7 @@
     "react-router-scroll": "0.4.1",
     "redux": "3.6.0",
     "redux-immutable": "3.0.8",
+    "redux-persist": "^4.4.2",
     "redux-saga": "0.14.0",
     "reselect": "2.5.4",
     "sanitize.css": "4.1.0",
@@ -257,8 +262,10 @@
     "babel-preset-react": "6.16.0",
     "babel-preset-react-hmre": "1.1.1",
     "babel-preset-stage-0": "6.16.0",
+    "babel-relay-plugin": "^0.11.0",
     "cheerio": "0.22.0",
     "circular-dependency-plugin": "2.0.0",
+    "copy-webpack-plugin": "^4.0.1",
     "coveralls": "2.11.15",
     "css-loader": "0.26.1",
     "enzyme": "2.6.0",

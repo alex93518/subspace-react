@@ -1,32 +1,16 @@
-/**
- * app.js
- *
- * This is the entry file for the application, only setup and boilerplate
- * code.
- */
-
-// Needed for redux-saga es6 generator support
-import 'babel-polyfill';
+import 'babel-polyfill'; // eslint-disable-line import/no-absolute-path, import/extensions, import/no-duplicates, import/no-unresolved
 
 // Import all the third party stuff
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Relay from 'react-relay';
 import useRelay from 'react-router-relay';
+import { persistStore } from 'redux-persist';
 import { Provider } from 'react-redux';
 import { applyRouterMiddleware, Router, browserHistory } from 'react-router';
 import { syncHistoryWithStore } from 'react-router-redux';
 import { useScroll } from 'react-router-scroll';
 import 'sanitize.css/sanitize.css';
-
-// Import root app
-import App from 'containers/App';
-
-// Import selector for `syncHistoryWithStore`
-import { makeSelectLocationState } from 'containers/App/selectors';
-
-// Import Language Provider
-import LanguageProvider from 'containers/LanguageProvider';
 
 // Load the favicon, the manifest.json file and the .htaccess file
 /* eslint-disable import/no-unresolved, import/extensions */
@@ -34,6 +18,15 @@ import '!file-loader?name=[name].[ext]!./favicon.ico';
 import '!file-loader?name=[name].[ext]!./manifest.json';
 import 'file-loader?name=[name].[ext]!./.htaccess';
 /* eslint-enable import/no-unresolved, import/extensions */
+
+// Import root app
+import App from './containers/App';
+
+// Import selector for `syncHistoryWithStore`
+import { makeSelectLocationState } from './containers/App/selectors';
+
+// Import Language Provider
+import LanguageProvider from './containers/LanguageProvider';
 
 import configureStore from './store';
 
@@ -52,6 +45,7 @@ import createRoutes from './routes';
 // e.g. `const browserHistory = useRouterHistory(createBrowserHistory)();`
 const initialState = {};
 const store = configureStore(initialState, browserHistory);
+const persistor = persistStore(store);
 
 // Sync history and store, as the react-router-redux reducer
 // is under the non-default key ("routing"), selectLocationState
@@ -72,7 +66,7 @@ Relay.injectNetworkLayer(
 
 const render = (messages) => {
   ReactDOM.render(
-    <Provider store={store}>
+    <Provider store={store} persistor={persistor}>
       <LanguageProvider messages={messages}>
         <Router
           history={history}

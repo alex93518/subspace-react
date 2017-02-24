@@ -1,24 +1,50 @@
-/*
- * HomePage
- *
- * This is the first thing users see of our App, at the '/' route
- *
- * NOTE: while this component should technically be a stateless functional
- * component (SFC), hot reloading does not currently support SFCs. If hot
- * reloading is not a necessity for you then you can refactor it and remove
- * the linting exception.
- */
+import React, { PropTypes } from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { Row, Col, Button } from 'react-bootstrap';
+import { createStructuredSelector } from 'reselect';
+import { authActions } from '../App/actions';
+import makeSelectAuth from '../App/selectors';
 
-import React from 'react';
-import { FormattedMessage } from 'react-intl';
-import messages from './messages';
-
-export default class HomePage extends React.PureComponent { // eslint-disable-line react/prefer-stateless-function
+class HomePage extends React.PureComponent { // eslint-disable-line react/prefer-stateless-function
   render() {
+    const { authenticated } = this.props.auth;
+    const { signInWithGoogle, signInWithGithub } = this.props.actions;
     return (
-      <h1>
-        <FormattedMessage {...messages.header} />
-      </h1>
+      <Row>
+        <Col md={8}>
+          <h1>Collaborative social coding.</h1>
+          <h1>Stand on the shoulders of giants. </h1>
+        </Col>
+        {authenticated ? null :
+        <Col md={4}>
+          <div className="text-center">
+            <Button onClick={signInWithGoogle}>Sign up with Google</Button>
+          </div>
+          <div style={{ height: 5 }}></div>
+          <div className="text-center">
+            <Button onClick={signInWithGithub}>Sign up with GitHub</Button>
+          </div>
+          <div style={{ height: 30 }}></div>
+          <div className="text-right">
+          </div>
+        </Col>}
+      </Row>
     );
   }
 }
+
+HomePage.propTypes = {
+  auth: PropTypes.object,
+  actions: PropTypes.object.isRequired,
+};
+
+const mapStateToProps = createStructuredSelector({
+  auth: makeSelectAuth(),
+});
+
+function mapDispatchToProps(dispatch) {
+  return { actions: bindActionCreators(authActions, dispatch) };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(HomePage);

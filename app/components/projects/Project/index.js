@@ -1,16 +1,13 @@
 import React, { PropTypes } from 'react';
 import Relay from 'react-relay';
 
-class Project extends React.Component {
-  static propTypes = {
-    project: PropTypes.object.isRequired,
-  }
-
-  render() {
-    const { project } = this.props;
-    return <div>{project.name}</div>;
-  }
+function Project({ project }) {
+  return <div>{project.name}</div>;
 }
+
+Project.propTypes = {
+  project: PropTypes.object.isRequired,
+};
 
 export default Relay.createContainer(Project, {
   fragments: {

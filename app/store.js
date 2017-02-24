@@ -1,12 +1,9 @@
-/**
- * Create the store with asynchronously loaded reducers
- */
-
 import { createStore, applyMiddleware, compose } from 'redux';
 import { fromJS } from 'immutable';
 import { routerMiddleware } from 'react-router-redux';
 import createSagaMiddleware from 'redux-saga';
 import createReducer from './reducers';
+import authSagas from './containers/App/sagas';
 
 const sagaMiddleware = createSagaMiddleware();
 
@@ -39,6 +36,7 @@ export default function configureStore(initialState = {}, history) {
   );
 
   // Extensions
+  sagaMiddleware.run(authSagas);
   store.runSaga = sagaMiddleware.run;
   store.asyncReducers = {}; // Async reducer registry
 
