@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Grid } from 'react-bootstrap';
 import { createStructuredSelector } from 'reselect';
+import Relay from 'react-relay';
 import { authActions } from '../App/actions';
 import makeSelectAuth from '../App/selectors';
 import Header from '../../components/shared/Header';
@@ -37,4 +38,17 @@ function mapDispatchToProps(dispatch) {
   return { actions: bindActionCreators(authActions, dispatch) };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(App);
+const AppRedux = connect(mapStateToProps, mapDispatchToProps)(App);
+
+export default Relay.createContainer(
+  AppRedux,
+  {
+    fragments: {
+      user: () => Relay.QL`
+        fragment on User {
+          id
+        }
+      `,
+    },
+  }
+);
