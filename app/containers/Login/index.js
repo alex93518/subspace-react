@@ -9,17 +9,18 @@ import LoginWidget from '../../components/users/LoginWidget';
 
 export class Login extends React.Component { // eslint-disable-line react/prefer-stateless-function
   render() {
-    const { authenticated, showChooseUsername } = this.props.auth;
-    const { signInWithGoogle, signInWithGithub, signInWithEmailPassword } = this.props.actions;
+    const { authenticated, showLoginStep } = this.props.auth;
+    const { signInWithGoogle, signInWithGithub, signInWithEmailPassword, addUsername } = this.props.actions;
     return (
       <div>
         <Helmet title="Login" meta={[{ name: 'description', content: 'Description of Login' }]} />
         <LoginWidget
           authenticated={authenticated}
-          showChooseUsername={showChooseUsername}
+          showLoginStep={showLoginStep}
           signInWithGoogle={signInWithGoogle}
           signInWithGithub={signInWithGithub}
           signInWithEmailPassword={signInWithEmailPassword}
+          addUsername={addUsername}
         />
       </div>
     );

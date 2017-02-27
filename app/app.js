@@ -71,12 +71,10 @@ const render = (messages) => {
         <Router
           history={history}
           environment={Relay.Store}
-          routes={rootRoute}
           render={
-            // Scroll to top when going to a new page, imitating default browser
-            // behaviour
             applyRouterMiddleware(useRelay, useScroll())
           }
+          routes={rootRoute}
         />
       </LanguageProvider>
     </Provider>,

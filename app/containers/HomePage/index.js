@@ -1,23 +1,18 @@
 import React, { PropTypes } from 'react';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
 import { Row, Col, Button } from 'react-bootstrap';
-import { createStructuredSelector } from 'reselect';
-import { authActions } from '../App/actions';
-import makeSelectAuth from '../App/selectors';
 import EmailSignupForm from '../../components/users/EmailSignupForm';
 
 class HomePage extends React.PureComponent { // eslint-disable-line react/prefer-stateless-function
   render() {
-    const { authenticated } = this.props.auth;
-    const { signInWithGoogle, signInWithGithub, createUserWithEmailPassword } = this.props.actions;
+    const { authenticated, showLoginStep } = this.props.auth;
+    const { signInWithGoogle, signInWithGithub, createUserWithEmailPassword } = this.props.authActions;
     return (
       <Row>
         <Col md={8}>
           <h1>Collaborative social coding.</h1>
           <h1>Stand on the shoulders of giants. </h1>
         </Col>
-        {authenticated ? null :
+        {authenticated || showLoginStep ? null :
         <Col md={4}>
           <div className="text-center">
             <Button onClick={signInWithGoogle}>Sign up with Google</Button>
@@ -38,15 +33,7 @@ class HomePage extends React.PureComponent { // eslint-disable-line react/prefer
 
 HomePage.propTypes = {
   auth: PropTypes.object,
-  actions: PropTypes.object.isRequired,
+  authActions: PropTypes.object,
 };
 
-const mapStateToProps = createStructuredSelector({
-  auth: makeSelectAuth(),
-});
-
-function mapDispatchToProps(dispatch) {
-  return { actions: bindActionCreators(authActions, dispatch) };
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(HomePage);
+export default HomePage;

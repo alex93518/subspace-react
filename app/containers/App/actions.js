@@ -88,15 +88,16 @@ export const authActions = {
 
   updateUserFulfilled: (authUser) => ({
     type: authActions.UPDATE_USER_FULFILLED,
-    payload: authUser,
+    payload: { authUser },
   }),
 
-  userNameNotAvail: () => ({
+  userNameNotAvail: (displayName) => ({
     type: authActions.USERNAME_NOTAVAIL,
+    payload: { displayName },
   }),
 
-  addUsername: (username) => ({
+  addUsername: (username, password) => ({
     type: authActions.ADD_USERNAME,
-    payload: { username },
+    payload: { username, password },
   }),
 };

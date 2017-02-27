@@ -1,9 +1,10 @@
 import React, { PropTypes } from 'react';
-import { Grid, Row, Col, Button, FormControl } from 'react-bootstrap';
+import { Col, Button } from 'react-bootstrap';
 import EmailLoginForm from '../EmailLoginForm';
+import LoginStep from '../LoginStep';
 // import styled from 'styled-components';
 
-function LoginWidget({ authenticated, showChooseUsername, signInWithGoogle, signInWithGithub, signInWithEmailPassword }) {
+function LoginWidget({ authenticated, showLoginStep, signInWithGoogle, signInWithGithub, signInWithEmailPassword, addUsername }) {
   const login = authenticated ? <Col className="text-center"><h3>Signed in</h3></Col> : (
     <Col md={4} mdOffset={4} className="text-center">
       <div>
@@ -19,36 +20,16 @@ function LoginWidget({ authenticated, showChooseUsername, signInWithGoogle, sign
       </div>
     </Col>
   );
-  return (<Grid>
-    <Row>
-      {showChooseUsername ? <Col md={4} mdOffset={4} className="text-center">
-        <h3>One more step</h3>
-        <form onSubmit={this.handleAddUsernameSubmit}>
-          Choose username:
-          <FormControl
-            id="formControlsUsername"
-            type="text"
-            label="Username"
-            placeholder="Enter username"
-            value={this.state.username}
-            onChange={this.handleUsernameChange}
-          />
-          <Button type="submit">
-            Submit
-          </Button>
-        </form>
-      </Col> : login}
-    </Row>
-  </Grid>
-  );
+  return showLoginStep ? <LoginStep onSubmit={addUsername} username={showLoginStep} /> : login;
 }
 
 LoginWidget.propTypes = {
   authenticated: PropTypes.bool.isRequired,
-  showChooseUsername: PropTypes.bool.isRequired,
+  showLoginStep: PropTypes.string,
   signInWithGoogle: PropTypes.func.isRequired,
   signInWithGithub: PropTypes.func.isRequired,
   signInWithEmailPassword: PropTypes.func.isRequired,
+  addUsername: PropTypes.func.isRequired,
 };
 
 export default LoginWidget;

@@ -7,7 +7,7 @@ import authSagas from './containers/App/sagas';
 
 const sagaMiddleware = createSagaMiddleware();
 
-export default function configureStore(initialState = {}, history) {
+export default function configureStore(initialState = {}, history, context = {}) {
   // Create the store with two middlewares
   // 1. sagaMiddleware: Makes redux-sagas work
   // 2. routerMiddleware: Syncs the location/URL path to the state
@@ -36,7 +36,7 @@ export default function configureStore(initialState = {}, history) {
   );
 
   // Extensions
-  sagaMiddleware.run(authSagas);
+  sagaMiddleware.run(authSagas, context);
   store.runSaga = sagaMiddleware.run;
   store.asyncReducers = {}; // Async reducer registry
 

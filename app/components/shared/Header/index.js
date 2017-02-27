@@ -3,7 +3,7 @@ import { Navbar, Nav, NavItem, Button } from 'react-bootstrap';
 import { Link } from 'react-router';
 import { LinkContainer } from 'react-router-bootstrap';
 
-const Header = ({ authenticated, displayName, signOut }) =>
+const Header = ({ authenticated, displayName, userName, signOut }) =>
   <Navbar>
     <Navbar.Header>
       <Navbar.Brand>
@@ -23,10 +23,14 @@ const Header = ({ authenticated, displayName, signOut }) =>
     {authenticated ?
       <Nav pullRight>
         {
-          displayName ? <NavItem href="/userprofile">{displayName}</NavItem> : null
+          displayName ? (
+            <LinkContainer to={`/profile/${userName}`}>
+              <NavItem eventKey={3}>{displayName}<i> @{userName}</i></NavItem>
+            </LinkContainer>
+          ) : null
         }
         <LinkContainer to="/createproject">
-          <NavItem eventKey={3}>Create Project</NavItem>
+          <NavItem eventKey={4}>Create Project</NavItem>
         </LinkContainer>
         <NavItem>
           <Button onClick={signOut} style={{ display: 'inline', padding: 0 }}>Sign out</Button>
@@ -34,13 +38,13 @@ const Header = ({ authenticated, displayName, signOut }) =>
       </Nav> :
       <Nav pullRight>
         <LinkContainer to="/login">
-          <NavItem eventKey={4}>Sign In</NavItem>
+          <NavItem eventKey={5}>Sign In</NavItem>
         </LinkContainer>
       </Nav>
     }
     <Nav pullRight>
       <LinkContainer to="/projects">
-        <NavItem eventKey={5}>Projects</NavItem>
+        <NavItem eventKey={6}>Projects</NavItem>
       </LinkContainer>
     </Nav>
   </Navbar>;
@@ -48,6 +52,7 @@ const Header = ({ authenticated, displayName, signOut }) =>
 Header.propTypes = {
   authenticated: PropTypes.bool.isRequired,
   displayName: PropTypes.string,
+  userName: PropTypes.string,
   signOut: PropTypes.func.isRequired,
 };
 

@@ -1,4 +1,5 @@
 import { getAsyncInjectors } from 'utils/asyncInjectors'; // eslint-disable-line import/no-absolute-path, import/extensions, import/no-duplicates, import/no-unresolved
+import { projectsQuery, userByNameQuery } from './relay/queries';
 
 const errorLoading = (err) => {
   console.error('Dynamic page loading failed', err); // eslint-disable-line no-console
@@ -48,6 +49,7 @@ export default function createRoutes(store) {
 
         importModules.catch(errorLoading);
       },
+      queries: projectsQuery,
     },
     {
       path: '/about',
@@ -71,6 +73,22 @@ export default function createRoutes(store) {
       },
     },
     {
+      path: '/profile/:userName',
+      name: 'userProfile',
+      getComponent(location, cb) {
+        import('containers/UserProfile').then(loadModule(cb)).catch(errorLoading);
+      },
+      queries: userByNameQuery,
+    },
+    {
+      path: '/createproject',
+      name: 'createProject',
+      getComponent(location, cb) {
+        import('containers/CreateProject')
+          .then(loadModule(cb))
+          .catch(errorLoading);
+      },
+    }, {
       path: '*',
       name: 'notfound',
       getComponent(nextState, cb) {

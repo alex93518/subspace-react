@@ -1,24 +1,32 @@
 import { call, fork, put, take } from 'redux-saga/effects';
 import { REHYDRATE } from 'redux-persist/constants';
+import { browserHistory } from 'react-router';
 import { firebaseAuth } from '../../utils/firebase';
 import { authActions } from './actions';
 
-const localUser = (userId) => fetch(`http://localhost:9000/graphql?query=query%20FetchUser%20%7B%0A%20%20node(id%3A%20%22${userId}%22)%20%7B%0A%20%20%20%20id%0A%20%20%20%20...%20on%20User%20%7B%0A%20%20%20%20%20%20userName%0A%20%20%20%20%7D%0A%20%20%7D%0A%7D&variables=`)
-  .then((response) => response.json())
-  .catch(() => null);
+const getUserName = (userId) => fetch('http://localhost:9000/graphql', {
+  headers: {
+    Accept: 'application/json',
+    'Content-Type': 'application/json',
+  },
+  method: 'POST',
+  body: JSON.stringify({ query: 'query User($userId: String!) {user(id: $userId) {userName}}', variables: { userId } }),
+}).then((response) => response.json())
+.catch(() => null);
 
-function* signIn(authProvider) {
-  try {
-    const authData = yield call([firebaseAuth, firebaseAuth.signInWithPopup], authProvider);
-    const localUserData = yield call(localUser, authData.user.uid);
-    if (!localUserData.data.node) {
-      console.log('insert new user');
-    }
-    yield put(authActions.signInFulfilled(authData.user));
-  } catch (error) {
-    yield put(authActions.signInFailed(error));
-  }
-}
+// Match firebaseId at the backend before insert (user can only create itself).
+const insertUser = (firebaseId, userName, fullName, photoUrl, token) => fetch('http://localhost:9000/auth/graphql', {
+  headers: {
+    Accept: 'application/json',
+    'Content-Type': 'application/json',
+    f_base: token,
+  },
+  method: 'POST',
+  body: JSON.stringify({
+    query: 'mutation CreateUser($firebaseId: String!, $userName: String!, $fullName: String!, $photoUrl: String!){ createUser(firebaseId: $firebaseId, userName: $userName, fullName: $fullName, photoUrl: $photoUrl) {userName}}',
+    variables: { firebaseId, userName, fullName, photoUrl } }),
+}).then((response) => response.json())
+.catch(() => null);
 
 function* signInWithEmailPassword(email, password) {
   try {
@@ -27,7 +35,12 @@ function* signInWithEmailPassword(email, password) {
       email,
       password
     );
-    yield put(authActions.signInFulfilled(authData));
+    const userName = yield call(getUserName, authData.uid);
+    if (userName.data.user) {
+      yield put(authActions.signInFulfilled({ user: authData, userName: userName.data.user.userName }));
+    } else {
+      yield put(authActions.signInFailed('No username'));
+    }
   } catch (error) {
     yield put(authActions.signInFailed(error));
   }
@@ -50,7 +63,8 @@ function* createUserWithEmailPassword(username, email, password) {
       email,
       password
     );
-    yield put(authActions.signInFulfilled(authData));
+    yield call(insertUser, authData.uid, username, 'no null', 'no null', authData.Fd);
+    yield put(authActions.signInFulfilled({ user: authData, userName: username }));
   } catch (error) {
     yield put(authActions.createUserFailed(error));
   }
@@ -64,8 +78,8 @@ function* watchRehydrate() {
   while (true) { // eslint-disable-line no-constant-condition
     const { payload } = yield take(REHYDRATE);
     const auth = payload._root.entries.find((o) => o[0] === 'auth'); // eslint-disable-line no-underscore-dangle
-    if (auth && auth[1].user && auth[1].user.authUser) {
-      yield put(authActions.signInFulfilled(auth[1].user.authUser));
+    if (auth && auth[1].user) {
+      yield put(authActions.signInFulfilled(auth[1].user));
     }
   }
 }
@@ -73,7 +87,21 @@ function* watchRehydrate() {
 function* watchSignIn() {
   while (true) { // eslint-disable-line no-constant-condition
     const { payload } = yield take(authActions.SIGN_IN);
-    yield fork(signIn, payload.authProvider);
+    try {
+      const authData = yield call([firebaseAuth, firebaseAuth.signInWithPopup], payload.authProvider);
+      const userName = yield call(getUserName, authData.user.uid);
+      if (!userName.data.user) {
+        yield call(browserHistory.push, '/login');
+        yield put(authActions.userNameNotAvail(authData.user.displayName));
+        const userAdd = yield take(authActions.ADD_USERNAME);
+        yield call(insertUser, authData.user.uid, userAdd.payload.username, authData.user.displayName, authData.user.photoURL, authData.user.Fd);
+        yield put(authActions.signInFulfilled({ user: authData.user, userName: userAdd.payload.username }));
+      } else {
+        yield put(authActions.signInFulfilled({ user: authData.user, userName: userName.data.user.userName }));
+      }
+    } catch (error) {
+      yield put(authActions.signInFailed(error));
+    }
   }
 }
 

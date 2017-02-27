@@ -8,7 +8,7 @@ import Project from '../../components/projects/Project';
 
 export class Projects extends React.Component { // eslint-disable-line react/prefer-stateless-function
   render() {
-    const { projects } = this.props;
+    const projects = this.props.projects.edges;
     return (
       <div>
         <Helmet
@@ -17,7 +17,7 @@ export class Projects extends React.Component { // eslint-disable-line react/pre
             { name: 'description', content: 'Description of Projects' },
           ]}
         />
-        {projects.map((project) => <Project project={project} />)}
+        {projects.map((project) => <Project project={project.node} key={project.node.id} />)}
       </div>
     );
   }
@@ -31,20 +31,19 @@ const mapStateToProps = createStructuredSelector({
   Projects: makeSelectProjects(),
 });
 
-function mapDispatchToProps() {
-  return null;
-}
-
-const ProjectsPage = connect(mapStateToProps, mapDispatchToProps)(Projects);
+const ProjectsPage = connect(mapStateToProps, null)(Projects);
 
 export default Relay.createContainer(
   ProjectsPage,
   {
     fragments: {
       projects: () => Relay.QL`
-        fragment on Project @relay(plural: true) {
-          projects {
-            ${Project.getFragment('project')}
+        fragment on ProjectConnection {
+          edges {
+            node {
+              id,
+              ${Project.getFragment('project')}
+            }
           }
         }
       `,

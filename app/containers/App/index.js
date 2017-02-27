@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Grid } from 'react-bootstrap';
 import { createStructuredSelector } from 'reselect';
-import Relay from 'react-relay';
 import { authActions } from '../App/actions';
 import makeSelectAuth from '../App/selectors';
 import Header from '../../components/shared/Header';
@@ -16,14 +15,15 @@ class App extends React.PureComponent { // eslint-disable-line react/prefer-stat
   };
 
   render() {
-    const { authenticated } = this.props.auth;
+    const { authenticated, user } = this.props.auth;
     const { signOut } = this.props.actions;
-    const displayName = authenticated ? this.props.auth.user.authUser.displayName : null;
+    const displayName = authenticated ? this.props.auth.user.user.displayName : null;
+    const userName = user ? this.props.auth.user.userName : null;
     return (
       <div>
-        <Header authenticated={authenticated} displayName={displayName} signOut={signOut} />
+        <Header authenticated={authenticated} displayName={displayName} userName={userName} signOut={signOut} />
         <Grid>
-          {React.Children.toArray(this.props.children)}
+          {React.cloneElement(this.props.children, { auth: this.props.auth, authActions: this.props.actions })}
         </Grid>
       </div>
     );
@@ -38,17 +38,4 @@ function mapDispatchToProps(dispatch) {
   return { actions: bindActionCreators(authActions, dispatch) };
 }
 
-const AppRedux = connect(mapStateToProps, mapDispatchToProps)(App);
-
-export default Relay.createContainer(
-  AppRedux,
-  {
-    fragments: {
-      user: () => Relay.QL`
-        fragment on User {
-          id
-        }
-      `,
-    },
-  }
-);
+export default connect(mapStateToProps, mapDispatchToProps)(App);
