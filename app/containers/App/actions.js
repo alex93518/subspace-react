@@ -23,17 +23,17 @@ export const authActions = {
   ADD_USERNAME_FAILED: 'ADD_USERNAME_FAILED',
   ADD_USERNAME_FULFILLED: 'ADD_USERNAME_FULFILLED',
 
-  signIn: (authProvider) => ({
+  signIn: authProvider => ({
     type: authActions.SIGN_IN,
     payload: { authProvider },
   }),
 
-  signInFailed: (error) => ({
+  signInFailed: error => ({
     type: authActions.SIGN_IN_FAILED,
     payload: { error },
   }),
 
-  signInFulfilled: (authUser) => ({
+  signInFulfilled: authUser => ({
     type: authActions.SIGN_IN_FULFILLED,
     payload: { authUser },
   }),
@@ -53,7 +53,7 @@ export const authActions = {
     type: authActions.SIGN_OUT,
   }),
 
-  signOutFailed: (error) => ({
+  signOutFailed: error => ({
     type: authActions.SIGN_OUT_FAILED,
     payload: { error },
   }),
@@ -67,7 +67,7 @@ export const authActions = {
     payload: { username, email, password },
   }),
 
-  createUserFailed: (error) => ({
+  createUserFailed: error => ({
     type: authActions.CREATE_USER_FAILED,
     payload: { error },
   }),
@@ -76,22 +76,22 @@ export const authActions = {
     type: authActions.CREATE_USER_FULFILLED,
   }),
 
-  updateUser: (newProfile) => ({
+  updateUser: newProfile => ({
     type: authActions.UPDATE_USER,
     payload: { newProfile },
   }),
 
-  updateUserFailed: (error) => ({
+  updateUserFailed: error => ({
     type: authActions.UPDATE_USER_FAILED,
     payload: { error },
   }),
 
-  updateUserFulfilled: (authUser) => ({
+  updateUserFulfilled: authUser => ({
     type: authActions.UPDATE_USER_FULFILLED,
     payload: { authUser },
   }),
 
-  userNameNotAvail: (displayName) => ({
+  userNameNotAvail: displayName => ({
     type: authActions.USERNAME_NOTAVAIL,
     payload: { displayName },
   }),

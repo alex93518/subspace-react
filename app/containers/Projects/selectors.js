@@ -3,7 +3,7 @@ import { createSelector } from 'reselect';
 /**
  * Direct selector to the projects state domain
  */
-const selectProjectsDomain = () => (state) => state.get('projects');
+const selectProjectsDomain = () => state => state.get('projects');
 
 /**
  * Other specific selectors
@@ -16,7 +16,7 @@ const selectProjectsDomain = () => (state) => state.get('projects');
 
 const makeSelectProjects = () => createSelector(
   selectProjectsDomain(),
-  (substate) => substate.toJS()
+  substate => substate.toJS()
 );
 
 export default makeSelectProjects;

@@ -17,7 +17,7 @@ export class Projects extends React.Component { // eslint-disable-line react/pre
             { name: 'description', content: 'Description of Projects' },
           ]}
         />
-        {projects.map((project) => <Project project={project.node} key={project.node.id} />)}
+        {projects.map(project => <Project project={project.node} key={project.node.id} />)}
       </div>
     );
   }

@@ -34,7 +34,7 @@ module.exports = {
     type: 'input',
     name: 'component',
     message: 'Which component should the route show?',
-    validate: (value) => {
+    validate: value => {
       if ((/.+/).test(value)) {
         return componentExists(value) ? true : `"${value}" doesn't exist.`;
       }
@@ -46,7 +46,7 @@ module.exports = {
     name: 'path',
     message: 'Enter the path of the route.',
     default: '/about',
-    validate: (value) => {
+    validate: value => {
       if ((/.+/).test(value)) {
         return true;
       }
@@ -57,7 +57,7 @@ module.exports = {
 
   // Add the route to the routes.js file above the error route
   // TODO smarter route adding
-  actions: (data) => {
+  actions: data => {
     const actions = [];
     if (reducerExists(data.component)) {
       data.useSagas = sagasExists(data.component); // eslint-disable-line no-param-reassign

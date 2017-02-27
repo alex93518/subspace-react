@@ -6,14 +6,14 @@ import { firebaseAuth } from '../../utils/firebase';
 import { authActions } from './actions';
 import CreateUserMutation from '../../relay/mutations/CreateUserMutation';
 
-const getUserName = (userId) => fetch('http://localhost:9000/graphql', {
+const getUserName = userId => fetch('http://localhost:9000/graphql', {
   headers: {
     Accept: 'application/json',
     'Content-Type': 'application/json',
   },
   method: 'POST',
   body: JSON.stringify({ query: 'query User($userId: String!) {user(id: $userId) {userName}}', variables: { userId } }),
-}).then((response) => response.json())
+}).then(response => response.json())
 .catch(() => null);
 
 function* signInWithEmailPassword(email, password) {
@@ -65,7 +65,7 @@ function* createUserWithEmailPassword(username, email, password) {
 function* watchRehydrate() {
   while (true) { // eslint-disable-line no-constant-condition
     const { payload } = yield take(REHYDRATE);
-    const auth = payload._root.entries.find((o) => o[0] === 'auth'); // eslint-disable-line no-underscore-dangle
+    const auth = payload._root.entries.find(o => o[0] === 'auth'); // eslint-disable-line no-underscore-dangle
     if (auth && auth[1].user) {
       yield put(authActions.signInFulfilled(auth[1].user));
     }

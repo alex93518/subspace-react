@@ -14,7 +14,7 @@ export class CreateProject extends React.Component { // eslint-disable-line reac
       alert('Project created');
     };
 
-    const onFailure = (transaction) => {
+    const onFailure = transaction => {
       console.log(transaction.getError());
     };
 
@@ -29,7 +29,7 @@ export class CreateProject extends React.Component { // eslint-disable-line reac
           meta={[{ name: 'description', content: 'Description of CreateProject' }]}
         />
         <CreateProjectForm
-          onSubmit={(payload) => this.handleSubmit(payload, this.props.auth.user.user.uid)}
+          onSubmit={payload => this.handleSubmit(payload, this.props.auth.user.user.uid)}
         />
       </div>
     );

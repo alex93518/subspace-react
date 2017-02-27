@@ -16,12 +16,12 @@ class CreateProjectForm extends React.Component {
       tags: '',
       isPublic: false,
     };
-    this.onProjectNameChange = (e) => this.setState({ projectName: e.target.value });
-    this.onTagsChange = (e) => this.setState({ tags: e.target.value });
-    this.onGoalsEditorChange = (goals) => this.setState({ goals });
-    this.onReadmeEditorChange = (readme) => this.setState({ readme });
-    this.onIsPublicChange = (isPublic) => this.setState({ isPublic });
-    this.handleSubmit = (e) => {
+    this.onProjectNameChange = e => this.setState({ projectName: e.target.value });
+    this.onTagsChange = e => this.setState({ tags: e.target.value });
+    this.onGoalsEditorChange = goals => this.setState({ goals });
+    this.onReadmeEditorChange = readme => this.setState({ readme });
+    this.onIsPublicChange = isPublic => this.setState({ isPublic });
+    this.handleSubmit = e => {
       this.props.onSubmit({
         ...this.state,
         goals: this.state.goals.toString('html'),
