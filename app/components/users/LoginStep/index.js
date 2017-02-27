@@ -38,7 +38,8 @@ class LoginStep extends React.Component {
       <Grid>
         <Row>
           <Col md={4} mdOffset={4} className="text-center">
-            <h3>Welcome: {username}</h3>
+            <h5>First time user</h5>
+            <h3>Welcome, {username}</h3>
             <h3>One more step to go</h3>
             <form onSubmit={this.handleSubmit}>
               Choose your terrella username:

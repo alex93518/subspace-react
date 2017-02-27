@@ -1,8 +1,10 @@
 import { call, fork, put, take } from 'redux-saga/effects';
 import { REHYDRATE } from 'redux-persist/constants';
 import { browserHistory } from 'react-router';
+import Relay from 'react-relay';
 import { firebaseAuth } from '../../utils/firebase';
 import { authActions } from './actions';
+import CreateUserMutation from '../../relay/mutations/CreateUserMutation';
 
 const getUserName = (userId) => fetch('http://localhost:9000/graphql', {
   headers: {
@@ -11,20 +13,6 @@ const getUserName = (userId) => fetch('http://localhost:9000/graphql', {
   },
   method: 'POST',
   body: JSON.stringify({ query: 'query User($userId: String!) {user(id: $userId) {userName}}', variables: { userId } }),
-}).then((response) => response.json())
-.catch(() => null);
-
-// Match firebaseId at the backend before insert (user can only create itself).
-const insertUser = (firebaseId, userName, fullName, photoUrl, token) => fetch('http://localhost:9000/auth/graphql', {
-  headers: {
-    Accept: 'application/json',
-    'Content-Type': 'application/json',
-    f_base: token,
-  },
-  method: 'POST',
-  body: JSON.stringify({
-    query: 'mutation CreateUser($firebaseId: String!, $userName: String!, $fullName: String!, $photoUrl: String!){ createUser(firebaseId: $firebaseId, userName: $userName, fullName: $fullName, photoUrl: $photoUrl) {userName}}',
-    variables: { firebaseId, userName, fullName, photoUrl } }),
 }).then((response) => response.json())
 .catch(() => null);
 
@@ -63,7 +51,7 @@ function* createUserWithEmailPassword(username, email, password) {
       email,
       password
     );
-    yield call(insertUser, authData.uid, username, 'no null', 'no null', authData.Fd);
+    // yield call(insertUser, authData.uid, username, 'no null', 'no null', authData.Fd);
     yield put(authActions.signInFulfilled({ user: authData, userName: username }));
   } catch (error) {
     yield put(authActions.createUserFailed(error));
@@ -94,7 +82,14 @@ function* watchSignIn() {
         yield call(browserHistory.push, '/login');
         yield put(authActions.userNameNotAvail(authData.user.displayName));
         const userAdd = yield take(authActions.ADD_USERNAME);
-        yield call(insertUser, authData.user.uid, userAdd.payload.username, authData.user.displayName, authData.user.photoURL, authData.user.Fd);
+        yield call(Relay.Store.commitUpdate, new CreateUserMutation({
+          firebaseId: authData.user.uid,
+          userName: userAdd.payload.username,
+          fullName: authData.user.displayName,
+          photoUrl: authData.user.photoURL,
+          emailAddress: authData.user.email,
+          password: userAdd.payload.password,
+        }));
         yield put(authActions.signInFulfilled({ user: authData.user, userName: userAdd.payload.username }));
       } else {
         yield put(authActions.signInFulfilled({ user: authData.user, userName: userName.data.user.userName }));
