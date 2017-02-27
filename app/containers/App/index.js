@@ -3,9 +3,9 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Grid } from 'react-bootstrap';
 import { createStructuredSelector } from 'reselect';
-import { authActions } from '../App/actions';
-import makeSelectAuth from '../App/selectors';
-import Header from '../../components/shared/Header';
+import Header from 'components/shared/Header';
+import { authActions } from './actions';
+import { makeSelectAuth } from './selectors';
 
 class App extends React.PureComponent { // eslint-disable-line react/prefer-stateless-function
   static propTypes = {

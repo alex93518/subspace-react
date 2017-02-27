@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { createStructuredSelector } from 'reselect';
 import { authActions } from '../App/actions';
-import makeSelectAuth from '../App/selectors';
+import { makeSelectAuth } from '../App/selectors';
 import LoginWidget from '../../components/users/LoginWidget';
 
 export class Login extends React.Component { // eslint-disable-line react/prefer-stateless-function

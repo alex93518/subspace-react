@@ -24,7 +24,7 @@
     "build": "cross-env NODE_ENV=production webpack --config internals/webpack/webpack.prod.babel.js --color -p --progress",
     "build:clean": "npm run test:clean && rimraf ./build",
     "build:dll": "node ./internals/scripts/dependencies.js",
-    "start": "cross-env NODE_ENV=development node server",
+    "start": "cross-env NODE_ENV=development GRAPHQL_ENDPOINT=http://localhost:9000/graphql node server",
     "start:tunnel": "cross-env NODE_ENV=development ENABLE_TUNNEL=true node server",
     "start:production": "npm run test && npm run build && npm run start:prod",
     "start:prod": "cross-env NODE_ENV=production node server",
@@ -105,6 +105,7 @@
       }
     },
     "rules": {
+      "semi": 0,
       "arrow-parens": [
         "error",
         "as-needed"
@@ -138,10 +139,14 @@
       "jsx-a11y/mouse-events-have-key-events": 2,
       "jsx-a11y/role-has-required-aria-props": 2,
       "jsx-a11y/role-supports-aria-props": 2,
-      "max-len": 0,
+      "max-len": [
+        1,
+        80
+      ],
       "newline-per-chained-call": 0,
       "no-confusing-arrow": 0,
       "no-console": 1,
+      "no-param-reassign": ["error", { "props": false  }],
       "no-use-before-define": 0,
       "prefer-template": 2,
       "class-methods-use-this": 0,
@@ -225,6 +230,7 @@
     "ip": "1.1.4",
     "lodash": "4.17.2",
     "minimist": "1.2.0",
+    "ramda": "^0.23.0",
     "react": "15.4.1",
     "react-bootstrap": "^0.30.7",
     "react-dom": "15.4.1",
@@ -239,6 +245,7 @@
     "react-router-scroll": "0.4.1",
     "react-rte": "^0.11.0",
     "redux": "3.6.0",
+    "redux-act": "^1.1.1",
     "redux-immutable": "3.0.8",
     "redux-persist": "^4.4.2",
     "redux-saga": "0.14.0",

@@ -6,7 +6,7 @@ import { firebaseAuth } from '../../utils/firebase';
 import { authActions } from './actions';
 import CreateUserMutation from '../../relay/mutations/CreateUserMutation';
 
-const getUserName = userId => fetch('http://localhost:9000/graphql', {
+const getUserName = userId => fetch(process.env.GRAPHQL_ENDPOINT, {
   headers: {
     Accept: 'application/json',
     'Content-Type': 'application/json',
