@@ -7,35 +7,37 @@ import Header from 'components/shared/Header';
 import { authActions } from './actions';
 import { makeSelectAuth } from './selectors';
 
-class App extends React.PureComponent { // eslint-disable-line react/prefer-stateless-function
-  static propTypes = {
-    children: PropTypes.node,
-    auth: PropTypes.object.isRequired,
-    actions: PropTypes.object.isRequired,
-  };
+const App = ({ auth, actions, children }) => {
+  const { authenticated, user } = auth
+  const displayName = authenticated ? auth.user.user.displayName : null;
+  const userName = user ? auth.user.userName : null;
 
-  render() {
-    const { authenticated, user } = this.props.auth;
-    const { signOut } = this.props.actions;
-    const displayName = authenticated ? this.props.auth.user.user.displayName : null;
-    const userName = user ? this.props.auth.user.userName : null;
-    return (
-      <div>
-        <Header authenticated={authenticated} displayName={displayName} userName={userName} signOut={signOut} />
-        <Grid>
-          {React.cloneElement(this.props.children, { auth: this.props.auth, authActions: this.props.actions })}
-        </Grid>
-      </div>
-    );
-  }
+  return (
+    <div>
+      <Header
+        authenticated={authenticated}
+        displayName={displayName}
+        userName={userName}
+        signOut={actions.signOut}
+      />
+      <Grid>
+        {React.cloneElement(children, { auth, authActions: actions })}
+      </Grid>
+    </div>
+  )
 }
 
-const mapStateToProps = createStructuredSelector({
-  auth: makeSelectAuth(),
-});
-
-function mapDispatchToProps(dispatch) {
-  return { actions: bindActionCreators(authActions, dispatch) };
+App.propTypes = {
+  children: PropTypes.node,
+  auth: PropTypes.object.isRequired,
+  actions: PropTypes.object.isRequired,
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(App);
+export default connect(
+  createStructuredSelector({
+    auth: makeSelectAuth(),
+  }),
+  dispatch => ({
+    actions: bindActionCreators(authActions, dispatch),
+  })
+)(App)

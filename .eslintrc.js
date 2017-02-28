@@ -9,6 +9,11 @@ module.exports = {
   },
   "settings": {
     "import/resolver": {
+      "node": {
+        "paths": [
+          "app",
+        ],
+      },
       "webpack": {
         "config": "./internals/webpack/webpack.prod.babel.js",
       },
@@ -58,6 +63,7 @@ module.exports = {
     "import/no-extraneous-dependencies": 0,
     "import/no-named-as-default": 0,
     "import/prefer-default-export": 0,
+    "import/extensions": 0,
 
     "react/forbid-prop-types": 0,
     "react/jsx-first-prop-new-line": [2, "multiline"],
