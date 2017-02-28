@@ -1,0 +1,34 @@
+{
+  "plugins": [
+    "react-relay",
+  ],
+  "presets": [
+    [
+      "latest",
+      {
+        "es2015": { "modules": false },
+      }
+    ],
+    "react",
+    "stage-0",
+    "./server/babelRelayPlugin",
+  ],
+  "env": {
+    "production": {
+      "only": [
+        "app",
+      ],
+      "plugins": [
+        "transform-react-remove-prop-types",
+        "transform-react-constant-elements",
+        "transform-react-inline-elements",
+      ],
+    },
+    "test": {
+      "plugins": [
+        "transform-es2015-modules-commonjs",
+        "dynamic-import-node",
+      ],
+    },
+  }
+}

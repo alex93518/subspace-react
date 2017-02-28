@@ -5,14 +5,16 @@ if (process.env.NODE_ENV === 'production') {
 
 require('shelljs/global');
 
-const path = require('path');
 const fs = require('fs');
+const path = require('path');
+const defaults = require('lodash/defaultsDeep');
+const config = require('../config');
+
+const pkg = require(path.join(process.cwd(), 'package.json'));
+
 const exists = fs.existsSync;
 const writeFile = fs.writeFileSync;
 
-const defaults = require('lodash/defaultsDeep');
-const pkg = require(path.join(process.cwd(), 'package.json'));
-const config = require('../config');
 const dllConfig = defaults(pkg.dllPlugin, config.dllPlugin.defaults);
 const outputPath = path.join(process.cwd(), dllConfig.path);
 const dllManifestPath = path.join(outputPath, 'package.json');

@@ -2,6 +2,7 @@
 const express = require('express');
 const path = require('path');
 const compression = require('compression');
+
 const pkg = require(path.resolve(process.cwd(), 'package.json'));
 
 // Dev middleware
