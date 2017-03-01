@@ -6,9 +6,10 @@ import Relay from 'react-relay';
 import makeSelectProjects from './selectors';
 import Project from '../../components/projects/Project';
 
-export class Projects extends React.Component { // eslint-disable-line react/prefer-stateless-function
+export class Projects extends React.Component { // eslint-disable-line react/prefer-stateless-function, max-len
   render() {
-    const projects = this.props.projects.edges;
+    const projects = this.props.viewer.projects.edges;
+    const userName = this.props.viewer.userName
     return (
       <div>
         <Helmet
@@ -17,14 +18,17 @@ export class Projects extends React.Component { // eslint-disable-line react/pre
             { name: 'description', content: 'Description of Projects' },
           ]}
         />
-        {projects.map(project => <Project project={project.node} key={project.node.id} />)}
+        <div>Viewer: {userName}</div>
+        {projects.map(project =>
+          <Project project={project.node} key={project.node.id} />
+        )}
       </div>
     );
   }
 }
 
 Projects.propTypes = {
-  projects: PropTypes.object,
+  viewer: PropTypes.object,
 };
 
 const mapStateToProps = createStructuredSelector({
@@ -37,12 +41,16 @@ export default Relay.createContainer(
   ProjectsPage,
   {
     fragments: {
-      projects: () => Relay.QL`
-        fragment on ProjectConnection {
-          edges {
-            node {
-              id,
-              ${Project.getFragment('project')}
+      viewer: () => Relay.QL`
+        fragment on ViewerQuery {
+          userName,
+          fullName,
+          projects(first: 10) {
+            edges {
+              node {
+                id,
+                ${Project.getFragment('project')}
+              }
             }
           }
         }

@@ -1,9 +1,8 @@
 import 'babel-polyfill';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Relay from 'react-relay';
 import useRelay from 'react-router-relay';
-import { persistStore } from 'redux-persist';
+import { persistStore, getStoredState } from 'redux-persist';
 import { Provider } from 'react-redux';
 import { applyRouterMiddleware, Router } from 'react-router';
 import { useScroll } from 'react-router-scroll';
@@ -22,6 +21,7 @@ import store, { history } from './store';
 import { translationMessages } from './i18n';
 import './global-styles';
 import createRoutes from './routes';
+import RelayEnv from './relay';
 
 // Create redux store with history
 // this uses the singleton browserHistory provided by react-router
@@ -35,52 +35,58 @@ const rootRoute = {
   childRoutes: createRoutes(store),
 };
 
-Relay.injectNetworkLayer(
-  new Relay.DefaultNetworkLayer(process.env.GRAPHQL_ENDPOINT)
-);
+getStoredState({}, (errState, state) => {
+  let token = '';
+  const auth = state._root.entries.find(o => o[0] === 'auth'); // eslint-disable-line no-underscore-dangle
+  if (auth && auth[1].user) {
+    token = auth[1].user.user.stsTokenManager.accessToken
+  }
 
-const render = messages => {
-  ReactDOM.render(
-    <Provider store={store} persistor={persistor}>
-      <LanguageProvider messages={messages}>
-        <Router
-          history={history}
-          environment={Relay.Store}
-          render={
-            applyRouterMiddleware(useRelay, useScroll())
-          }
-          routes={rootRoute}
-        />
-      </LanguageProvider>
-    </Provider>,
-    document.getElementById('app')
-  );
-};
+  const relayEnv = RelayEnv.refresh(token);
 
-if (module.hot) {
-  module.hot.accept('./i18n', () => render(translationMessages))
-}
+  const render = messages => {
+    ReactDOM.render(
+      <Provider store={store} persistor={persistor}>
+        <LanguageProvider messages={messages}>
+          <Router
+            history={history}
+            environment={relayEnv}
+            render={
+              applyRouterMiddleware(useRelay, useScroll())
+            }
+            routes={rootRoute}
+          />
+        </LanguageProvider>
+      </Provider>,
+      document.getElementById('app')
+    );
+  };
 
-// Chunked polyfill for browsers without Intl support
-if (!window.Intl) {
-  (new Promise(resolve => {
-    resolve(import('intl'));
-  }))
-    .then(() => Promise.all([
-      import('intl/locale-data/jsonp/en.js'),
-    ]))
-    .then(() => render(translationMessages))
-    .catch(err => {
-      throw err;
-    });
-} else {
-  render(translationMessages);
-}
+  if (module.hot) {
+    module.hot.accept('./i18n', () => render(translationMessages))
+  }
 
-// Install ServiceWorker and AppCache in the end since
-// it's not most important operation and if main code fails,
-// we do not want it installed
-if (process.env.NODE_ENV === 'production') {
-  // eslint-disable-next-line global-require
-  require('offline-plugin/runtime').install();
-}
+  // Chunked polyfill for browsers without Intl support
+  if (!window.Intl) {
+    (new Promise(resolve => {
+      resolve(import('intl'));
+    }))
+      .then(() => Promise.all([
+        import('intl/locale-data/jsonp/en.js'),
+      ]))
+      .then(() => render(translationMessages))
+      .catch(err => {
+        throw err;
+      });
+  } else {
+    render(translationMessages);
+  }
+
+  // Install ServiceWorker and AppCache in the end since
+  // it's not most important operation and if main code fails,
+  // we do not want it installed
+  if (process.env.NODE_ENV === 'production') {
+    // eslint-disable-next-line global-require
+    require('offline-plugin/runtime').install();
+  }
+});
