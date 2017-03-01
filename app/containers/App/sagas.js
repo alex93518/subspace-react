@@ -1,10 +1,10 @@
 import { call, fork, put, take } from 'redux-saga/effects';
 import { REHYDRATE } from 'redux-persist/constants';
 import { browserHistory } from 'react-router';
-import { firebaseAuth } from '../../utils/firebase';
+import { firebaseAuth } from 'utils/firebase';
+import CreateUserMutation from 'relay/mutations/CreateUserMutation';
+import CurrentRelay from 'relay';
 import { authActions } from './actions';
-import CreateUserMutation from '../../relay/mutations/CreateUserMutation';
-import RelayStore from '../../relay';
 
 const getUserName = userId => fetch(process.env.GRAPHQL_ENDPOINT, {
   headers: {
@@ -40,6 +40,7 @@ function* signOut() {
     yield put(authActions.signOutFulfilled());
     location.reload();
   } catch (error) {
+    console.error(error)
     yield put(authActions.signOutFailed(error));
   }
 }
@@ -82,7 +83,7 @@ function* watchSignIn() {
         yield call(browserHistory.push, '/login');
         yield put(authActions.userNameNotAvail(authData.user.displayName));
         const userAdd = yield take(authActions.ADD_USERNAME);
-        yield call(RelayStore.getCurrent().commitUpdate, new CreateUserMutation({
+        yield call(CurrentRelay.Store.commitUpdate, new CreateUserMutation({
           firebaseId: authData.user.uid,
           userName: userAdd.payload.username,
           fullName: authData.user.displayName,

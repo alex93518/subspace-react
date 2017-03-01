@@ -1,16 +1,29 @@
 {
   "plugins": [
+    "transform-decorators",
+    "syntax-dynamic-import",
+    "transform-es2015-parameters",
+    "transform-es2015-destructuring",
+    "transform-es2015-spread",
+    ["transform-object-rest-spread", {
+      "useBuiltIns": true
+    }],
+    ["transform-class-properties", {
+      "spec": true
+    }],
+    "transform-es2015-classes",
+    "transform-async-to-generator",
     "react-relay",
   ],
   "presets": [
-    [
-      "latest",
-      {
-        "es2015": { "modules": false },
-      }
-    ],
+    // [
+    //   "latest",
+    //   {
+    //     "es2015": { "modules": false },
+    //   }
+    // ],
+    // "stage-0",
     "react",
-    "stage-0",
     "./server/babelRelayPlugin",
   ],
   "env": {

@@ -15,13 +15,13 @@ import '!file-loader?name=[name].[ext]!./manifest.json';
 import 'file-loader?name=[name].[ext]!./.htaccess';
 /* eslint-enable import/no-unresolved, import/extensions */
 
-import App from './containers/App';
-import LanguageProvider from './containers/LanguageProvider';
-import store, { history } from './store';
-import { translationMessages } from './i18n';
+import App from 'containers/App';
+import LanguageProvider from 'containers/LanguageProvider';
+import CurrentRelay from 'relay';
 import './global-styles';
+import { translationMessages } from './i18n';
+import store, { history } from './store';
 import createRoutes from './routes';
-import RelayEnv from './relay';
 
 // Create redux store with history
 // this uses the singleton browserHistory provided by react-router
@@ -42,7 +42,7 @@ getStoredState({}, (errState, state) => {
     token = auth[1].user.user.stsTokenManager.accessToken
   }
 
-  const relayEnv = RelayEnv.refresh(token);
+  CurrentRelay.refresh(token);
 
   const render = messages => {
     ReactDOM.render(
@@ -50,7 +50,7 @@ getStoredState({}, (errState, state) => {
         <LanguageProvider messages={messages}>
           <Router
             history={history}
-            environment={relayEnv}
+            environment={CurrentRelay.Store}
             render={
               applyRouterMiddleware(useRelay, useScroll())
             }

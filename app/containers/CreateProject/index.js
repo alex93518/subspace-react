@@ -1,8 +1,8 @@
 import React, { PropTypes } from 'react';
 import Helmet from 'react-helmet';
-import CreateProjectMutation from '../../relay/mutations/CreateProjectMutation';
-import CreateProjectForm from '../../components/projects/CreateProjectForm';
-import RelayStore from '../../relay';
+import CreateProjectMutation from 'relay/mutations/CreateProjectMutation';
+import CreateProjectForm from 'components/projects/CreateProjectForm';
+import CurrentRelay from 'relay';
 
 export class CreateProject extends React.Component { // eslint-disable-line react/prefer-stateless-function
   static propTypes = {
@@ -10,15 +10,13 @@ export class CreateProject extends React.Component { // eslint-disable-line reac
   };
 
   handleSubmit(payload, userId) {
-    const onSuccess = () => {
-      alert('Project created');
-    };
-
-    const onFailure = transaction => {
-      console.log(transaction.getError());
-    };
-
-    RelayStore.getCurrent().commitUpdate(new CreateProjectMutation({ ...payload, userId }), { onFailure, onSuccess });
+    CurrentRelay.Store.commitUpdate(
+      new CreateProjectMutation({ ...payload, userId }),
+      {
+        onSuccess: () => alert('Project created'),
+        onFailure: transaction => console.log(transaction.getError()),
+      }
+    );
   }
 
   render() {

@@ -1,5 +1,5 @@
 import { getAsyncInjectors } from 'utils/asyncInjectors';
-import { viewerQuery, userByNameQuery } from './relay/queries';
+import { viewerQuery } from './relay/queries';
 
 const errorLoading = err => {
   console.error('Dynamic page loading failed', err); // eslint-disable-line no-console
@@ -78,7 +78,7 @@ export default function createRoutes(store) {
       getComponent(location, cb) {
         import('containers/UserProfile').then(loadModule(cb)).catch(errorLoading);
       },
-      queries: userByNameQuery,
+      queries: viewerQuery,
     },
     {
       path: '/createproject',
