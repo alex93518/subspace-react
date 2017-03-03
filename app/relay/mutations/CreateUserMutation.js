@@ -6,13 +6,14 @@ export default class CreateUserMutation extends Relay.Mutation {
   }
 
   getVariables() {
+    const { firebaseId, userName, fullName, photoUrl, emailAddress, password } = this.props;
     return {
-      firebaseId: this.props.firebaseId,
-      userName: this.props.userName,
-      fullName: this.props.fullName,
-      photoUrl: this.props.photoUrl,
-      emailAddress: this.props.emailAddress,
-      password: this.props.password,
+      firebaseId,
+      userName,
+      fullName: fullName || null,
+      photoUrl: photoUrl || null,
+      emailAddress: emailAddress || null,
+      password,
     };
   }
 

@@ -26,6 +26,7 @@ function* signInWithEmailPassword(email, password) {
     const userName = yield call(getUserName, authData.uid);
     if (userName.data.user) {
       yield put(authActions.signInFulfilled({ user: authData, userName: userName.data.user.userName }));
+      location.reload();
     } else {
       yield put(authActions.signInFailed('No username'));
     }
@@ -51,9 +52,16 @@ function* createUserWithEmailPassword(username, email, password) {
       email,
       password
     );
-    // yield call(insertUser, authData.uid, username, 'no null', 'no null', authData.Fd);
+    yield call(RelayStore.getCurrent().commitUpdate, new CreateUserMutation({
+      firebaseId: authData.uid,
+      userName: username,
+      emailAddress: email,
+      password,
+    }));
     yield put(authActions.signInFulfilled({ user: authData, userName: username }));
+    location.reload();
   } catch (error) {
+    console.log(error)
     yield put(authActions.createUserFailed(error));
   }
 }
@@ -80,7 +88,8 @@ function* watchSignIn() {
       const userName = yield call(getUserName, authData.user.uid);
       if (!userName.data.user) {
         yield call(browserHistory.push, '/login');
-        yield put(authActions.userNameNotAvail(authData.user.displayName));
+        const displayName = authData.user.displayName ? authData.user.displayName : 'Guest';
+        yield put(authActions.userNameNotAvail(displayName));
         const userAdd = yield take(authActions.ADD_USERNAME);
         yield call(RelayStore.getCurrent().commitUpdate, new CreateUserMutation({
           firebaseId: authData.user.uid,

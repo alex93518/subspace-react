@@ -23,7 +23,7 @@ const Header = ({ authenticated, displayName, userName, signOut }) =>
     {authenticated ?
       <Nav pullRight>
         {
-          displayName &&
+          userName &&
           <LinkContainer to={`/profile/${userName}`}>
             <NavItem eventKey={3}>{displayName}<i> @{userName}</i></NavItem>
           </LinkContainer>

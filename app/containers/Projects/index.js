@@ -8,8 +8,9 @@ import Project from '../../components/projects/Project';
 
 export class Projects extends React.Component { // eslint-disable-line react/prefer-stateless-function, max-len
   render() {
-    const projects = this.props.viewer.projects.edges;
-    const userName = this.props.viewer.userName
+    const allProjects = this.props.viewer.allProjects.edges;
+    const user = this.props.viewer.user
+    console.log(this.props.viewer)
     return (
       <div>
         <Helmet
@@ -18,8 +19,8 @@ export class Projects extends React.Component { // eslint-disable-line react/pre
             { name: 'description', content: 'Description of Projects' },
           ]}
         />
-        <div>Viewer: {userName}</div>
-        {projects.map(project =>
+        <div>Viewer: {user ? user.userName : null}</div>
+        {allProjects.map(project =>
           <Project project={project.node} key={project.node.id} />
         )}
       </div>
@@ -43,9 +44,10 @@ export default Relay.createContainer(
     fragments: {
       viewer: () => Relay.QL`
         fragment on ViewerQuery {
-          userName,
-          fullName,
-          projects(first: 10) {
+          user {
+            userName
+          },
+          allProjects(first: 10) {
             edges {
               node {
                 id,

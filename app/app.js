@@ -22,6 +22,7 @@ import { translationMessages } from './i18n';
 import './global-styles';
 import createRoutes from './routes';
 import RelayEnv from './relay';
+import { viewerQuery } from './relay/queries';
 
 // Create redux store with history
 // this uses the singleton browserHistory provided by react-router
@@ -33,6 +34,7 @@ const persistor = persistStore(store);
 const rootRoute = {
   component: App,
   childRoutes: createRoutes(store),
+  queries: viewerQuery,
 };
 
 getStoredState({}, (errState, state) => {

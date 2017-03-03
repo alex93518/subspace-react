@@ -4,8 +4,12 @@ build
 node_modules
 stats.json
 schema.json
+app/utils/firebase/config.js
 
 # Cruft
 .DS_Store
 npm-debug.log
 .idea
+.eslintrc
+.eslintrc.js
+.gitignore
