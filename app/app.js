@@ -1,11 +1,12 @@
 import 'babel-polyfill';
-import React from 'react';
+import React, { PropTypes } from 'react';
 import ReactDOM from 'react-dom';
 import useRelay from 'react-router-relay';
-import { persistStore, getStoredState } from 'redux-persist';
-import { Provider } from 'react-redux';
-import { applyRouterMiddleware, Router } from 'react-router';
+import { persistStore } from 'redux-persist';
+import { compose, withState } from 'recompose'
+import { Provider, connect } from 'react-redux';
 import { useScroll } from 'react-router-scroll';
+import { applyRouterMiddleware, Router } from 'react-router';
 import 'sanitize.css/sanitize.css';
 
 // Load the favicon, the manifest.json file and the .htaccess file
@@ -16,10 +17,8 @@ import 'file-loader?name=[name].[ext]!./.htaccess';
 /* eslint-enable import/no-unresolved, import/extensions */
 
 import App from 'containers/App';
-import LanguageProvider from 'containers/LanguageProvider';
 import CurrentRelay from 'relay';
 import './global-styles';
-import { translationMessages } from './i18n';
 import store, { history } from './store';
 import createRoutes from './routes';
 
@@ -27,66 +26,56 @@ import createRoutes from './routes';
 // this uses the singleton browserHistory provided by react-router
 // Optionally, this could be changed to leverage a created history
 // e.g. `const browserHistory = useRouterHistory(createBrowserHistory)();`
-const persistor = persistStore(store);
+const persistor = persistStore(store)
 
-// Set up the router, wrapping all Routes in the App component
 const rootRoute = {
   component: App,
   childRoutes: createRoutes(store),
-};
+}
 
-getStoredState({}, (errState, state) => {
-  let token = '';
-  const auth = state._root.entries.find(o => o[0] === 'auth'); // eslint-disable-line no-underscore-dangle
-  if (auth && auth[1].user) {
-    token = auth[1].user.user.stsTokenManager.accessToken
+const AuthWrapper = ({ storeLoaded, updateStoreStatus }) => {
+  if (!storeLoaded) {
+    CurrentRelay.reset(() => updateStoreStatus(true))
   }
 
-  CurrentRelay.refresh(token);
+  return (
+    <Router
+      history={history}
+      environment={CurrentRelay.Store}
+      render={
+        applyRouterMiddleware(useRelay, useScroll())
+      }
+      routes={rootRoute}
+    />
+  )
+}
 
-  const render = messages => {
-    ReactDOM.render(
-      <Provider store={store} persistor={persistor}>
-        <LanguageProvider messages={messages}>
-          <Router
-            history={history}
-            environment={CurrentRelay.Store}
-            render={
-              applyRouterMiddleware(useRelay, useScroll())
-            }
-            routes={rootRoute}
-          />
-        </LanguageProvider>
-      </Provider>,
-      document.getElementById('app')
-    );
-  };
+AuthWrapper.propTypes = {
+  storeLoaded: PropTypes.bool,
+  updateStoreStatus: PropTypes.func,
+}
 
-  if (module.hot) {
-    module.hot.accept('./i18n', () => render(translationMessages))
-  }
+// Rerender Router with new Relay.Environment on auth change
+const RouterWrapper = compose(
+  connect(state => ({ loggedIn: state.getIn(['auth', 'authenticated']) })),
+  withState('storeLoaded', 'updateStoreStatus', () => !CurrentRelay.Store),
+)(AuthWrapper)
 
-  // Chunked polyfill for browsers without Intl support
-  if (!window.Intl) {
-    (new Promise(resolve => {
-      resolve(import('intl'));
-    }))
-      .then(() => Promise.all([
-        import('intl/locale-data/jsonp/en.js'),
-      ]))
-      .then(() => render(translationMessages))
-      .catch(err => {
-        throw err;
-      });
-  } else {
-    render(translationMessages);
-  }
+const render = () => {
+  ReactDOM.render(
+    <Provider store={store} persistor={persistor}>
+      <RouterWrapper />
+    </Provider>,
+    document.getElementById('app')
+  )
+}
 
-  // Install ServiceWorker and AppCache in the end since
-  // it's not most important operation and if main code fails,
-  // we do not want it installed
-  if (process.env.NODE_ENV === 'production') {
-    // eslint-disable-next-line global-require
-    require('offline-plugin/runtime').install();
-  }
-});
+render()
+
+// Install ServiceWorker and AppCache in the end since
+// it's not most important operation and if main code fails,
+// we do not want it installed
+if (process.env.NODE_ENV === 'production') {
+  // eslint-disable-next-line global-require
+  require('offline-plugin/runtime').install()
+}

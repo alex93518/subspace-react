@@ -1,23 +1,21 @@
 import Relay from 'react-relay';
-import { RelayNetworkLayer, urlMiddleware } from 'react-relay-network-layer';
-
-const tokenMiddleware = ({ token } = {}) => (
-  next => req => {
-    Object.assign(req.headers, {
-      f_base: token,
-    });
-
-    return next(req);
-  }
-)
+import { getToken } from 'utils/firebase';
+import {
+  RelayNetworkLayer,
+  urlMiddleware,
+  authMiddleware,
+} from 'react-relay-network-layer';
 
 const getCustomNetworkLayer = token => new RelayNetworkLayer(
   [
     urlMiddleware({
       url: () => 'http://localhost:9000/auth/graphql',
     }),
-    tokenMiddleware({
+    authMiddleware({
       token,
+      prefix: '',
+      header: 'f_base',
+      tokenRefreshPromise: getToken,
     }),
   ],
   { disableBatchQuery: true }
@@ -25,13 +23,16 @@ const getCustomNetworkLayer = token => new RelayNetworkLayer(
 
 class CurrentRelay {
   constructor() {
-    this.Store = this.refresh()
+    this.Store = this.reset()
   }
 
-  refresh(token = '') {
+  reset = async cb => {
     const env = new Relay.Environment()
+    const token = await getToken
+
     env.injectNetworkLayer(getCustomNetworkLayer(token))
     this.Store = env
+    if (cb) cb()
   }
 }
 

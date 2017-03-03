@@ -3,7 +3,7 @@ import Helmet from 'react-helmet';
 import Relay from 'react-relay';
 import Project from '../../components/projects/Project';
 
-export const Projects = ({ viewer: { allProjects, user } }) => (
+export const Projects = ({ viewer: { allProjects, user } = {} }) => (
   <div>
     <Helmet
       title="Projects"
@@ -11,8 +11,11 @@ export const Projects = ({ viewer: { allProjects, user } }) => (
         { name: 'description', content: 'Description of Projects' },
       ]}
     />
-    <div>Viewer: {user.userName}</div>
-    {allProjects.edges.map(({ node }) =>
+    {
+      user &&
+      <div>Viewer: {user.userName}</div>
+    }
+    {allProjects && allProjects.edges.map(({ node }) =>
       <Project key={node.id} project={node} />
     )}
   </div>

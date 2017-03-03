@@ -25,8 +25,9 @@ function* signInWithEmailPassword(email, password) {
     );
     const userName = yield call(getUserName, authData.uid);
     if (userName.data.user) {
+      yield call(CurrentRelay.reset)
       yield put(authActions.signInFulfilled({ user: authData, userName: userName.data.user.userName }));
-      location.reload();
+      // location.reload();
     } else {
       yield put(authActions.signInFailed('No username'));
     }
@@ -38,8 +39,10 @@ function* signInWithEmailPassword(email, password) {
 function* signOut() {
   try {
     yield call([firebaseAuth, firebaseAuth.signOut]);
+    yield call(browserHistory.push, '/login');
+    yield call(CurrentRelay.reset)
     yield put(authActions.signOutFulfilled());
-    location.reload();
+    // location.reload();
   } catch (error) {
     console.error(error)
     yield put(authActions.signOutFailed(error));
@@ -59,8 +62,9 @@ function* createUserWithEmailPassword(username, email, password) {
       emailAddress: email,
       password,
     }));
+    yield call(CurrentRelay.reset)
     yield put(authActions.signInFulfilled({ user: authData, userName: username }));
-    location.reload();
+    // location.reload();
   } catch (error) {
     console.log(error)
     yield put(authActions.createUserFailed(error));
@@ -87,11 +91,14 @@ function* watchSignIn() {
     try {
       const authData = yield call([firebaseAuth, firebaseAuth.signInWithPopup], payload.authProvider);
       const userName = yield call(getUserName, authData.user.uid);
+      yield call(CurrentRelay.reset)
+
       if (!userName.data.user) {
         yield call(browserHistory.push, '/login');
         const displayName = authData.user.displayName ? authData.user.displayName : 'Guest';
         yield put(authActions.userNameNotAvail(displayName));
         const userAdd = yield take(authActions.ADD_USERNAME);
+
         yield call(CurrentRelay.Store.commitUpdate, new CreateUserMutation({
           firebaseId: authData.user.uid,
           userName: userAdd.payload.username,
@@ -100,11 +107,12 @@ function* watchSignIn() {
           emailAddress: authData.user.email,
           password: userAdd.payload.password,
         }));
+
         yield put(authActions.signInFulfilled({ user: authData.user, userName: userAdd.payload.username }));
       } else {
         yield put(authActions.signInFulfilled({ user: authData.user, userName: userName.data.user.userName }));
       }
-      location.reload();
+      // location.reload();
     } catch (error) {
       yield put(authActions.signInFailed(error));
     }
