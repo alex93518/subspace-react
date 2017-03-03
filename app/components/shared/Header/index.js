@@ -32,7 +32,12 @@ const Header = ({ authenticated, displayName, userName, signOut }) =>
           <NavItem eventKey={4}>Create Project</NavItem>
         </LinkContainer>
         <NavItem>
-          <Button onClick={signOut} style={{ display: 'inline', padding: 0 }}>Sign out</Button>
+          <Button
+            onClick={signOut}
+            style={{ display: 'inline', padding: 0 }}
+          >
+            Sign out
+          </Button>
         </NavItem>
       </Nav> :
       <Nav pullRight>

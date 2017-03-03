@@ -1,10 +1,10 @@
 import { call, fork, put, take } from 'redux-saga/effects';
 import { REHYDRATE } from 'redux-persist/constants';
 import { browserHistory } from 'react-router';
-import { firebaseAuth } from '../../utils/firebase';
+import { firebaseAuth } from 'utils/firebase';
+import CreateUserMutation from 'relay/mutations/CreateUserMutation';
+import CurrentRelay from 'relay';
 import { authActions } from './actions';
-import CreateUserMutation from '../../relay/mutations/CreateUserMutation';
-import RelayStore from '../../relay';
 
 const getUserName = userId => fetch(process.env.GRAPHQL_ENDPOINT, {
   headers: {
@@ -41,6 +41,7 @@ function* signOut() {
     yield put(authActions.signOutFulfilled());
     location.reload();
   } catch (error) {
+    console.error(error)
     yield put(authActions.signOutFailed(error));
   }
 }
@@ -52,7 +53,7 @@ function* createUserWithEmailPassword(username, email, password) {
       email,
       password
     );
-    yield call(RelayStore.getCurrent().commitUpdate, new CreateUserMutation({
+    yield call(CurrentRelay.Store.commitUpdate, new CreateUserMutation({
       firebaseId: authData.uid,
       userName: username,
       emailAddress: email,
@@ -91,7 +92,7 @@ function* watchSignIn() {
         const displayName = authData.user.displayName ? authData.user.displayName : 'Guest';
         yield put(authActions.userNameNotAvail(displayName));
         const userAdd = yield take(authActions.ADD_USERNAME);
-        yield call(RelayStore.getCurrent().commitUpdate, new CreateUserMutation({
+        yield call(CurrentRelay.Store.commitUpdate, new CreateUserMutation({
           firebaseId: authData.user.uid,
           userName: userAdd.payload.username,
           fullName: authData.user.displayName,

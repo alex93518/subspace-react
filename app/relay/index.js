@@ -1,41 +1,38 @@
 import Relay from 'react-relay';
 import { RelayNetworkLayer, urlMiddleware } from 'react-relay-network-layer';
 
-let instance = null;
-
-const tokenMiddleware = (opts = { token }) => {
-  const token = opts.token;
-  return next => req => {
+const tokenMiddleware = ({ token } = {}) => (
+  next => req => {
     Object.assign(req.headers, {
-      ...req.headers,
       f_base: token,
     });
-    const resPromise = next(req);
-    return resPromise;
-  };
-}
 
-const getCustomNetworkLayer = token => {
-  const network = new RelayNetworkLayer([
+    return next(req);
+  }
+)
+
+const getCustomNetworkLayer = token => new RelayNetworkLayer(
+  [
     urlMiddleware({
       url: () => 'http://localhost:9000/auth/graphql',
     }),
     tokenMiddleware({
       token,
     }),
-  ], { disableBatchQuery: true });
-  return network
-};
+  ],
+  { disableBatchQuery: true }
+)
 
-const refresh = token => {
-  instance = new Relay.Environment();
-  instance.injectNetworkLayer(getCustomNetworkLayer(token));
-  return instance;
-};
+class CurrentRelay {
+  constructor() {
+    this.Store = this.refresh()
+  }
 
-const getInstance = () => (instance || refresh(''));
+  refresh(token = '') {
+    const env = new Relay.Environment()
+    env.injectNetworkLayer(getCustomNetworkLayer(token))
+    this.Store = env
+  }
+}
 
-export default {
-  getCurrent: getInstance.bind(this),
-  refresh: refresh.bind(this),
-};
+export default new CurrentRelay()
