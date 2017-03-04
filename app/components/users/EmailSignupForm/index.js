@@ -41,7 +41,11 @@ class EmailSignupForm extends React.Component {
   handleSubmit(e) {
     e.preventDefault();
     if (this.state.password === this.state.verifyPassword) {
-      this.props.onSubmit(this.state.username, this.state.email, this.state.password);
+      this.props.onSubmit({
+        username: this.state.username,
+        email: this.state.email,
+        password: this.state.password,
+      });
     }
   }
 

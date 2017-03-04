@@ -29,7 +29,10 @@ class LoginStep extends React.Component {
 
   handleSubmit(e) {
     e.preventDefault();
-    this.props.onSubmit(this.state.username, this.state.password);
+    this.props.onSubmit({
+      username: this.state.username,
+      password: this.state.password,
+    });
   }
 
   render() {

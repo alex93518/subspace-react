@@ -3,7 +3,7 @@ import Helmet from 'react-helmet';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { createStructuredSelector } from 'reselect';
-import { authActions } from '../App/actions';
+import * as authActions from '../App/actions';
 import { makeSelectAuth } from '../App/selectors';
 import LoginWidget from '../../components/users/LoginWidget';
 

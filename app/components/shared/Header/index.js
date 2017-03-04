@@ -33,7 +33,7 @@ const Header = ({ authenticated, displayName, userName, signOut }) =>
         </LinkContainer>
         <NavItem>
           <Button
-            onClick={signOut}
+            onClick={() => signOut()}
             style={{ display: 'inline', padding: 0 }}
           >
             Sign out

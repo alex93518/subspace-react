@@ -4,7 +4,7 @@ import { browserHistory } from 'react-router';
 import { firebaseAuth } from 'utils/firebase';
 import CreateUserMutation from 'relay/mutations/CreateUserMutation';
 import CurrentRelay from 'relay';
-import { authActions } from './actions';
+import * as authActions from './actions';
 
 const getUserName = userId => fetch(process.env.GRAPHQL_ENDPOINT, {
   headers: {
@@ -87,7 +87,7 @@ function* watchRehydrate() {
 
 function* watchSignIn() {
   while (true) { // eslint-disable-line no-constant-condition
-    const { payload } = yield take(authActions.SIGN_IN);
+    const { payload } = yield take('SIGN_IN');
     try {
       const authData = yield call([firebaseAuth, firebaseAuth.signInWithPopup], payload.authProvider);
       const userName = yield call(getUserName, authData.user.uid);
@@ -97,7 +97,7 @@ function* watchSignIn() {
         yield call(browserHistory.push, '/login');
         const displayName = authData.user.displayName ? authData.user.displayName : 'Guest';
         yield put(authActions.userNameNotAvail(displayName));
-        const userAdd = yield take(authActions.ADD_USERNAME);
+        const userAdd = yield take('ADD_USERNAME');
 
         yield call(CurrentRelay.Store.commitUpdate, new CreateUserMutation({
           firebaseId: authData.user.uid,
@@ -121,21 +121,21 @@ function* watchSignIn() {
 
 function* watchSignInWithEmailPassword() {
   while (true) { // eslint-disable-line no-constant-condition
-    const { payload } = yield take(authActions.SIGN_IN_WITH_EMAIL_PASSWORD);
+    const { payload } = yield take('SIGN_IN_WITH_EMAIL_PASSWORD');
     yield fork(signInWithEmailPassword, payload.email, payload.password);
   }
 }
 
 function* watchSignOut() {
   while (true) { // eslint-disable-line no-constant-condition
-    yield take(authActions.SIGN_OUT);
+    yield take('SIGN_OUT');
     yield fork(signOut);
   }
 }
 
 function* watchCreateUserWithEmailPassword() {
   while (true) { // eslint-disable-line no-constant-condition
-    const { payload } = yield take(authActions.CREATE_USER_WITH_EMAIL_PASSWORD);
+    const { payload } = yield take('CREATE_USER_WITH_EMAIL_PASSWORD');
     yield fork(createUserWithEmailPassword, payload.username, payload.email, payload.password);
   }
 }

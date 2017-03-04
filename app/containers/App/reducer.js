@@ -1,31 +1,22 @@
 import { fromJS } from 'immutable';
-import { authActions } from './actions';
+import { createReducer } from 'redux-act';
+import { signInFulfilled, signOutFulfilled, userNameNotAvail } from './actions';
 
-const AuthState = fromJS({
+const initAuthState = fromJS({
   showLoginStep: '',
   authenticated: false,
   user: null,
 });
 
-export default function authReducer(state = AuthState, { payload, type }) {
-  switch (type) {
-    case authActions.SIGN_IN_FULFILLED:
-      return state
-        .set('authenticated', true)
-        .set('showLoginStep', '')
-        .set('user', payload.authUser);
-
-    case authActions.SIGN_OUT_FULFILLED:
-      return state
-        .set('authenticated', false)
-        .set('showLoginStep', '')
-        .set('user', null);
-
-    case authActions.USERNAME_NOTAVAIL:
-      return state
-        .set('showLoginStep', payload.displayName);
-
-    default:
-      return state;
-  }
-}
+export default createReducer({
+  [signInFulfilled]: (state, payload) => state
+    .set('authenticated', true)
+    .set('showLoginStep', '')
+    .set('user', payload),
+  [signOutFulfilled]: state => state
+    .set('authenticated', false)
+    .set('showLoginStep', '')
+    .set('user', null),
+  [userNameNotAvail]: (state, payload) => state
+    .set('showLoginStep', payload),
+}, initAuthState);
