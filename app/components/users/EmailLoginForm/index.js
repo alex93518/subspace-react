@@ -1,63 +1,23 @@
 import React, { PropTypes } from 'react';
-import { FormControl, Button } from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
+import { Field, reduxForm } from 'redux-form/immutable';
+import { ReduxFormInput } from 'components/shared/ReduxFormInput';
 
-class EmailLoginForm extends React.Component {
-  static propTypes = {
-    onSubmit: PropTypes.func.isRequired,
-  }
+const EmailLoginForm = ({ handleSubmit, onSubmit }) => (
+  <form onSubmit={handleSubmit(onSubmit)}>
+    <Field name="email" component={ReduxFormInput} type="email" placeholder="Email Address" />
+    <Field name="password" component={ReduxFormInput} type="password" placeholder="Password" />
+    <Button type="submit">
+      Sign Up
+    </Button>
+  </form>
+)
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      email: '',
-      password: '',
-    };
-
-    this.handleEmailChange = this.handleEmailChange.bind(this);
-    this.handlePasswordChange = this.handlePasswordChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
-  }
-
-  handleEmailChange(e) {
-    this.setState({ email: e.target.value });
-  }
-
-  handlePasswordChange(e) {
-    this.setState({ password: e.target.value });
-  }
-
-  handleSubmit(e) {
-    e.preventDefault();
-    this.props.onSubmit(this.state.email, this.state.password);
-  }
-
-  render() {
-    return (
-      <form onSubmit={this.handleSubmit}>
-        <FormControl
-          id="formControlsEmail"
-          type="email"
-          label="Email address"
-          placeholder="Enter email"
-          value={this.state.email}
-          onChange={this.handleEmailChange}
-        />
-        <div style={{ height: 5 }}></div>
-        <FormControl
-          id="formControlsPassword"
-          label="Password"
-          type="password"
-          placeholder="Enter password"
-          value={this.state.password}
-          onChange={this.handlePasswordChange}
-        />
-        <div style={{ height: 5 }}></div>
-        <Button type="submit">
-          Login
-        </Button>
-      </form>
-    );
-  }
+EmailLoginForm.propTypes = {
+  handleSubmit: PropTypes.func,
+  onSubmit: PropTypes.func,
 }
 
-export default EmailLoginForm;
+export default reduxForm({
+  form: 'login',
+})(EmailLoginForm);

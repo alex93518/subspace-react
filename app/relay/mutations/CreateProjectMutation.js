@@ -9,7 +9,7 @@ export default class CreateProjectMutation extends Relay.Mutation {
     return {
       name: this.props.projectName,
       goals: this.props.goals,
-      isPublic: this.props.isPublic,
+      isPublic: this.props.repoAccess !== 'private',
       owner: this.props.userId,
     };
   }

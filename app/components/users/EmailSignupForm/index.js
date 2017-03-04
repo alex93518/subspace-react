@@ -1,99 +1,25 @@
 import React, { PropTypes } from 'react';
-import { FormControl, Button } from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
+import { Field, reduxForm } from 'redux-form/immutable';
+import { ReduxFormInput } from 'components/shared/ReduxFormInput';
 
-class EmailSignupForm extends React.Component {
-  static propTypes = {
-    onSubmit: PropTypes.func.isRequired,
-  }
+const EmailSignupForm = ({ handleSubmit, onSubmit }) => (
+  <form onSubmit={handleSubmit(onSubmit)}>
+    <Field name="username" component={ReduxFormInput} type="text" placeholder="user name" />
+    <Field name="email" component={ReduxFormInput} type="email" placeholder="email address" />
+    <Field name="password" component={ReduxFormInput} type="password" placeholder="password" />
+    <Field name="verifyPassword" component={ReduxFormInput} type="password" placeholder="verify password" />
+    <Button type="submit">
+      Sign Up
+    </Button>
+  </form>
+)
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      username: '',
-      email: '',
-      password: '',
-      verifyPassword: '',
-    };
-
-    this.handleUsernameChange = this.handleUsernameChange.bind(this);
-    this.handleEmailChange = this.handleEmailChange.bind(this);
-    this.handlePasswordChange = this.handlePasswordChange.bind(this);
-    this.handleVerifyPasswordChange = this.handleVerifyPasswordChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
-  }
-
-  handleUsernameChange(e) {
-    this.setState({ username: e.target.value });
-  }
-
-  handleEmailChange(e) {
-    this.setState({ email: e.target.value });
-  }
-
-  handlePasswordChange(e) {
-    this.setState({ password: e.target.value });
-  }
-
-  handleVerifyPasswordChange(e) {
-    this.setState({ verifyPassword: e.target.value });
-  }
-
-  handleSubmit(e) {
-    e.preventDefault();
-    if (this.state.password === this.state.verifyPassword) {
-      this.props.onSubmit({
-        username: this.state.username,
-        email: this.state.email,
-        password: this.state.password,
-      });
-    }
-  }
-
-  render() {
-    return (
-      <form onSubmit={this.handleSubmit}>
-        <FormControl
-          id="formControlsUsername"
-          type="text"
-          label="Username"
-          placeholder="Enter username"
-          value={this.state.username}
-          onChange={this.handleUsernameChange}
-        />
-        <div style={{ height: 5 }}></div>
-        <FormControl
-          id="formControlsEmail"
-          type="email"
-          label="Email address"
-          placeholder="Enter email"
-          value={this.state.email}
-          onChange={this.handleEmailChange}
-        />
-        <div style={{ height: 5 }}></div>
-        <FormControl
-          id="formControlsPassword"
-          label="Password"
-          type="password"
-          placeholder="Enter password"
-          value={this.state.password}
-          onChange={this.handlePasswordChange}
-        />
-        <div style={{ height: 5 }}></div>
-        <FormControl
-          id="formControlsVerifyPassword"
-          label="VerifyPassword"
-          type="password"
-          placeholder="Verify password"
-          value={this.state.verifyPassword}
-          onChange={this.handleVerifyPasswordChange}
-        />
-        <div style={{ height: 5 }}></div>
-        <Button type="submit">
-          Sign Up
-        </Button>
-      </form>
-    );
-  }
+EmailSignupForm.propTypes = {
+  handleSubmit: PropTypes.func,
+  onSubmit: PropTypes.func,
 }
 
-export default EmailSignupForm;
+export default reduxForm({
+  form: 'signup',
+})(EmailSignupForm);
