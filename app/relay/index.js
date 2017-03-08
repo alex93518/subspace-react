@@ -36,4 +36,7 @@ class CurrentRelay {
   }
 }
 
+export * from './queries'
+export * from './mutations'
+
 export default new CurrentRelay()

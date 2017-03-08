@@ -1,4 +1,4 @@
-{
+module.exports = {
   "parser": "babel-eslint",
   "extends": "airbnb",
   "env": {
@@ -47,17 +47,19 @@
     "no-use-before-define": 0,
     "class-methods-use-this": 0,
     "newline-per-chained-call": 0,
+    "no-param-reassign": ['error', { 'props': false }],
     "no-unused-expressions": ['error', {
       'allowShortCircuit': true,
       'allowTernary': true,
     }],
 
+    "graphql/template-strings": ['error', {
+      env: 'relay',
+      schemaJson: require('./schema.json'),
+    }],
+
     "import/imports-first": 0,
     "import/no-dynamic-require": 0,
-		"import/no-unresolved": 0,
-		"import/no-duplicates": 0,
-		"import/no-absolute-path": 0,
-		"import/no-named-as-default-member": 0,
     "import/no-extraneous-dependencies": 0,
     "import/no-named-as-default": 0,
     "import/prefer-default-export": 0,
@@ -98,5 +100,5 @@
     "jsx-a11y/mouse-events-have-key-events": 2,
     "jsx-a11y/role-has-required-aria-props": 2,
     "jsx-a11y/role-supports-aria-props": 2,
-  }
+  },
 }

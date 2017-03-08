@@ -1,10 +1,14 @@
 import React, { PropTypes } from 'react';
 import { Col, Button } from 'react-bootstrap';
+import { authActions, signInWithGoogle } from 'containers/App/actions'
 import EmailLoginForm from '../EmailLoginForm';
 import LoginStep from '../LoginStep';
-// import styled from 'styled-components';
 
-function LoginWidget({ authenticated, showLoginStep, signInWithGoogle, signInWithGithub, signInWithEmailPassword, addUsername }) {
+function LoginWidget({
+  authenticated,
+  showLoginStep,
+  signInWithGithub,
+}) {
   const login = authenticated ? <Col className="text-center"><h3>Signed in</h3></Col> : (
     <Col md={4} mdOffset={4} className="text-center">
       <div>
@@ -16,20 +20,20 @@ function LoginWidget({ authenticated, showLoginStep, signInWithGoogle, signInWit
       </div>
       <div style={{ height: 30 }}></div>
       <div>
-        <EmailLoginForm onSubmit={(email, password) => signInWithEmailPassword(email, password)} />
+        <EmailLoginForm onSubmit={authActions.signInWithEmailPassword.init} />
       </div>
     </Col>
-  );
-  return showLoginStep ? <LoginStep onSubmit={addUsername} username={showLoginStep} /> : login;
+  )
+
+  return showLoginStep
+    ? <LoginStep onSubmit={authActions.addUsername} username={showLoginStep} />
+    : login
 }
 
 LoginWidget.propTypes = {
   authenticated: PropTypes.bool.isRequired,
   showLoginStep: PropTypes.string,
-  signInWithGoogle: PropTypes.func.isRequired,
   signInWithGithub: PropTypes.func.isRequired,
-  signInWithEmailPassword: PropTypes.func.isRequired,
-  addUsername: PropTypes.func.isRequired,
 };
 
 export default LoginWidget;

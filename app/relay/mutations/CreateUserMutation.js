@@ -1,12 +1,20 @@
 import Relay from 'react-relay';
 
-export default class CreateUserMutation extends Relay.Mutation {
+export class CreateUserMutation extends Relay.Mutation {
   getMutation() {
     return Relay.QL`mutation { createUser }`;
   }
 
   getVariables() {
-    const { firebaseId, userName, fullName, photoUrl, emailAddress, password } = this.props;
+    const {
+      firebaseId,
+      userName,
+      fullName,
+      photoUrl,
+      emailAddress,
+      password,
+    } = this.props
+
     return {
       firebaseId,
       userName,
