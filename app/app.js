@@ -16,12 +16,6 @@ import './global-styles';
 import store from './store';
 import Router from './router'
 
-// Create redux store with history
-// this uses the singleton browserHistory provided by react-router
-// Optionally, this could be changed to leverage a created history
-// e.g. `const browserHistory = useRouterHistory(createBrowserHistory)();`
-const persistor = persistStore(store)
-
 const render = () => {
   ReactDOM.render(
     <Provider store={store} persistor={persistor}>
@@ -31,7 +25,11 @@ const render = () => {
   )
 }
 
-render()
+// Create redux store with history
+// this uses the singleton browserHistory provided by react-router
+// Optionally, this could be changed to leverage a created history
+// e.g. `const browserHistory = useRouterHistory(createBrowserHistory)();`
+const persistor = persistStore(store, {}, render)
 
 // Install ServiceWorker and AppCache in the end since
 // it's not most important operation and if main code fails,

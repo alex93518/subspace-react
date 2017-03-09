@@ -13,7 +13,7 @@ const LoginStep = ({ handleSubmit, username }) => (
         <form onSubmit={handleSubmit}>
           Choose your terrella username:
           <Field
-            name="username"
+            name="userName"
             component={ReduxFormInput}
             type="text"
             placeholder="Enter username"

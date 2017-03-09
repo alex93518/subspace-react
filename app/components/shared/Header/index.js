@@ -2,7 +2,7 @@ import React, { PropTypes } from 'react';
 import { Link } from 'react-router';
 import { LinkContainer } from 'react-router-bootstrap';
 import { Navbar, Nav, NavItem, Button } from 'react-bootstrap';
-import { authActions } from 'containers/App/actions'
+import { authActions } from 'redux/auth/actions'
 
 const Header = ({ authenticated, displayName, userName }) => (
   <Navbar>
@@ -35,7 +35,7 @@ const Header = ({ authenticated, displayName, userName }) => (
         <NavItem>
           <Button
             onClick={authActions.signOut.init}
-            style={{ display: 'inline', padding: 0 }}
+            style={{ display: 'inline', padding: '0 6px' }}
           >
             Sign out
           </Button>

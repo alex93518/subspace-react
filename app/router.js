@@ -1,22 +1,23 @@
 import React, { PropTypes } from 'react';
 import useRelay from 'react-router-relay';
-import { compose, withState } from 'recompose'
+import { compose, withState, pure } from 'recompose'
 import { connect } from 'react-redux';
 import { useScroll } from 'react-router-scroll';
 import { applyRouterMiddleware, Router } from 'react-router';
 import CurrentRelay from 'relay';
 import App from 'containers/App';
-import store, { history } from './store';
-import createRoutes from './routes';
+import { history } from './store';
+import routes from './routes';
 
 const rootRoute = {
   component: App,
-  childRoutes: createRoutes(store),
+  childRoutes: routes,
 }
 
 const AuthWrapper = ({ storeLoaded, updateStoreStatus }) => {
   if (!storeLoaded) {
     CurrentRelay.reset(() => updateStoreStatus(true))
+    return null
   }
 
   return (
@@ -41,6 +42,7 @@ export default compose(
   connect(state => ({
     loggedIn: state.getIn(['auth', 'authenticated']),
   })),
-  withState('storeLoaded', 'updateStoreStatus', () => !CurrentRelay.Store),
+  withState('storeLoaded', 'updateStoreStatus', () => !!CurrentRelay.Store),
+  pure,
 )(AuthWrapper)
 

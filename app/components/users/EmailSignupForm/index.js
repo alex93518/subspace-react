@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
 import { Button } from 'react-bootstrap';
 import { Field, reduxForm } from 'redux-form/immutable';
-import { authActions } from 'containers/App/actions'
+import { authActions } from 'redux/auth/actions'
 import { ReduxFormInput } from 'components/shared/ReduxFormInput';
 
 const EmailSignupForm = ({ handleSubmit }) => (

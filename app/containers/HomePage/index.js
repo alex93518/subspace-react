@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
 import { Row, Col, Button } from 'react-bootstrap';
-import { signInWithGoogle, signInWithGithub } from 'containers/App/actions'
+import { signInWithGoogle, signInWithGithub } from 'redux/auth/actions'
 import EmailSignupForm from 'components/users/EmailSignupForm';
 
 class HomePage extends React.PureComponent { // eslint-disable-line react/prefer-stateless-function
