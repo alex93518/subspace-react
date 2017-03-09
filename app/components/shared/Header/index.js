@@ -1,9 +1,10 @@
 import React, { PropTypes } from 'react';
-import { Navbar, Nav, NavItem, Button } from 'react-bootstrap';
 import { Link } from 'react-router';
 import { LinkContainer } from 'react-router-bootstrap';
+import { Navbar, Nav, NavItem, Button } from 'react-bootstrap';
+import { authActions } from 'redux/auth/actions'
 
-const Header = ({ authenticated, displayName, userName, signOut }) =>
+const Header = ({ authenticated, displayName, userName }) => (
   <Navbar>
     <Navbar.Header>
       <Navbar.Brand>
@@ -33,8 +34,8 @@ const Header = ({ authenticated, displayName, userName, signOut }) =>
         </LinkContainer>
         <NavItem>
           <Button
-            onClick={() => signOut()}
-            style={{ display: 'inline', padding: 0 }}
+            onClick={authActions.signOut.init}
+            style={{ display: 'inline', padding: '0 6px' }}
           >
             Sign out
           </Button>
@@ -51,13 +52,13 @@ const Header = ({ authenticated, displayName, userName, signOut }) =>
         <NavItem eventKey={6}>Projects</NavItem>
       </LinkContainer>
     </Nav>
-  </Navbar>;
+  </Navbar>
+)
 
 Header.propTypes = {
   authenticated: PropTypes.bool.isRequired,
   displayName: PropTypes.string,
   userName: PropTypes.string,
-  signOut: PropTypes.func.isRequired,
-};
+}
 
-export default Header;
+export default Header

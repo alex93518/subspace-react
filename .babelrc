@@ -1,18 +1,14 @@
 {
   "plugins": [
-    "transform-decorators",
+    'styled-components',
     "syntax-dynamic-import",
-    "transform-es2015-parameters",
-    "transform-es2015-destructuring",
-    "transform-es2015-spread",
-    ["transform-object-rest-spread", {
-      "useBuiltIns": true
+    'transform-es2015-spread',
+    ['transform-object-rest-spread', {
+      useBuiltIns: true,
     }],
-    ["transform-class-properties", {
-      "spec": true
+    ['transform-class-properties', {
+      spec: true,
     }],
-    "transform-es2015-classes",
-    "transform-async-to-generator",
     "react-relay",
   ],
   "presets": [

@@ -1,14 +1,15 @@
+import { path } from 'ramda'
 import { createStore, applyMiddleware, compose } from 'redux';
 import { fromJS } from 'immutable';
 import { browserHistory } from 'react-router';
 import { syncHistoryWithStore, routerMiddleware } from 'react-router-redux';
 import createSagaMiddleware from 'redux-saga';
 import { dispatchRef } from 'redux/utils'
-import createReducer from './reducers';
-import { makeSelectLocationState } from './containers/App/selectors';
-import authSagas from './containers/App/sagas';
+import createReducer from 'redux/reducer'
+import rootSaga from 'redux/sagas'
+import { makeSelectLocationState } from 'redux/selectors'
 
-const sagaMiddleware = createSagaMiddleware();
+const sagaMiddleware = createSagaMiddleware()
 const initialState = {}
 const context = {}
 
@@ -18,6 +19,14 @@ const context = {}
 const middlewares = [
   sagaMiddleware,
   routerMiddleware(browserHistory),
+  () => next => reduxAction => {
+    // remove synthetic events from the payload
+    if (path(['payload', 'nativeEvent'], reduxAction)) {
+      reduxAction.payload = undefined
+    }
+
+    next(reduxAction)
+  },
 ];
 
 const enhancers = [
@@ -40,9 +49,9 @@ const store = createStore(
 );
 
 // Extensions
-sagaMiddleware.run(authSagas, context);
-store.runSaga = sagaMiddleware.run;
-store.asyncReducers = {}; // Async reducer registry
+sagaMiddleware.run(rootSaga, context)
+store.runSaga = sagaMiddleware.run
+store.asyncReducers = {} // Async reducer registry
 
 // Assign real dispatch for autobinded actions
 dispatchRef.dispatch = store.dispatch
@@ -50,8 +59,8 @@ dispatchRef.dispatch = store.dispatch
 // Make reducers hot reloadable, see http://mxs.is/googmo
 /* istanbul ignore next */
 if (module.hot) {
-  module.hot.accept('./reducers', () => {
-    import('./reducers').then(reducerModule => {
+  module.hot.accept('redux/reducer', () => {
+    import('redux/reducer').then(reducerModule => {
       const createReducers = reducerModule.default;
       const nextReducers = createReducers(store.asyncReducers);
 
@@ -65,6 +74,6 @@ if (module.hot) {
 // must be provided for resolving how to retrieve the "route" in the state
 export const history = syncHistoryWithStore(browserHistory, store, {
   selectLocationState: makeSelectLocationState(),
-});
+})
 
 export default store

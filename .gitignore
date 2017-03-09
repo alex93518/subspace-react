@@ -10,6 +10,4 @@ app/utils/firebase/config.js
 .DS_Store
 npm-debug.log
 .idea
-.eslintrc
-.eslintrc.js
 .gitignore

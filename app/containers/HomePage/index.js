@@ -1,11 +1,12 @@
 import React, { PropTypes } from 'react';
 import { Row, Col, Button } from 'react-bootstrap';
-import EmailSignupForm from '../../components/users/EmailSignupForm';
+import { signInWithGoogle, signInWithGithub } from 'redux/auth/actions'
+import EmailSignupForm from 'components/users/EmailSignupForm';
 
 class HomePage extends React.PureComponent { // eslint-disable-line react/prefer-stateless-function
   render() {
     const { authenticated, showLoginStep } = this.props.auth;
-    const { signInWithGoogle, signInWithGithub, createUserWithEmailPassword } = this.props.authActions;
+
     return (
       <Row>
         <Col md={8}>
@@ -23,7 +24,7 @@ class HomePage extends React.PureComponent { // eslint-disable-line react/prefer
           </div>
           <div style={{ height: 30 }}></div>
           <div className="text-right">
-            <EmailSignupForm onSubmit={(username, email, password) => createUserWithEmailPassword(username, email, password)} />
+            <EmailSignupForm />
           </div>
         </Col>}
       </Row>
@@ -33,7 +34,6 @@ class HomePage extends React.PureComponent { // eslint-disable-line react/prefer
 
 HomePage.propTypes = {
   auth: PropTypes.object,
-  authActions: PropTypes.object,
 };
 
 export default HomePage;

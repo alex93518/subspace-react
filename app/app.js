@@ -1,12 +1,8 @@
 import 'babel-polyfill';
-import React, { PropTypes } from 'react';
+import React from 'react';
 import ReactDOM from 'react-dom';
-import useRelay from 'react-router-relay';
+import { Provider } from 'react-redux';
 import { persistStore } from 'redux-persist';
-import { compose, withState } from 'recompose'
-import { Provider, connect } from 'react-redux';
-import { useScroll } from 'react-router-scroll';
-import { applyRouterMiddleware, Router } from 'react-router';
 import 'sanitize.css/sanitize.css';
 
 // Load the favicon, the manifest.json file and the .htaccess file
@@ -16,61 +12,24 @@ import '!file-loader?name=[name].[ext]!./manifest.json';
 import 'file-loader?name=[name].[ext]!./.htaccess';
 /* eslint-enable import/no-unresolved, import/extensions */
 
-import App from 'containers/App';
-import CurrentRelay from 'relay';
 import './global-styles';
-import store, { history } from './store';
-import createRoutes from './routes';
-
-// Create redux store with history
-// this uses the singleton browserHistory provided by react-router
-// Optionally, this could be changed to leverage a created history
-// e.g. `const browserHistory = useRouterHistory(createBrowserHistory)();`
-const persistor = persistStore(store)
-
-const rootRoute = {
-  component: App,
-  childRoutes: createRoutes(store),
-}
-
-const AuthWrapper = ({ storeLoaded, updateStoreStatus }) => {
-  if (!storeLoaded) {
-    CurrentRelay.reset(() => updateStoreStatus(true))
-  }
-
-  return (
-    <Router
-      history={history}
-      environment={CurrentRelay.Store}
-      render={
-        applyRouterMiddleware(useRelay, useScroll())
-      }
-      routes={rootRoute}
-    />
-  )
-}
-
-AuthWrapper.propTypes = {
-  storeLoaded: PropTypes.bool,
-  updateStoreStatus: PropTypes.func,
-}
-
-// Rerender Router with new Relay.Environment on auth change
-const RouterWrapper = compose(
-  connect(state => ({ loggedIn: state.getIn(['auth', 'authenticated']) })),
-  withState('storeLoaded', 'updateStoreStatus', () => !CurrentRelay.Store),
-)(AuthWrapper)
+import store from './store';
+import Router from './router'
 
 const render = () => {
   ReactDOM.render(
     <Provider store={store} persistor={persistor}>
-      <RouterWrapper />
+      <Router />
     </Provider>,
     document.getElementById('app')
   )
 }
 
-render()
+// Create redux store with history
+// this uses the singleton browserHistory provided by react-router
+// Optionally, this could be changed to leverage a created history
+// e.g. `const browserHistory = useRouterHistory(createBrowserHistory)();`
+const persistor = persistStore(store, {}, render)
 
 // Install ServiceWorker and AppCache in the end since
 // it's not most important operation and if main code fails,

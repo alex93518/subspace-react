@@ -3,7 +3,7 @@ import Relay from 'react-relay';
 import Helmet from 'react-helmet';
 import Profile from '../../components/users/Profile';
 
-export const UserProfile = ({ viewer }) => (
+export const UserProfile = ({ viewer }) => !viewer ? null : (
   <div>
     <Helmet
       title={viewer.user.fullName}

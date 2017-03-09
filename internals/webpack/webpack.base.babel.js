@@ -73,6 +73,7 @@ module.exports = options => ({
       'process.env': {
         NODE_ENV: JSON.stringify(process.env.NODE_ENV),
         GRAPHQL_ENDPOINT: JSON.stringify(process.env.GRAPHQL_ENDPOINT),
+        __DEV__: process.env.NODE_ENV === 'development',
       },
     }),
     new webpack.NamedModulesPlugin(),

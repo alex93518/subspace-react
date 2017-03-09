@@ -11,3 +11,12 @@ export const userByNameQuery = {
     userByUserName(userName: $userName)
   }`,
 };
+
+export const userNameQuery = userId => Relay.createQuery(
+  Relay.QL `query User($userId: String!) {
+    user(id: $userId) {
+      userName
+    }
+  }`,
+  { userId },
+)

@@ -1,8 +1,7 @@
 import React, { PropTypes } from 'react';
 import Helmet from 'react-helmet';
-import CreateProjectMutation from 'relay/mutations/CreateProjectMutation';
+import CurrentRelay, { CreateProjectMutation } from 'relay';
 import CreateProjectForm from 'components/projects/CreateProjectForm';
-import CurrentRelay from 'relay';
 
 export class CreateProject extends React.Component { // eslint-disable-line react/prefer-stateless-function
   static propTypes = {
