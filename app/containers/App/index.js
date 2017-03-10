@@ -7,8 +7,8 @@ import { makeSelectAuth } from 'redux/selectors';
 
 const App = ({ auth, children }) => {
   const { authenticated, user } = auth
-  const displayName = authenticated ? auth.user.user.displayName : null;
-  const userName = user ? auth.user.userName : null;
+  const displayName = authenticated ? auth.user.displayName : null;
+  const userName = user ? auth.userName : null;
 
   return (
     <div>

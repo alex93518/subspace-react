@@ -29,7 +29,8 @@ class CurrentRelay {
     const token = await getToken()
 
     env.injectNetworkLayer(getCustomNetworkLayer(token))
-    this.Store = env
+    // TODO: remove window binding before pushing to production
+    window.Store = this.Store = env
     if (cb) cb()
   }
 

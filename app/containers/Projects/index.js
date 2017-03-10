@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
 import Helmet from 'react-helmet';
 import Relay from 'react-relay';
-import Project from '../../components/projects/Project';
+import Project from 'components/projects/Project';
 
 export const Projects = ({ viewer: { allProjects, user } = {} }) => (
   <div>

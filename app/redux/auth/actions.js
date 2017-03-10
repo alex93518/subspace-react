@@ -1,8 +1,7 @@
 import firebase from 'firebase';
 import { call, take } from 'redux-saga/effects';
-import { browserHistory } from 'react-router';
 import { firebaseAuth } from 'utils/firebase';
-import { actionsGenerator } from 'redux/utils'
+import { actionsGenerator, redirect } from 'redux/utils'
 import CurrentRelay, { CreateUserMutation, userNameQuery } from 'relay';
 
 const getUserName = userId => CurrentRelay.fetch({
@@ -53,7 +52,7 @@ function* signIn({ payload: { authProvider } }) {
 }
 
 function* getNameAndCreateUser(user) {
-  yield call(browserHistory.push, '/login')
+  yield call(redirect, '/login')
   authActions.userNameNotAvail(user.displayName || 'Guest')
   const { payload } = yield take(authActions.addUsername.getType())
 
@@ -86,7 +85,7 @@ function* signInWithEmailPassword({ payload: { email, password } }) {
 }
 
 function* signOut() {
-  yield call(browserHistory.push, '/login')
+  yield call(redirect, '/login')
   yield call([firebaseAuth, firebaseAuth.signOut])
   yield call(CurrentRelay.reset)
 }

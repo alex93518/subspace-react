@@ -5,17 +5,20 @@ import { authActions } from './actions';
 const initAuthState = fromJS({
   showLoginStep: '',
   authenticated: false,
+  userName: undefined,
   user: null,
 });
 
-const loginUser = (state, payload) => state
+const loginUser = (state, { user, userName }) => state
   .set('authenticated', true)
   .set('showLoginStep', '')
-  .set('user', payload)
+  .set('userName', userName)
+  .set('user', user)
 
 const logoutCurrentUser = state => state
   .set('authenticated', false)
   .set('showLoginStep', '')
+  .set('userName', undefined)
   .set('user', null)
 
 export default createReducer({

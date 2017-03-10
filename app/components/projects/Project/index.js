@@ -16,7 +16,7 @@ function Project({ project }) {
             Goals: {project.goals}
           </Row>
           <Row>
-            Owner: {project.owner} (TODO: Change to graphql UserType)
+            Owner: {project.owner}
           </Row>
           <Row>
             Is Public Repo: {project.isPublic.toString()}
@@ -43,7 +43,12 @@ export default Relay.createContainer(Project, {
   fragments: {
     project: () => Relay.QL`
       fragment on Project {
-        id, name, goals, isPublic, owner, createdAt,
+        id
+        name
+        goals
+        isPublic
+        owner
+        createdAt
       }
     `,
   },

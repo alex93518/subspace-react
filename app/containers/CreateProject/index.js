@@ -1,21 +1,27 @@
-import React, { PropTypes } from 'react';
+import React, { Component, PropTypes } from 'react';
 import Helmet from 'react-helmet';
+import { redirect } from 'redux/utils'
 import CurrentRelay, { CreateProjectMutation } from 'relay';
 import CreateProjectForm from 'components/projects/CreateProjectForm';
 
-export class CreateProject extends React.Component { // eslint-disable-line react/prefer-stateless-function
+export class CreateProject extends Component {
   static propTypes = {
     auth: PropTypes.object,
   };
 
-  handleSubmit(payload, userId) {
+  // eslint-disable-next-line
+  handleSubmit = ({ repoAccess, tags, ...project }) => {
     CurrentRelay.Store.commitUpdate(
-      new CreateProjectMutation({ ...payload, userId }),
+      new CreateProjectMutation({
+        ...project,
+        isPublic: repoAccess !== 'private',
+        owner: this.props.auth.user.uid,
+      }),
       {
-        onSuccess: () => alert('Project created'),
+        onSuccess: () => redirect('/projects'),
         onFailure: transaction => console.log(transaction.getError()),
       }
-    );
+    )
   }
 
   render() {
@@ -23,11 +29,12 @@ export class CreateProject extends React.Component { // eslint-disable-line reac
       <div>
         <Helmet
           title="CreateProject"
-          meta={[{ name: 'description', content: 'Description of CreateProject' }]}
+          meta={[{
+            name: 'description',
+            content: 'Description of CreateProject',
+          }]}
         />
-        <CreateProjectForm
-          onSubmit={payload => this.handleSubmit(payload, this.props.auth.user.user.uid)}
-        />
+        <CreateProjectForm onSubmit={this.handleSubmit} />
       </div>
     );
   }

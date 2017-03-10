@@ -48,6 +48,9 @@ module.exports = {
     "class-methods-use-this": 0,
     "newline-per-chained-call": 0,
     "no-param-reassign": ['error', { 'props': false }],
+    "no-unused-vars": ["error", {
+      "ignoreRestSiblings": true,
+    }],
     "no-unused-expressions": ['error', {
       'allowShortCircuit': true,
       'allowTernary': true,
