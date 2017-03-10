@@ -5,9 +5,9 @@ import { connect } from 'react-redux';
 import { useScroll } from 'react-router-scroll';
 import { applyRouterMiddleware, Router } from 'react-router';
 import CurrentRelay from 'relay';
-import App from 'containers/App';
+import routes from 'components/routes';
+import App from 'components/App';
 import { history } from './store';
-import routes from './routes';
 
 const rootRoute = {
   component: App,
