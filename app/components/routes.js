@@ -2,98 +2,77 @@ import store from 'store'
 import { getAsyncInjectors } from 'utils/asyncInjectors';
 import { viewerQuery } from 'relay/queries';
 
-const errorLoading = err => {
-  // eslint-disable-next-line no-console
-  console.error('Dynamic page loading failed', err);
-}
-
-const loadModule = cb => componentModule => {
-  cb(null, componentModule.default);
-}
-
 // Create reusable async injectors using getAsyncInjectors factory
 const { injectReducer, injectSagas } = getAsyncInjectors(store)
+
+const loadModule = (path, injectables = []) => async (nextState, cb) => {
+  try {
+    const [component, reducer, sagas] = await Promise.all([
+      import(`components/${path}/index`),
+      ...injectables.map(module => import(`components/${path}/${module}`)),
+    ]);
+
+    if (reducer) injectReducer('projects', reducer.default);
+    if (sagas) injectSagas(sagas.default);
+
+    cb(null, component.default);
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.error(`Dynamic loading of "components/${path}" failed`, err);
+  }
+}
 
 export default [
   {
     path: '/',
     name: 'home',
-    getComponent(nextState, cb) {
-      const importModules = Promise.all([import('components/HomePage')]);
-
-      const renderRoute = loadModule(cb);
-
-      importModules.then(([component]) => {
-        renderRoute(component);
-      });
-
-      importModules.catch(errorLoading);
-    },
-  },
-  {
-    path: '/projects',
-    name: 'projects',
-    getComponent(nextState, cb) {
-      const importModules = Promise.all([
-        import('components/Projects/reducer'),
-        import('components/Projects/sagas'),
-        import('components/Projects'),
-      ]);
-
-      const renderRoute = loadModule(cb);
-
-      importModules.then(([reducer, sagas, component]) => {
-        injectReducer('projects', reducer.default);
-        injectSagas(sagas.default);
-        renderRoute(component);
-      });
-
-      importModules.catch(errorLoading);
-    },
-    queries: viewerQuery,
+    getComponent: loadModule('HomePage'),
   },
   {
     path: '/about',
     name: 'about',
-    getComponent(location, cb) {
-      import('components/About').then(loadModule(cb)).catch(errorLoading);
-    },
+    getComponent: loadModule('About'),
   },
   {
     path: '/howitworks',
     name: 'howItWorks',
-    getComponent(location, cb) {
-      import('components/HowItWorks').then(loadModule(cb)).catch(errorLoading);
-    },
+    getComponent: loadModule('HowItWorks'),
   },
   {
     path: '/login',
     name: 'login',
-    getComponent(location, cb) {
-      import('components/Login').then(loadModule(cb)).catch(errorLoading);
-    },
+    getComponent: loadModule('Login'),
   },
   {
     path: '/profile/:userName',
     name: 'userProfile',
-    getComponent(location, cb) {
-      import('components/UserProfile').then(loadModule(cb)).catch(errorLoading);
-    },
+    getComponent: loadModule('UserProfile'),
     queries: viewerQuery,
   },
   {
     path: '/createproject',
     name: 'createProject',
-    getComponent(location, cb) {
-      import('components/CreateProject')
-        .then(loadModule(cb))
-        .catch(errorLoading);
-    },
-  }, {
+    getComponent: loadModule('CreateProject'),
+  },
+  {
+    path: '/projects',
+    name: 'projects',
+    getComponent: loadModule('Projects', ['reducer']),
+    queries: viewerQuery,
+  },
+  {
+    path: '/:userName/:projectName',
+    name: 'project',
+    getComponent: loadModule('Project'),
+    queries: viewerQuery,
+    prepareParams: ({ projectName, userName }) => ({
+      name: projectName,
+      owner: userName,
+    }),
+  },
+  {
     path: '*',
     name: 'notfound',
-    getComponent(nextState, cb) {
-      import('components/NotFoundPage').then(loadModule(cb)).catch(errorLoading);
-    },
+    getComponent: loadModule('NotFoundPage'),
   },
 ]
