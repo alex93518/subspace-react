@@ -86,7 +86,7 @@ But how do we include all of your react components into a single html file? That
 
 When your application is deployed on a server, browsers will load this html file. The javascript files that webpack has included will be executed by the browser, thereby booting up your react application! It's magic really!! No, not really, though it can certainly seem that way. Let's dissect this phenomenon to better know what's really going on.
 
-### `app/app.js`:
+### `app/index.js`:
 
 When you run `npm start`, a server will be launched in your terminal for development. You can then open [http://localhost:3000](http://localhost:3000) to access the server and see your app.
 

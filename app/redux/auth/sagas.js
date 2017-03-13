@@ -9,8 +9,8 @@ function* onRehydrate({ payload }) {
 
   // eslint-disable-next-line no-underscore-dangle
   const auth = payload._root.entries.find(o => o[0] === 'auth')
-  if (auth && auth[1].user) {
-    authActions.signIn.success(auth[1].user)
+  if (auth && auth[1].authenticated) {
+    authActions.signIn.success(auth[1])
   }
 }
 

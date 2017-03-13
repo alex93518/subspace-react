@@ -1,33 +1,35 @@
-import Relay from 'react-relay';
+import Relay from 'react-relay'
 
 export class CreateProjectMutation extends Relay.Mutation {
   getMutation() {
-    return Relay.QL`mutation { createProject }`;
+    return Relay.QL`mutation { createProject }`
   }
 
   getVariables() {
-    return {
-      name: this.props.projectName,
-      goals: this.props.goals,
-      isPublic: this.props.repoAccess !== 'private',
-      owner: this.props.userId,
-    };
-  }
-
-  getConfigs() {
-    return [{
-      type: 'FIELDS_CHANGE',
-      fieldIDs: {
-        project: this.props.project,
-      },
-    }];
+    return this.props
   }
 
   getFatQuery() {
     return Relay.QL`
       fragment on CreateProjectPayload @relay(pattern: true) {
-        project
+        projectEdge
+        viewer { allProjects }
       }
-    `;
+    `
+  }
+
+  getConfigs() {
+    return [
+      {
+        type: 'RANGE_ADD',
+        parentName: 'viewer',
+        parentID: this.props.owner,
+        connectionName: 'allProjects',
+        edgeName: 'projectEdge',
+        rangeBehaviors: {
+          '': 'append',
+        },
+      },
+    ]
   }
 }
