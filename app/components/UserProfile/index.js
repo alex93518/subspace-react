@@ -23,7 +23,7 @@ UserProfile.propTypes = {
 export default Relay.createContainer(UserProfile, {
   fragments: {
     viewer: () => Relay.QL`
-      fragment on ViewerQuery {
+      fragment on Viewer {
         user {
           userName
           fullName

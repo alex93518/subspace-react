@@ -28,7 +28,7 @@ Projects.propTypes = {
 export default Relay.createContainer(Projects, {
   fragments: {
     viewer: () => Relay.QL`
-      fragment on ViewerQuery {
+      fragment on Viewer {
         user {
           userName
         },
