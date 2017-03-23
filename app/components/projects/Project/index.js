@@ -49,14 +49,16 @@ Project.propTypes = {
 export default Relay.createContainer(Project, {
   fragments: {
     project: () => Relay.QL`
-      fragment on Project {
+      fragment on Repository {
         id
         name
-        goals
-        isPublic
-        owner
-        createdAt
       }
     `,
   },
 })
+        // project {
+        //   goals
+        //   isPublic
+        //   owner
+        //   createdAt
+        // }

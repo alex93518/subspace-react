@@ -2,7 +2,7 @@ import Relay from 'react-relay'
 
 export class CreateProjectMutation extends Relay.Mutation {
   getMutation() {
-    return Relay.QL`mutation { createProject }`
+    return Relay.QL`mutation { createRepository }`
   }
 
   getVariables() {
@@ -11,9 +11,9 @@ export class CreateProjectMutation extends Relay.Mutation {
 
   getFatQuery() {
     return Relay.QL`
-      fragment on CreateProjectPayload @relay(pattern: true) {
-        projectEdge
-        viewer { allProjects }
+      fragment on CreateRepositoryPayload @relay(pattern: true) {
+        repositoryEdge
+        viewer { repositories }
       }
     `
   }
@@ -24,8 +24,8 @@ export class CreateProjectMutation extends Relay.Mutation {
         type: 'RANGE_ADD',
         parentName: 'viewer',
         parentID: this.props.owner,
-        connectionName: 'allProjects',
-        edgeName: 'projectEdge',
+        connectionName: 'repositories',
+        edgeName: 'repositoryEdge',
         rangeBehaviors: {
           '': 'append',
         },

@@ -1,11 +1,11 @@
-import Relay from 'react-relay';
-import { getToken } from 'utils/firebase';
+import Relay from 'react-relay'
+import { getToken } from 'utils/firebase'
 import {
   RelayNetworkLayer,
   urlMiddleware,
   authMiddleware,
   loggerMiddleware, // eslint-disable-line
-} from 'react-relay-network-layer';
+} from 'react-relay-network-layer'
 
 const getCustomNetworkLayer = token => new RelayNetworkLayer(
   [
@@ -20,7 +20,11 @@ const getCustomNetworkLayer = token => new RelayNetworkLayer(
       tokenRefreshPromise: getToken,
     }),
   ],
-  { disableBatchQuery: true }
+  { disableBatchQuery: true },
+  next => req => {
+    req.credentials = 'same-origin'
+    return next(req)
+  },
 )
 
 class CurrentRelay {

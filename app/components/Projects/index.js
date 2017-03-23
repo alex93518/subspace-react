@@ -32,7 +32,7 @@ export default Relay.createContainer(Projects, {
         user {
           userName
         },
-        allProjects(first: 10) {
+        repositories(first: 10) {
           edges {
             node {
               id,
