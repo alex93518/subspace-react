@@ -15,7 +15,7 @@ const CreateProjectForm = ({ handleSubmit }) => (
     <div>Goals</div>
     <Field name="goals" component={TextArea} rows="5" />
     <div>Readme (Optional)</div>
-    <Field name="readme" component={TextArea} rows="5" />
+    <Field name="description" component={TextArea} rows="5" />
     <Field
       name="tags"
       component={TextInput}

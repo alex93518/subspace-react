@@ -14,8 +14,9 @@ export class CreateProject extends Component {
     CurrentRelay.Store.commitUpdate(
       new CreateProjectMutation({
         ...project,
-        isPublic: repoAccess !== 'private',
-        owner: this.props.auth.user.uid,
+        isPushVote: false,
+        isPrivate: repoAccess === 'private',
+        ownerId: this.props.auth.user.uid,
       }),
       {
         onSuccess: () => redirect('/projects'),
@@ -36,8 +37,8 @@ export class CreateProject extends Component {
         />
         <CreateProjectForm onSubmit={this.handleSubmit} />
       </div>
-    );
+    )
   }
 }
 
-export default CreateProject;
+export default CreateProject
