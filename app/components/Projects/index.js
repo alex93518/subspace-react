@@ -3,7 +3,7 @@ import Helmet from 'react-helmet';
 import Relay from 'react-relay';
 import Project from './Project';
 
-export const Projects = ({ viewer: { allProjects, user } = {} }) => (
+export const Projects = ({ viewer: { repositories, actor } = {} }) => (
   <div>
     <Helmet
       title="Projects"
@@ -12,10 +12,10 @@ export const Projects = ({ viewer: { allProjects, user } = {} }) => (
       ]}
     />
     {
-      user &&
-      <div>Viewer: {user.userName}</div>
+      actor &&
+      <div>Viewer: {actor.userName}</div>
     }
-    {allProjects && allProjects.edges.map(({ node }) =>
+    {repositories && repositories.edges.map(({ node }) =>
       <Project key={node.id} project={node} />
     )}
   </div>
@@ -29,7 +29,7 @@ export default Relay.createContainer(Projects, {
   fragments: {
     viewer: () => Relay.QL`
       fragment on Viewer {
-        user {
+        actor {
           userName
         },
         repositories(first: 10) {
