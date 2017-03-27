@@ -1,4 +1,5 @@
 import Relay from 'react-relay'
+import { viewerId } from 'relay/constants'
 
 export class CreateProjectMutation extends Relay.Mutation {
   getMutation() {
@@ -6,7 +7,7 @@ export class CreateProjectMutation extends Relay.Mutation {
   }
 
   getVariables() {
-    return this.props
+    return this.props.repository
   }
 
   getFatQuery() {
@@ -23,7 +24,7 @@ export class CreateProjectMutation extends Relay.Mutation {
       {
         type: 'RANGE_ADD',
         parentName: 'viewer',
-        parentID: this.props.owner,
+        parentID: viewerId,
         connectionName: 'repositories',
         edgeName: 'repositoryEdge',
         rangeBehaviors: {

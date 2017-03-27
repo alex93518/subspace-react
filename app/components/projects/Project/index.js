@@ -13,6 +13,9 @@ const Project = ({
     project: {
       goals,
       description,
+      topics: {
+        edges: topics,
+      },
     },
   },
 }) => (
@@ -23,6 +26,11 @@ const Project = ({
           <Col>
             <Link to={`/${owner.userName}/${name}`}>Project name: {name}</Link>
           </Col>
+        </Row>
+        <Row>
+          Topics: {topics.map(({ node: { value } }) => (
+            <span key={value}>{value} </span>
+          ))}
         </Row>
         <Row>
           Goals: {goals}
@@ -67,6 +75,13 @@ export default Relay.createContainer(Project, {
         project {
           goals
           description
+          topics(first: 10) {
+            edges {
+              node {
+                value
+              }
+            }
+          }
         }
       }
     `,

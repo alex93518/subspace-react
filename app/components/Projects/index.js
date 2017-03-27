@@ -1,7 +1,8 @@
-import React, { PropTypes } from 'react';
-import Helmet from 'react-helmet';
-import Relay from 'react-relay';
-import Project from './Project';
+import React, { PropTypes } from 'react'
+import Helmet from 'react-helmet'
+import Relay from 'react-relay'
+import R from 'ramda'
+import Project from './Project'
 
 export const Projects = ({ viewer: { repositories, actor } = {} }) => (
   <div>
@@ -15,15 +16,22 @@ export const Projects = ({ viewer: { repositories, actor } = {} }) => (
       actor &&
       <div>Viewer: {actor.userName}</div>
     }
-    {repositories && repositories.edges.map(({ node }) =>
-      <Project key={node.id} project={node} />
-    )}
+    {
+      R.pipe(
+        R.path(['edges']),
+        R.map(R.prop('node')),
+        R.sortWith([
+          R.descend(R.prop('createdAt')),
+        ]),
+        R.map(node => <Project key={node.id} project={node} />),
+      )(repositories)
+    }
   </div>
 )
 
 Projects.propTypes = {
   viewer: PropTypes.object,
-};
+}
 
 export default Relay.createContainer(Projects, {
   fragments: {
@@ -31,11 +39,12 @@ export default Relay.createContainer(Projects, {
       fragment on Viewer {
         actor {
           userName
-        },
+        }
         repositories(first: 10) {
           edges {
             node {
-              id,
+              id
+              createdAt
               ${Project.getFragment('project')}
             }
           }
@@ -43,4 +52,4 @@ export default Relay.createContainer(Projects, {
       }
     `,
   },
-});
+})
