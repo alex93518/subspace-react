@@ -5,6 +5,7 @@ import moment from 'moment'
 import styled from 'styled-components'
 import { Row, Col, Glyphicon } from 'react-bootstrap';
 import NavTabs from 'components/shared/NavTabs';
+import Tree from './Tree'
 
 const getNavConfig = (owner, name) => [
   {
@@ -41,6 +42,9 @@ const Project = ({
       },
     },
   },
+  viewer: {
+    repository,
+  },
 }) => (
   <Row>
     <h3>
@@ -49,6 +53,7 @@ const Project = ({
       <AccessIcon glyph={isPrivate ? 'flash' : 'lock'} />
     </h3>
     <NavTabs config={getNavConfig(owner.userName, name)} />
+    <Tree tree={repository} />
     <FilesCol md={12}>
       <Row>
         Goals: {goals}
@@ -83,6 +88,7 @@ export default Relay.createContainer(Project, {
     viewer: () => Relay.QL`
       fragment on Viewer {
         repository(owner: $owner, name: $name) {
+          ${Tree.getFragment('tree')}
           name
           owner {
             userName
@@ -98,4 +104,3 @@ export default Relay.createContainer(Project, {
     `,
   },
 })
-
