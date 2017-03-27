@@ -6,16 +6,12 @@ export const viewerQuery = {
   }`,
 };
 
-export const userByNameQuery = {
-  userByUserName: () => Relay.QL`query {
-    userByUserName(userName: $userName)
-  }`,
-};
-
 export const userNameQuery = userId => Relay.createQuery(
   Relay.QL `query User($userId: String!) {
-    user(id: $userId) {
-      userName
+    viewer {
+      user(id: $userId) {
+        id
+      }
     }
   }`,
   { userId },

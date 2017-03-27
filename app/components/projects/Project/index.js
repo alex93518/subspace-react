@@ -1,15 +1,19 @@
 import React, { PropTypes } from 'react';
 import { Link } from 'react-router'
+import moment from 'moment'
 import { Panel, Row, Col } from 'react-bootstrap';
 import Relay from 'react-relay';
 
 const Project = ({
   project: {
     name,
-    goals,
-    owner,
-    isPublic,
+    isPrivate,
     createdAt,
+    owner,
+    project: {
+      goals,
+      description,
+    },
   },
 }) => (
   <Panel>
@@ -17,17 +21,20 @@ const Project = ({
       <Col md={9}>
         <Row>
           <Col>
-            <Link to={`/${owner}/${name}`}>Project name: {name}</Link>
+            <Link to={`/${owner.userName}/${name}`}>Project name: {name}</Link>
           </Col>
         </Row>
         <Row>
           Goals: {goals}
         </Row>
         <Row>
-          Owner: {owner}
+          Owner: {owner.userName}
         </Row>
         <Row>
-          Is Public Repo: {isPublic.toString()}
+          Description: {description}
+        </Row>
+        <Row>
+          Is Public Repo: {isPrivate.toString()}
         </Row>
         <Row>
           Readme: (TODO: Read from repo file)
@@ -36,7 +43,7 @@ const Project = ({
       <Col md={3} className="text-right">
         <Row><Col> Contributors</Col></Row>
         <Row><Col> Live Users</Col></Row>
-        <Row><Col>Created: {createdAt}</Col></Row>
+        <Row><Col>Created: {moment(createdAt).format('MMMM Do YYYY')}</Col></Row>
       </Col>
     </Row>
   </Panel>
@@ -49,13 +56,18 @@ Project.propTypes = {
 export default Relay.createContainer(Project, {
   fragments: {
     project: () => Relay.QL`
-      fragment on Project {
+      fragment on Repository {
         id
         name
-        goals
-        isPublic
-        owner
+        isPrivate
         createdAt
+        owner {
+          userName
+        }
+        project {
+          goals
+          description
+        }
       }
     `,
   },

@@ -1,6 +1,7 @@
 import React, { PropTypes } from 'react';
 import { Link } from 'react-router'
 import Relay from 'react-relay';
+import moment from 'moment'
 import styled from 'styled-components'
 import { Row, Col, Glyphicon } from 'react-bootstrap';
 import NavTabs from 'components/shared/NavTabs';
@@ -19,33 +20,46 @@ const getNavConfig = (owner, name) => [
 const FilesCol = styled(Col)`
   padding-top: 15px;
 `
+const AccessIcon = styled(Glyphicon)`
+  display: inline-block;
+  margin-left: 10px;
+  opacity: 0.6;
+  font-size: 14px;
+`
 
 const Project = ({
   viewer: {
-    project: {
+    repository: {
       name,
-      goals,
       owner,
-      isPublic,
       createdAt,
+      isPrivate,
+
+      project: {
+        goals,
+        description,
+      },
     },
   },
 }) => (
   <Row>
     <h3>
-      <Link to="/projects">{owner}</Link>
+      <Link to="/projects">{owner.userName}</Link>
       /{name}
-      <Glyphicon glyph={isPublic ? 'flash' : 'lock'} />
+      <AccessIcon glyph={isPrivate ? 'flash' : 'lock'} />
     </h3>
-    <NavTabs config={getNavConfig(owner, name)} />
+    <NavTabs config={getNavConfig(owner.userName, name)} />
     <FilesCol md={12}>
       <Row>
         Goals: {goals}
       </Row>
+      <Row>
+        Description: {description}
+      </Row>
       <Row>TODO: show files here</Row>
       <Row><Col>Contributors</Col></Row>
       <Row><Col>Live Users</Col></Row>
-      <Row><Col>Created: {createdAt}</Col></Row>
+      <Row><Col>Created: {moment(createdAt).format('MMMM Do YYYY')}</Col></Row>
     </FilesCol>
     <FilesCol md={12}>
       <Row>
@@ -68,14 +82,17 @@ export default Relay.createContainer(Project, {
   fragments: {
     viewer: () => Relay.QL`
       fragment on Viewer {
-        id
-        project(owner: $owner, name: $name) {
-          id
+        repository(owner: $owner, name: $name) {
           name
-          goals
-          isPublic
-          owner
+          owner {
+            userName
+          }
           createdAt
+          isPrivate
+          project {
+            goals
+            description
+          }
         }
       }
     `,

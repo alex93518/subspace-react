@@ -6,13 +6,13 @@ import Profile from './Profile';
 export const UserProfile = ({ viewer }) => !viewer ? null : (
   <div>
     <Helmet
-      title={viewer.user.fullName}
+      title={viewer.actor.fullName}
       meta={[{
         name: 'description',
-        content: `${viewer.user.fullName} profile`,
+        content: `${viewer.actor.fullName} profile`,
       }]}
     />
-    <Profile user={viewer.user} />
+    <Profile user={viewer.actor} />
   </div>
 )
 
@@ -24,7 +24,7 @@ export default Relay.createContainer(UserProfile, {
   fragments: {
     viewer: () => Relay.QL`
       fragment on Viewer {
-        user {
+        actor {
           userName
           fullName
           photoUrl
