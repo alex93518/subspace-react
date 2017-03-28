@@ -1,12 +1,25 @@
 import React, { PropTypes } from 'react';
 import Relay from 'react-relay';
 import styled from 'styled-components'
-import { Row, Col, FormControl } from 'react-bootstrap';
+import { Row, Col, FormControl, Table } from 'react-bootstrap';
 import TreeEntry from './TreeEntry';
 
 const FilesCol = styled(Col)`
   padding-top: 15px;
 `
+
+const sortByName = (a, b) => {
+  const nameA = a.name.toUpperCase()
+  const nameB = b.name.toUpperCase()
+  if (nameA < nameB) {
+    return -1;
+  }
+  if (nameA > nameB) {
+    return 1;
+  }
+
+  return 0;
+}
 
 const Tree = ({
   tree: {
@@ -33,11 +46,30 @@ const Tree = ({
       </Row>
     </FilesCol>
     <FilesCol md={12}>
-      <Row>
-        {ref.target.tree.entries.map(treeEntry =>
-          <TreeEntry key={treeEntry.oid} treeEntry={treeEntry} />
-        )}
-      </Row>
+      <Table hover responsive>
+        <tbody>
+          {ref.target.tree.entries
+            .filter(val => val.type === 'tree')
+            .sort(sortByName)
+            .map(treeEntry =>
+              <TreeEntry
+                key={treeEntry.oid}
+                treeEntry={treeEntry}
+                branchHead={relay.variables.branchHead}
+              />
+          )}
+          {ref.target.tree.entries
+            .filter(val => val.type === 'blob')
+            .sort(sortByName)
+            .map(treeEntry =>
+              <TreeEntry
+                key={treeEntry.oid}
+                treeEntry={treeEntry}
+                branchHead={relay.variables.branchHead}
+              />
+          )}
+        </tbody>
+      </Table>
     </FilesCol>
   </div>
 )
@@ -52,7 +84,7 @@ export default Relay.createContainer(Tree, {
     branchHead: 'refs/heads/master',
   },
   fragments: {
-    tree: () => Relay.QL`
+    tree: ({ branchHead }) => Relay.QL`
       fragment on Repository {
         refs(first: 99) {
           edges {
@@ -68,7 +100,9 @@ export default Relay.createContainer(Tree, {
               tree {
                 entries {
                   oid,
-                  ${TreeEntry.getFragment('treeEntry')}
+                  type,
+                  name,
+                  ${TreeEntry.getFragment('treeEntry', { branchHead })}
                 }
               }
             }
