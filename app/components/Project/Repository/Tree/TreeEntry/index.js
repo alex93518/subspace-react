@@ -17,9 +17,17 @@ const TreeEntry = ({
     },
     object,
   },
+  path,
+  onRowClick,
 }) => (
-  <tr>
-    <td><span style={{ paddingRight: 10 }}>{iconType(type)}</span>{name}</td>
+  <tr // eslint-disable-line jsx-a11y/no-static-element-interactions
+    onClick={() => onRowClick(name)}
+    style={{ cursor: 'pointer' }}
+  >
+    <td>
+      <span style={{ paddingRight: 10 }}>{iconType(type)}</span>
+      {path ? name.replace(`${path}/`, '') : name}
+    </td>
     <td>{byteSize(object)}</td>
     <td>{shortMessage}</td>
     <td>{parseInt(
@@ -30,6 +38,8 @@ const TreeEntry = ({
 
 TreeEntry.propTypes = {
   treeEntry: PropTypes.object.isRequired,
+  path: PropTypes.string,
+  onRowClick: PropTypes.func,
 }
 
 export default Relay.createContainer(TreeEntry, {

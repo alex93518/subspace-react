@@ -1,13 +1,17 @@
 import React, { PropTypes } from 'react';
-import { Link } from 'react-router'
+import { Link, browserHistory } from 'react-router'
 import Relay from 'react-relay';
 import moment from 'moment'
 import styled from 'styled-components'
 import { Row, Col, Glyphicon } from 'react-bootstrap';
 import NavTabs from 'components/shared/NavTabs';
-import Tree from './Tree'
+import Repository from './Repository'
 
 const getNavConfig = (owner, name) => [
+  {
+    link: `/${owner}/${name}`,
+    label: 'Code',
+  },
   {
     link: `/${owner}/${name}/commits`,
     label: 'Commits',
@@ -28,23 +32,36 @@ const AccessIcon = styled(Glyphicon)`
   font-size: 14px;
 `
 
+const handleOnRowClick = (
+  isTree, pathName, branchName, relay
+) => {
+  let path = `/${relay.variables.userName}/${relay.variables.projectName}`
+  if (branchName && pathName) {
+    path += `/${branchName}/${isTree ? 'tree' : 'blob'}/${pathName}`
+  }
+  relay.setVariables({
+    branchHead: branchName,
+    path: pathName,
+    isTree,
+  })
+  browserHistory.push(path)
+}
+
 const Project = ({
   viewer: {
+    repository,
     repository: {
       name,
       owner,
       createdAt,
       isPrivate,
-
       project: {
         goals,
         description,
       },
     },
   },
-  viewer: {
-    repository,
-  },
+  relay,
 }) => (
   <Row>
     <h3>
@@ -53,7 +70,20 @@ const Project = ({
       <AccessIcon glyph={isPrivate ? 'flash' : 'lock'} />
     </h3>
     <NavTabs config={getNavConfig(owner.userName, name)} />
-    <Tree tree={repository} />
+    <Repository
+      repository={repository}
+      branchHead={relay.variables.branchHead}
+      isTree={relay.variables.isTree}
+      path={relay.variables.path}
+      onRowClick={(isTree, path, branchName) =>
+        handleOnRowClick(
+          isTree,
+          path,
+          branchName,
+          relay
+        )
+      }
+    />
     <FilesCol md={12}>
       <Row>
         Goals: {goals}
@@ -76,19 +106,32 @@ const Project = ({
 
 Project.propTypes = {
   viewer: PropTypes.object.isRequired,
+  relay: PropTypes.object.isRequired,
 }
 
 export default Relay.createContainer(Project, {
   initialVariables: {
-    owner: null,
-    name: null,
+    userName: null,
+    projectName: null,
+    branchHead: 'master',
+    treeName: null,
+    fileName: null,
+    isTree: true,
+    path: '',
   },
-
+  prepareVariables: vars => {
+    if (vars.treeName !== null) {
+      return { ...vars, path: vars.treeName, isTree: true }
+    } else if (vars.fileName !== null) {
+      return { ...vars, path: vars.fileName, isTree: false }
+    }
+    return vars
+  },
   fragments: {
-    viewer: () => Relay.QL`
+    viewer: ({ branchHead, isTree, path }) => Relay.QL`
       fragment on Viewer {
-        repository(owner: $owner, name: $name) {
-          ${Tree.getFragment('tree')}
+        repository(owner: $userName, name: $projectName) {
+          ${Repository.getFragment('repository', { branchHead, isTree, path })}
           name
           owner {
             userName
