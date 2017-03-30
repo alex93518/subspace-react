@@ -14,13 +14,13 @@ const CreateProjectForm = ({ handleSubmit }) => (
     />
     <div>Goals</div>
     <Field name="goals" component={TextArea} rows="5" />
-    <div>Readme (Optional)</div>
+    <div>Description</div>
     <Field name="description" component={TextArea} rows="5" />
     <Field
-      name="tags"
+      name="topics"
       component={TextInput}
       type="text"
-      placeholder="Tags"
+      placeholder="Topics"
     />
     <FormGroup>
       <Field
