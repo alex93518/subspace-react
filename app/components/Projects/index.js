@@ -4,7 +4,7 @@ import Relay from 'react-relay'
 import R from 'ramda'
 import Project from './Project'
 
-export const Projects = ({ viewer: { repositories, actor } = {} }) => (
+export const Projects = ({ viewer: { repositories } }) => (
   <div>
     <Helmet
       title="Projects"
@@ -12,10 +12,6 @@ export const Projects = ({ viewer: { repositories, actor } = {} }) => (
         { name: 'description', content: 'Description of Projects' },
       ]}
     />
-    {
-      actor &&
-      <div>Viewer: {actor.userName}</div>
-    }
     {
       R.pipe(
         R.path(['edges']),
@@ -37,9 +33,6 @@ export default Relay.createContainer(Projects, {
   fragments: {
     viewer: () => Relay.QL`
       fragment on Viewer {
-        actor {
-          userName
-        }
         repositories(first: 10) {
           edges {
             node {
