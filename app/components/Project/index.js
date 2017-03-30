@@ -33,17 +33,11 @@ const AccessIcon = styled(Glyphicon)`
 `
 
 const handleOnRowClick = (
-  isTree, pathName, branchName, relay
+  isTree, splat, branchHead, relay
 ) => {
   let path = `/${relay.variables.userName}/${relay.variables.projectName}`
-  if (branchName && pathName) {
-    path += `/${branchName}/${isTree ? 'tree' : 'blob'}/${pathName}`
-  }
-  relay.setVariables({
-    branchHead: branchName,
-    path: pathName,
-    isTree,
-  })
+  if (branchHead) path += `/${branchHead}`
+  if (splat) path += `/${isTree ? 'tree' : 'blob'}/${splat}`
   browserHistory.push(path)
 }
 
@@ -74,12 +68,12 @@ const Project = ({
       repository={repository}
       branchHead={relay.variables.branchHead}
       isTree={relay.variables.isTree}
-      path={relay.variables.path}
-      onRowClick={(isTree, path, branchName) =>
+      splat={relay.variables.splat}
+      onRowClick={(isTree, splat, branchHead) =>
         handleOnRowClick(
           isTree,
-          path,
-          branchName,
+          splat,
+          branchHead,
           relay
         )
       }
@@ -91,15 +85,9 @@ const Project = ({
       <Row>
         Description: {description}
       </Row>
-      <Row>TODO: show files here</Row>
       <Row><Col>Contributors</Col></Row>
       <Row><Col>Live Users</Col></Row>
       <Row><Col>Created: {moment(createdAt).format('MMMM Do YYYY')}</Col></Row>
-    </FilesCol>
-    <FilesCol md={12}>
-      <Row>
-        TODO: show README from repo file
-      </Row>
     </FilesCol>
   </Row>
 )
@@ -113,25 +101,38 @@ export default Relay.createContainer(Project, {
   initialVariables: {
     userName: null,
     projectName: null,
-    branchHead: 'master',
-    treeName: null,
-    fileName: null,
     isTree: true,
-    path: '',
+    branchHead: 'master',
+    treeOrBlob: 'tree',
+    splat: '',
   },
   prepareVariables: vars => {
-    if (vars.treeName !== null) {
-      return { ...vars, path: vars.treeName, isTree: true }
-    } else if (vars.fileName !== null) {
-      return { ...vars, path: vars.fileName, isTree: false }
+    if (vars.splat) {
+      return {
+        ...vars,
+        isTree: vars.treeOrBlob === 'tree',
+      }
+    } else if (vars.branchHead) {
+      return {
+        ...vars,
+        treeOrBlob: 'tree',
+        isTree: true,
+        splat: '',
+      }
     }
-    return vars
+    return {
+      ...vars,
+      branchHead: 'master',
+      treeOrBlob: 'tree',
+      isTree: true,
+      splat: '',
+    }
   },
   fragments: {
-    viewer: ({ branchHead, isTree, path }) => Relay.QL`
+    viewer: ({ branchHead, isTree, splat }) => Relay.QL`
       fragment on Viewer {
         repository(owner: $userName, name: $projectName) {
-          ${Repository.getFragment('repository', { branchHead, isTree, path })}
+          ${Repository.getFragment('repository', { branchHead, isTree, splat })}
           name
           owner {
             userName

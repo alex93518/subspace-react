@@ -61,18 +61,7 @@ export default [
     queries: viewerQuery,
   },
   {
-    path: '/:userName/:projectName',
-    name: 'project',
-    getComponent: loadModule('Project'),
-    queries: viewerQuery,
-  },
-  {
-    path: '/:userName/:projectName/:branchName/tree/:treeName',
-    getComponent: loadModule('Project'),
-    queries: viewerQuery,
-  },
-  {
-    path: '/:userName/:projectName/:branchName/blob/:fileName',
+    path: '/:userName/:projectName(/:branchHead)(/:treeOrBlob/**)',
     getComponent: loadModule('Project'),
     queries: viewerQuery,
   },

@@ -1,6 +1,7 @@
 import React, { PropTypes } from 'react';
 import { Glyphicon } from 'react-bootstrap';
 import Relay from 'react-relay';
+import moment from 'moment';
 
 const iconType = type => type === 'blob' ?
   <Glyphicon glyph="file" /> :
@@ -30,9 +31,7 @@ const TreeEntry = ({
     </td>
     <td>{byteSize(object)}</td>
     <td>{shortMessage}</td>
-    <td>{parseInt(
-      (((Date.now() / 1000) - commitTime) / (60 * 60)) % 24, 10)} hours ago
-    </td>
+    <td>{moment.unix(commitTime).fromNow()}</td>
   </tr>
 )
 

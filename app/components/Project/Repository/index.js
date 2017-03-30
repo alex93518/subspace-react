@@ -1,59 +1,74 @@
 import React, { PropTypes } from 'react';
 import Relay from 'react-relay';
+import RichTextEditor from 'react-rte';
 import styled from 'styled-components'
-import { Row, Col, FormControl } from 'react-bootstrap';
+import { Row, Col } from 'react-bootstrap';
+import BranchSelect from './BranchSelect';
 import Tree from './Tree';
 import Blob from './Blob';
 
-const FilesCol = styled(Col)`
+const RowSty = styled(Row)`
   padding-top: 15px;
 `
 
+const Readme = (isBase, ref) => {
+  if (isBase) {
+    return ref.target.readme.entries.length ?
+      <Blob
+        blob={ref.target.readme}
+        splat={'README.md'}
+      /> :
+      <RichTextEditor
+        readOnly
+        value={
+          RichTextEditor.createValueFromString('No README.md file', 'html')
+        }
+      />
+  }
+  return null
+}
+
 const Repository = ({
   repository: {
-    refs,
     ref,
   },
+  repository,
   relay,
   onRowClick,
 }) => (
-  <div>
-    <FilesCol md={12}>
-      <Row>
-        Branch:
-        <FormControl
-          name="branch"
-          componentClass="select"
-          onChange={e => onRowClick(
-            relay.variables.isTree,
-            relay.variables.path,
-            e.target.value
-          )}
-        >
-          {refs.edges.map(refNode => {
-            const name = refNode.node.name.replace('refs/heads/', '')
-            return (<option key={name} value={name}>
-              {name}
-            </option>)
-          })}
-        </FormControl>
-      </Row>
-    </FilesCol>
-    {relay.variables.isTree ?
-      <Tree
-        tree={ref.target.tree}
-        path={relay.variables.path}
-        branchHead={relay.variables.branchHead}
-        onRowClick={(isTree, path) =>
-          onRowClick(isTree, path, relay.variables.branchHead)
+  <Col md={12}>
+    <RowSty>
+      <Col>
+        <BranchSelect
+          branchSelect={repository}
+          onRowClick={onRowClick}
+        />
+      </Col>
+    </RowSty>
+    <RowSty>
+      <Col>
+        {relay.variables.isTree ?
+          <Tree
+            tree={ref.target.tree}
+            splat={relay.variables.splat}
+            branchHead={relay.variables.branchHead}
+            onRowClick={(isTree, splat) =>
+              onRowClick(isTree, splat, relay.variables.branchHead)
+            }
+          /> :
+          <Blob
+            blob={ref.target.tree}
+            splat={relay.variables.splat}
+          />
         }
-      /> :
-      <Blob
-        blob={ref.target.tree}
-        path={relay.variables.path}
-      />
-    }
-  </div>
+      </Col>
+    </RowSty>
+    <Row>
+      <Col>
+        {Readme(relay.variables.isBase, ref)}
+      </Col>
+    </Row>
+  </Col>
 )
 
 Repository.propTypes = {
@@ -64,29 +79,42 @@ Repository.propTypes = {
 
 export default Relay.createContainer(Repository, {
   initialVariables: {
-    path: '',
+    splat: '',
+    isBase: true,
     isTree: true,
     branchHead: 'master',
   },
+  prepareVariables: vars => {
+    if (!vars.splat) {
+      return {
+        ...vars,
+        isBase: true,
+      }
+    }
+    return {
+      ...vars,
+      isBase: false,
+    }
+  },
   fragments: {
-    repository: ({ branchHead, path }) => Relay.QL`
+    repository: ({ branchHead, splat }) => Relay.QL`
       fragment on Repository {
-        refs(first: 99) {
-          edges {
-            node {
-              name
-            }
-          }
-        }
+        ${BranchSelect.getFragment('branchSelect')}
         ref(refName: $branchHead) {
           name
           target {
             ... on Commit {
               tree @include(if: $isTree) {
-                ${Tree.getFragment('tree', { branchHead, path })}
+                ${Tree.getFragment('tree', { branchHead, splat })}
               }
               tree @skip(if: $isTree) {
-                ${Blob.getFragment('blob', { path })}
+                ${Blob.getFragment('blob', { splat })}
+              }
+              readme: tree @include(if: $isBase) {
+                entries(path: "README.md") {
+                  oid
+                }
+                ${Blob.getFragment('blob', { splat: 'README.md' })}
               }
             }
           }

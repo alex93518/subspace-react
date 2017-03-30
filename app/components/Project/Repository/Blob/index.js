@@ -1,28 +1,21 @@
 import React, { PropTypes } from 'react';
 import Relay from 'react-relay';
-import styled from 'styled-components'
-import { Col } from 'react-bootstrap';
 import RichTextEditor from 'react-rte';
-
-const FilesCol = styled(Col)`
-  padding-top: 15px;
-`
 
 const Blob = ({
   blob: {
     entries,
   },
 }) => (
-  <FilesCol md={12}>
-    <RichTextEditor
-      readOnly
-      value={RichTextEditor.createValueFromString(
-        entries[0].object.text.replace('\n', '<br />'),
-        'html')
-      }
-      onChange={() => {}}
-    />
-  </FilesCol>
+  <RichTextEditor
+    readOnly
+    value={RichTextEditor.createValueFromString(
+      entries[0].name.endsWith('.md') ? entries[0].object.text :
+      entries[0].object.text.replace(/\n/g, '<br />'),
+      entries[0].name.endsWith('.md') ? 'markdown' : 'html')
+    }
+    onChange={() => {}}
+  />
 )
 
 Blob.propTypes = {
@@ -31,12 +24,13 @@ Blob.propTypes = {
 
 export default Relay.createContainer(Blob, {
   initialVariables: {
-    path: '',
+    splat: '',
   },
   fragments: {
     blob: () => Relay.QL`
       fragment on Tree {
-        entries(path: $path) {
+        entries(path: $splat) {
+          name
           object {
             ... on Blob {
               text
