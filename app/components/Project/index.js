@@ -1,16 +1,24 @@
 import React, { PropTypes } from 'react';
-import { Link } from 'react-router'
 import Relay from 'react-relay';
 import moment from 'moment'
 import styled from 'styled-components'
-import { Row, Col, Glyphicon } from 'react-bootstrap';
+import { Row, Col } from 'react-bootstrap';
 import NavTabs from 'components/shared/NavTabs';
+import RepoLink from 'components/shared/repo/TitleLink'
 import Repository from './Repository'
 
 const getNavConfig = (owner, name) => [
   {
     link: `/${owner}/${name}`,
     label: 'Code',
+  },
+  {
+    link: `/${owner}/${name}/readme`,
+    label: 'ReadMe',
+  },
+  {
+    link: `/${owner}/${name}/objectives`,
+    label: 'Objectives',
   },
   {
     link: `/${owner}/${name}/commits`,
@@ -22,14 +30,11 @@ const getNavConfig = (owner, name) => [
   },
 ]
 
+const RepoTitle = styled.h3`
+  margin-bottom: 25px;
+`
 const FilesCol = styled(Col)`
   padding-top: 15px;
-`
-const AccessIcon = styled(Glyphicon)`
-  display: inline-block;
-  margin-left: 10px;
-  opacity: 0.6;
-  font-size: 14px;
 `
 
 const projectPath = relay =>
@@ -51,12 +56,14 @@ const Project = ({
   },
   relay,
 }) => (
-  <Row>
-    <h3>
-      <Link to="/projects">{owner.userName}</Link>
-      /{name}
-      <AccessIcon glyph={isPrivate ? 'flash' : 'lock'} />
-    </h3>
+  <div>
+    <RepoTitle>
+      <RepoLink
+        repoName={name}
+        isPrivate={isPrivate}
+        userName={owner.userName}
+      />
+    </RepoTitle>
     <NavTabs config={getNavConfig(owner.userName, name)} />
     <Repository
       repository={repository}
@@ -65,7 +72,7 @@ const Project = ({
       splat={relay.variables.splat}
       projectPath={projectPath(relay)}
     />
-    <FilesCol md={12}>
+    <FilesCol sm={6} md={6}>
       <Row>
         Goals: {goals}
       </Row>
@@ -74,9 +81,18 @@ const Project = ({
       </Row>
       <Row><Col>Contributors</Col></Row>
       <Row><Col>Live Users</Col></Row>
-      <Row><Col>Created: {moment(createdAt).format('MMMM Do YYYY')}</Col></Row>
+      <Row>
+        <Col>
+          Created: {moment(createdAt).format('MMMM Do YYYY')}
+        </Col>
+      </Row>
     </FilesCol>
-  </Row>
+    <FilesCol sm={6} md={6}>
+      <Row>
+        TODO: show README from repo file
+      </Row>
+    </FilesCol>
+  </div>
 )
 
 Project.propTypes = {

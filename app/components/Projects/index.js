@@ -1,9 +1,10 @@
-import React, { PropTypes } from 'react';
-import Helmet from 'react-helmet';
-import Relay from 'react-relay';
-import Project from './Project';
+import React, { PropTypes } from 'react'
+import Helmet from 'react-helmet'
+import Relay from 'react-relay'
+import R from 'ramda'
+import Project from './Project'
 
-export const Projects = ({ viewer: { repositories, actor } = {} }) => (
+export const Projects = ({ viewer: { repositories } }) => (
   <div>
     <Helmet
       title="Projects"
@@ -12,30 +13,31 @@ export const Projects = ({ viewer: { repositories, actor } = {} }) => (
       ]}
     />
     {
-      actor &&
-      <div>Viewer: {actor.userName}</div>
+      R.pipe(
+        R.path(['edges']),
+        R.map(R.prop('node')),
+        R.sortWith([
+          R.descend(R.prop('createdAt')),
+        ]),
+        R.map(node => <Project key={node.id} project={node} />),
+      )(repositories)
     }
-    {repositories && repositories.edges.map(({ node }) =>
-      <Project key={node.id} project={node} />
-    )}
   </div>
 )
 
 Projects.propTypes = {
   viewer: PropTypes.object,
-};
+}
 
 export default Relay.createContainer(Projects, {
   fragments: {
     viewer: () => Relay.QL`
       fragment on Viewer {
-        actor {
-          userName
-        },
         repositories(first: 10) {
           edges {
             node {
-              id,
+              id
+              createdAt
               ${Project.getFragment('project')}
             }
           }
@@ -43,4 +45,4 @@ export default Relay.createContainer(Projects, {
       }
     `,
   },
-});
+})
