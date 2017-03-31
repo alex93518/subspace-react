@@ -1,5 +1,5 @@
 import React, { PropTypes } from 'react';
-import { Link, browserHistory } from 'react-router'
+import { Link } from 'react-router'
 import Relay from 'react-relay';
 import moment from 'moment'
 import styled from 'styled-components'
@@ -32,14 +32,8 @@ const AccessIcon = styled(Glyphicon)`
   font-size: 14px;
 `
 
-const handleOnRowClick = (
-  isTree, splat, branchHead, relay
-) => {
-  let path = `/${relay.variables.userName}/${relay.variables.projectName}`
-  if (branchHead) path += `/${branchHead}`
-  if (splat) path += `/${isTree ? 'tree' : 'blob'}/${splat}`
-  browserHistory.push(path)
-}
+const projectPath = relay =>
+  `/${relay.variables.userName}/${relay.variables.projectName}`
 
 const Project = ({
   viewer: {
@@ -69,14 +63,7 @@ const Project = ({
       branchHead={relay.variables.branchHead}
       isTree={relay.variables.isTree}
       splat={relay.variables.splat}
-      onRowClick={(isTree, splat, branchHead) =>
-        handleOnRowClick(
-          isTree,
-          splat,
-          branchHead,
-          relay
-        )
-      }
+      projectPath={projectPath(relay)}
     />
     <FilesCol md={12}>
       <Row>

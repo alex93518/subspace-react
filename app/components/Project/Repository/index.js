@@ -1,32 +1,15 @@
 import React, { PropTypes } from 'react';
 import Relay from 'react-relay';
-import RichTextEditor from 'react-rte';
-import styled from 'styled-components'
+import styled from 'styled-components';
 import { Row, Col } from 'react-bootstrap';
 import BranchSelect from './BranchSelect';
 import Tree from './Tree';
 import Blob from './Blob';
+import Readme from './Readme';
 
 const RowSty = styled(Row)`
   padding-top: 15px;
 `
-
-const Readme = (isBase, ref) => {
-  if (isBase) {
-    return ref.target.readme.entries.length ?
-      <Blob
-        blob={ref.target.readme}
-        splat={'README.md'}
-      /> :
-      <RichTextEditor
-        readOnly
-        value={
-          RichTextEditor.createValueFromString('No README.md file', 'html')
-        }
-      />
-  }
-  return null
-}
 
 const Repository = ({
   repository: {
@@ -34,14 +17,14 @@ const Repository = ({
   },
   repository,
   relay,
-  onRowClick,
+  projectPath,
 }) => (
   <Col md={12}>
     <RowSty>
       <Col>
         <BranchSelect
           branchSelect={repository}
-          onRowClick={onRowClick}
+          projectPath={projectPath}
         />
       </Col>
     </RowSty>
@@ -52,9 +35,7 @@ const Repository = ({
             tree={ref.target.tree}
             splat={relay.variables.splat}
             branchHead={relay.variables.branchHead}
-            onRowClick={(isTree, splat) =>
-              onRowClick(isTree, splat, relay.variables.branchHead)
-            }
+            projectPath={projectPath}
           /> :
           <Blob
             blob={ref.target.tree}
@@ -65,7 +46,11 @@ const Repository = ({
     </RowSty>
     <Row>
       <Col>
-        {Readme(relay.variables.isBase, ref)}
+        {relay.variables.isBase ?
+          <Readme
+            readme={repository.ref.target.readme}
+          /> : null
+        }
       </Col>
     </Row>
   </Col>
@@ -73,7 +58,7 @@ const Repository = ({
 
 Repository.propTypes = {
   repository: PropTypes.object.isRequired,
-  onRowClick: PropTypes.func.isRequired,
+  projectPath: PropTypes.string.isRequired,
   relay: PropTypes.object.isRequired,
 }
 
@@ -111,10 +96,7 @@ export default Relay.createContainer(Repository, {
                 ${Blob.getFragment('blob', { splat })}
               }
               readme: tree @include(if: $isBase) {
-                entries(path: "README.md") {
-                  oid
-                }
-                ${Blob.getFragment('blob', { splat: 'README.md' })}
+                ${Readme.getFragment('readme')}
               }
             }
           }

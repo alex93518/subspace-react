@@ -1,6 +1,7 @@
 import React, { PropTypes } from 'react';
 import Relay from 'react-relay';
 import RichTextEditor from 'react-rte';
+import { getFileType, convertText } from 'utils/editor/rte';
 
 const Blob = ({
   blob: {
@@ -10,11 +11,9 @@ const Blob = ({
   <RichTextEditor
     readOnly
     value={RichTextEditor.createValueFromString(
-      entries[0].name.endsWith('.md') ? entries[0].object.text :
-      entries[0].object.text.replace(/\n/g, '<br />'),
-      entries[0].name.endsWith('.md') ? 'markdown' : 'html')
-    }
-    onChange={() => {}}
+      convertText(entries[0].name, entries[0].object.text),
+      getFileType(entries[0].name)
+    )}
   />
 )
 

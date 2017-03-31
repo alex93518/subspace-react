@@ -1,18 +1,27 @@
 import React, { PropTypes } from 'react';
 import Relay from 'react-relay';
 import styled from 'styled-components'
+import { compose, withHandlers } from 'recompose'
+import { redirect } from 'redux/utils'
 import { Form, FormGroup, ControlLabel, FormControl } from 'react-bootstrap';
 
 const ControlLabelSty = styled(ControlLabel)`
   padding-right: 10px;
 `
 
-const BranchSelect = ({
+const enhance = compose(
+  withHandlers({
+    onChange: props => event => {
+      redirect(`${props.projectPath}/${event.target.value}`)
+    },
+  })
+)
+
+const BranchSelect = enhance(({
   branchSelect: {
     refs,
   },
-  relay,
-  onRowClick,
+  onChange,
 }) => (
   <Form inline>
     <FormGroup controlId="formInlineName">
@@ -20,11 +29,7 @@ const BranchSelect = ({
       <FormControl
         name="branch"
         componentClass="select"
-        onChange={e => onRowClick(
-          relay.variables.isTree,
-          relay.variables.splat,
-          e.target.value
-        )}
+        onChange={onChange}
       >
         {refs.edges.map(refNode => {
           const name = refNode.node.name.replace('refs/heads/', '')
@@ -35,11 +40,10 @@ const BranchSelect = ({
       </FormControl>
     </FormGroup>
   </Form>
-)
+))
 
 BranchSelect.propTypes = {
-  onRowClick: PropTypes.func.isRequired,
-  relay: PropTypes.object.isRequired,
+  projectPath: PropTypes.string.isRequired,
   branchSelect: PropTypes.object.isRequired,
 }
 

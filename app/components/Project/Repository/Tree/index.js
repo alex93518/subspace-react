@@ -1,57 +1,53 @@
 import React, { PropTypes } from 'react';
 import Relay from 'react-relay';
-import { Table, Glyphicon } from 'react-bootstrap';
+import { Table } from 'react-bootstrap';
+import styled from 'styled-components';
 import R from 'ramda';
 import TreeEntry from './TreeEntry';
-
-const parentFolderUp = (onRowClick, relay) => {
-  const upPath = relay.variables.splat.split('/')
-  upPath.splice(-1, 1)
-  const path = upPath.count === 0 ? '' : upPath.join('/')
-  return (<tr // eslint-disable-line jsx-a11y/no-static-element-interactions
-    onClick={() => onRowClick(true, path)}
-    style={{ cursor: 'pointer' }}
-  >
-    <td colSpan="4">
-      <span style={{ paddingRight: 10 }}>
-        <Glyphicon glyph="folder-open" />
-      </span>
-      ..
-    </td>
-  </tr>)
-}
+import FolderUp from './FolderUp';
 
 const sortEntries = R.sortWith([
   R.descend(R.prop('type')),
   R.ascend(R.prop(name)),
 ])
 
+const TableWhite = styled(Table)`
+  background: white;
+  border: 1px solid #DDD;
+`
+
 const Tree = ({
   tree: {
     entries,
   },
-  onRowClick,
+  projectPath,
   relay,
 }) => (
-  <Table hover responsive>
+  <TableWhite hover>
     <tbody>
-      {relay.variables.splat ? parentFolderUp(onRowClick, relay) : null}
+      {relay.variables.splat ?
+        <FolderUp
+          branchHead={relay.variables.branchHead}
+          path={relay.variables.splat}
+          projectPath={projectPath}
+        /> : null
+      }
       {sortEntries(entries).map(treeEntry =>
         <TreeEntry
           key={treeEntry.oid}
           treeEntry={treeEntry}
           branchHead={relay.variables.branchHead}
           path={relay.variables.splat}
-          onRowClick={path => onRowClick(treeEntry.type === 'tree', path)}
+          projectPath={projectPath}
         />
       )}
     </tbody>
-  </Table>
+  </TableWhite>
 )
 
 Tree.propTypes = {
   tree: PropTypes.object.isRequired,
-  onRowClick: PropTypes.func.isRequired,
+  projectPath: PropTypes.string.isRequired,
   relay: PropTypes.object.isRequired,
 }
 

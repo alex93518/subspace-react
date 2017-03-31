@@ -1,12 +1,14 @@
 import React, { PropTypes } from 'react';
-import { Glyphicon } from 'react-bootstrap';
 import Relay from 'react-relay';
 import moment from 'moment';
+import { getTreeEntryPath } from 'utils/path';
+import { LinkBlue, GlyphiconBlue } from 'components/shared/Project/styled'
 
 const iconType = type => type === 'blob' ?
-  <Glyphicon glyph="file" /> :
-  <Glyphicon glyph="folder-open" />
+  <GlyphiconBlue glyph="file" /> :
+  <GlyphiconBlue glyph="folder-open" />
 const byteSize = obj => obj.byteSize ? `${obj.byteSize}b` : ''
+const shortName = (name, path) => path ? name.replace(`${path}/`, '') : name
 
 const TreeEntry = ({
   treeEntry: {
@@ -19,15 +21,19 @@ const TreeEntry = ({
     object,
   },
   path,
-  onRowClick,
+  projectPath,
+  relay,
 }) => (
-  <tr // eslint-disable-line jsx-a11y/no-static-element-interactions
-    onClick={() => onRowClick(name)}
-    style={{ cursor: 'pointer' }}
-  >
+  <tr>
     <td>
-      <span style={{ paddingRight: 10 }}>{iconType(type)}</span>
-      {path ? name.replace(`${path}/`, '') : name}
+      <LinkBlue
+        to={
+          getTreeEntryPath(projectPath, type, relay.variables.branchHead, name)
+        }
+      >
+        <span style={{ paddingRight: 10 }}>{iconType(type)}</span>
+        {shortName(name, path)}
+      </LinkBlue>
     </td>
     <td>{byteSize(object)}</td>
     <td>{shortMessage}</td>
@@ -37,8 +43,9 @@ const TreeEntry = ({
 
 TreeEntry.propTypes = {
   treeEntry: PropTypes.object.isRequired,
-  path: PropTypes.string,
-  onRowClick: PropTypes.func,
+  path: PropTypes.string.isRequired,
+  projectPath: PropTypes.string.isRequired,
+  relay: PropTypes.object.isRequired,
 }
 
 export default Relay.createContainer(TreeEntry, {
