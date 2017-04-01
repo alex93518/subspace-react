@@ -5,8 +5,13 @@ import styled from 'styled-components'
 import { Row, Col } from 'react-bootstrap';
 import NavTabs from 'components/shared/NavTabs';
 import RepoLink from 'components/shared/repo/TitleLink'
+import Repository from './Repository'
 
 const getNavConfig = (owner, name) => [
+  {
+    link: `/${owner}/${name}`,
+    label: 'Code',
+  },
   {
     link: `/${owner}/${name}/readme`,
     label: 'ReadMe',
@@ -34,16 +39,23 @@ const FilesCol = styled(Col)`
 
 const Project = ({
   viewer: {
+    repository,
     repository: {
       name,
       owner,
       createdAt,
       isPrivate,
-
       project: {
         goals,
         description,
       },
+    },
+  },
+  relay: {
+    variables: {
+      userName,
+      projectName,
+      ...restVariables
     },
   },
 }) => (
@@ -56,6 +68,11 @@ const Project = ({
       />
     </RepoTitle>
     <NavTabs config={getNavConfig(owner.userName, name)} />
+    <Repository
+      repository={repository}
+      projectPath={`/${userName}/${projectName}`}
+      {...restVariables}
+    />
     <FilesCol sm={6} md={6}>
       <Row>
         Goals: {goals}
@@ -63,7 +80,6 @@ const Project = ({
       <Row>
         Description: {description}
       </Row>
-      <Row>TODO: show files here</Row>
       <Row><Col>Contributors</Col></Row>
       <Row><Col>Live Users</Col></Row>
       <Row>
@@ -82,18 +98,34 @@ const Project = ({
 
 Project.propTypes = {
   viewer: PropTypes.object.isRequired,
+  relay: PropTypes.object.isRequired,
 }
 
 export default Relay.createContainer(Project, {
   initialVariables: {
-    owner: null,
-    name: null,
+    userName: null,
+    projectName: null,
+    isTree: true,
+    branchHead: 'master',
+    treeOrBlob: 'tree',
+    splat: '',
   },
-
+  prepareVariables: ({
+    treeOrBlob,
+    splat = '',
+    branchHead = 'master',
+    ...rest
+  }) => ({
+    ...rest,
+    splat,
+    branchHead,
+    isTree: typeof treeOrBlob === 'undefined' || treeOrBlob === 'tree',
+  }),
   fragments: {
-    viewer: () => Relay.QL`
+    viewer: ({ branchHead, isTree, splat }) => Relay.QL`
       fragment on Viewer {
-        repository(owner: $owner, name: $name) {
+        repository(owner: $userName, name: $projectName) {
+          ${Repository.getFragment('repository', { branchHead, isTree, splat })}
           name
           owner {
             userName
@@ -109,4 +141,3 @@ export default Relay.createContainer(Project, {
     `,
   },
 })
-

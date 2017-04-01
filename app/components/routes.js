@@ -61,14 +61,9 @@ export default [
     queries: viewerQuery,
   },
   {
-    path: '/:userName/:projectName',
-    name: 'project',
+    path: '/:userName/:projectName(/:branchHead)(/:treeOrBlob/**)',
     getComponent: loadModule('Project'),
     queries: viewerQuery,
-    prepareParams: ({ projectName, userName }) => ({
-      name: projectName,
-      owner: userName,
-    }),
   },
   {
     path: '*',
