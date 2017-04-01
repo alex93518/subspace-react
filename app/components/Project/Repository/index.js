@@ -12,12 +12,14 @@ const RowSty = styled(Row)`
 `
 
 const Repository = ({
+  projectPath,
+  repository,
   repository: {
     ref,
   },
-  repository,
-  relay,
-  projectPath,
+  relay: {
+    variables,
+  },
 }) => (
   <Col md={12}>
     <RowSty>
@@ -25,31 +27,31 @@ const Repository = ({
         <BranchSelect
           branchSelect={repository}
           projectPath={projectPath}
+          currentBranch={variables.branchHead}
         />
       </Col>
     </RowSty>
     <RowSty>
       <Col>
-        {relay.variables.isTree ?
+        {variables.isTree ?
           <Tree
             tree={ref.target.tree}
-            splat={relay.variables.splat}
-            branchHead={relay.variables.branchHead}
+            splat={variables.splat}
+            branchHead={variables.branchHead}
             projectPath={projectPath}
           /> :
           <Blob
             blob={ref.target.tree}
-            splat={relay.variables.splat}
+            splat={variables.splat}
           />
         }
       </Col>
     </RowSty>
     <Row>
       <Col>
-        {relay.variables.isBase ?
-          <Readme
-            readme={repository.ref.target.readme}
-          /> : null
+        {
+          variables.isBase &&
+          <Readme readme={ref.target.readme} />
         }
       </Col>
     </Row>
@@ -69,18 +71,10 @@ export default Relay.createContainer(Repository, {
     isTree: true,
     branchHead: 'master',
   },
-  prepareVariables: vars => {
-    if (!vars.splat) {
-      return {
-        ...vars,
-        isBase: true,
-      }
-    }
-    return {
-      ...vars,
-      isBase: false,
-    }
-  },
+  prepareVariables: vars => ({
+    ...vars,
+    isBase: !vars.splat,
+  }),
   fragments: {
     repository: ({ branchHead, splat }) => Relay.QL`
       fragment on Repository {

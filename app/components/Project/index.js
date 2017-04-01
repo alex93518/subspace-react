@@ -37,9 +37,6 @@ const FilesCol = styled(Col)`
   padding-top: 15px;
 `
 
-const projectPath = relay =>
-  `/${relay.variables.userName}/${relay.variables.projectName}`
-
 const Project = ({
   viewer: {
     repository,
@@ -54,7 +51,13 @@ const Project = ({
       },
     },
   },
-  relay,
+  relay: {
+    variables: {
+      userName,
+      projectName,
+      ...restVariables
+    },
+  },
 }) => (
   <div>
     <RepoTitle>
@@ -67,10 +70,8 @@ const Project = ({
     <NavTabs config={getNavConfig(owner.userName, name)} />
     <Repository
       repository={repository}
-      branchHead={relay.variables.branchHead}
-      isTree={relay.variables.isTree}
-      splat={relay.variables.splat}
-      projectPath={projectPath(relay)}
+      projectPath={`/${userName}/${projectName}`}
+      {...restVariables}
     />
     <FilesCol sm={6} md={6}>
       <Row>
@@ -109,28 +110,17 @@ export default Relay.createContainer(Project, {
     treeOrBlob: 'tree',
     splat: '',
   },
-  prepareVariables: vars => {
-    if (vars.splat) {
-      return {
-        ...vars,
-        isTree: vars.treeOrBlob === 'tree',
-      }
-    } else if (vars.branchHead) {
-      return {
-        ...vars,
-        treeOrBlob: 'tree',
-        isTree: true,
-        splat: '',
-      }
-    }
-    return {
-      ...vars,
-      branchHead: 'master',
-      treeOrBlob: 'tree',
-      isTree: true,
-      splat: '',
-    }
-  },
+  prepareVariables: ({
+    treeOrBlob,
+    splat = '',
+    branchHead = 'master',
+    ...rest
+  }) => ({
+    ...rest,
+    splat,
+    branchHead,
+    isTree: typeof treeOrBlob === 'undefined' || treeOrBlob === 'tree',
+  }),
   fragments: {
     viewer: ({ branchHead, isTree, splat }) => Relay.QL`
       fragment on Viewer {
