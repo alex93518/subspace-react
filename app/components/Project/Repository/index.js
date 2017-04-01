@@ -2,14 +2,49 @@ import React, { PropTypes } from 'react';
 import Relay from 'react-relay';
 import styled from 'styled-components';
 import { Row, Col } from 'react-bootstrap';
-import BranchSelect from './BranchSelect';
-import Tree from './Tree';
-import Blob from './Blob';
-import Readme from './Readme';
+import BranchSelect from 'components/shared/Project/Repository/BranchSelect';
+import Tree from 'components/shared/Project/Repository/Tree';
+import Blob from 'components/shared/Project/Repository/Blob';
+import Readme from './MainPage/Readme';
+import StatusBar from './MainPage/StatusBar';
+import MainPage from './MainPage';
+import TreePage from './TreePage';
+import BlobPage from './BlobPage';
 
 const RowSty = styled(Row)`
   padding-top: 15px;
 `
+
+const child = (isBase, isTree, repository, ref, projectPath, relay) => {
+  if (isBase) {
+    return (
+      <MainPage
+        mainPage={repository}
+        branchHead={relay.variables.branchHead}
+        projectPath={projectPath}
+      />
+    )
+  } else {
+    if (isTree) {
+      return (
+        <TreePage
+          treePage={repository}
+          splat={relay.variables.splat}
+          branchHead={relay.variables.branchHead}
+          projectPath={projectPath}
+        />
+      )
+    } else {
+      return (
+        <BlobPage
+          blobPage={repository}
+          branchHead={relay.variables.branchHead}
+          splat={relay.variables.splat}
+        />
+      )
+    }
+  }
+}
 
 const Repository = ({
   repository: {
@@ -22,37 +57,9 @@ const Repository = ({
   <Col md={12}>
     <RowSty>
       <Col>
-        <BranchSelect
-          branchSelect={repository}
-          projectPath={projectPath}
-        />
+        {child(relay.variables.isBase, relay.variables.isTree, repository, ref, projectPath, relay)}
       </Col>
     </RowSty>
-    <RowSty>
-      <Col>
-        {relay.variables.isTree ?
-          <Tree
-            tree={ref.target.tree}
-            splat={relay.variables.splat}
-            branchHead={relay.variables.branchHead}
-            projectPath={projectPath}
-          /> :
-          <Blob
-            blob={ref.target.tree}
-            splat={relay.variables.splat}
-          />
-        }
-      </Col>
-    </RowSty>
-    <Row>
-      <Col>
-        {relay.variables.isBase ?
-          <Readme
-            readme={repository.ref.target.readme}
-          /> : null
-        }
-      </Col>
-    </Row>
   </Col>
 )
 
@@ -84,23 +91,9 @@ export default Relay.createContainer(Repository, {
   fragments: {
     repository: ({ branchHead, splat }) => Relay.QL`
       fragment on Repository {
-        ${BranchSelect.getFragment('branchSelect')}
-        ref(refName: $branchHead) {
-          name
-          target {
-            ... on Commit {
-              tree @include(if: $isTree) {
-                ${Tree.getFragment('tree', { branchHead, splat })}
-              }
-              tree @skip(if: $isTree) {
-                ${Blob.getFragment('blob', { splat })}
-              }
-              readme: tree @include(if: $isBase) {
-                ${Readme.getFragment('readme')}
-              }
-            }
-          }
-        }
+        ${MainPage.getFragment('mainPage', { branchHead })}
+        ${TreePage.getFragment('treePage', { branchHead, splat })}
+        ${BlobPage.getFragment('blobPage', { splat })}
       }
     `,
   },

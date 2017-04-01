@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
 import RichTextEditor from 'react-rte';
 import Relay from 'react-relay';
-import Blob from '../Blob';
+import Blob from 'components/shared/Project/Repository/Blob';
 
 const Readme = ({ readme }) => (
   readme.entries.length ?
