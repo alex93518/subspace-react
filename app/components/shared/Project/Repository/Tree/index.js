@@ -1,8 +1,7 @@
 import React, { PropTypes } from 'react';
 import Relay from 'react-relay';
-import { Table } from 'react-bootstrap';
-import styled from 'styled-components';
 import R from 'ramda';
+import { TableWhite } from 'components/shared/Project/styled';
 import TreeEntry from './TreeEntry';
 import FolderUp from './FolderUp';
 
@@ -10,11 +9,6 @@ const sortEntries = R.sortWith([
   R.descend(R.prop('type')),
   R.ascend(R.prop(name)),
 ])
-
-const TableWhite = styled(Table)`
-  background: white;
-  border: 1px solid #DDD;
-`
 
 const Tree = ({
   tree: {

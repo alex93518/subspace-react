@@ -66,7 +66,8 @@ export default compose(
   }),
   withHandlers({
     handleBranchChange: props => event => {
-      redirect(`/${props.relay.variables.userName}/${props.relay.variables.projectName}/${event.target.value}`)
+      const suffix = props.suffix ? `/${props.suffix}` : ''
+      redirect(`/${props.relay.variables.userName}/${props.relay.variables.projectName}/${event.target.value}${suffix}`)
     },
   }),
 )(BranchSelect)
