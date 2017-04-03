@@ -16,6 +16,7 @@ const TreePage = ({ treePage, relay }) => (
         <BranchSelect
           {...relay.variables}
           branchSelect={treePage}
+          currentBranch={relay.variables.branchHead}
         />
       </Col>
     </RowSty>

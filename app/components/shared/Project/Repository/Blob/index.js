@@ -5,14 +5,14 @@ import { getFileType, convertText } from 'utils/editor/rte';
 
 const Blob = ({
   blob: {
-    entries,
+    entries: [firstEntry],
   },
 }) => (
   <RichTextEditor
     readOnly
     value={RichTextEditor.createValueFromString(
-      convertText(entries[0].name, entries[0].object.text),
-      getFileType(entries[0].name)
+      convertText(firstEntry.name, firstEntry.object.text),
+      getFileType(firstEntry.name)
     )}
   />
 )
