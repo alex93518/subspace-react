@@ -11,12 +11,12 @@ const RowSty = styled(Row)`
   padding-top: 15px;
 `
 
-const MainContainer = ({ mainContainer, relay }) => (
+const MainContainer = ({ mainContainer, relay: { variables } }) => (
   <Col md={12}>
     <RowSty>
       <Col md={12}>
         <StatusBar
-          {...relay.variables}
+          {...variables}
           statusBar={mainContainer}
         />
       </Col>
@@ -24,7 +24,7 @@ const MainContainer = ({ mainContainer, relay }) => (
     <RowSty>
       <Col>
         <BranchSelect
-          {...relay.variables}
+          {...variables}
           branchSelect={mainContainer}
         />
       </Col>
@@ -32,7 +32,7 @@ const MainContainer = ({ mainContainer, relay }) => (
     <RowSty>
       <Col>
         <Tree
-          {...relay.variables}
+          {...variables}
           tree={mainContainer.ref.target.tree}
         />
       </Col>
@@ -48,8 +48,8 @@ const MainContainer = ({ mainContainer, relay }) => (
 )
 
 MainContainer.propTypes = {
-  relay: PropTypes.object.isRequired,
   mainContainer: PropTypes.object.isRequired,
+  relay: PropTypes.object.isRequired,
 }
 
 export default Relay.createContainer(MainContainer, {

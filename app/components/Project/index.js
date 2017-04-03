@@ -51,7 +51,9 @@ const Project = ({
       },
     },
   },
-  relay,
+  relay: {
+    variables,
+  },
 }) => (
   <div>
     <RepoTitle>
@@ -63,7 +65,7 @@ const Project = ({
     </RepoTitle>
     <NavTabs config={getNavConfig(owner.userName, name)} />
     <Repository
-      {...relay.variables}
+      {...variables}
       repository={repository}
     />
     <FilesCol sm={6} md={6}>

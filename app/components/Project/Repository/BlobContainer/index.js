@@ -8,13 +8,13 @@ const RowSty = styled(Row)`
   padding-top: 15px;
 `
 
-const BlobContiner = ({ blobContainer, relay }) => (
+const BlobContiner = ({ blobContainer, relay: { variables } }) => (
   <Col md={12}>
     <RowSty>
       <Col>
         <Blob
           blob={blobContainer.ref.target.tree}
-          splat={relay.variables.splat}
+          splat={variables.splat}
         />
       </Col>
     </RowSty>

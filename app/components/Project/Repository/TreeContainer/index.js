@@ -9,21 +9,20 @@ const RowSty = styled(Row)`
   padding-top: 15px;
 `
 
-const TreeContainer = ({ treeContainer, relay }) => (
+const TreeContainer = ({ treeContainer, relay: { variables } }) => (
   <Col md={12}>
     <RowSty>
       <Col>
         <BranchSelect
-          {...relay.variables}
+          {...variables}
           branchSelect={treeContainer}
-          currentBranch={relay.variables.branchHead}
         />
       </Col>
     </RowSty>
     <RowSty>
       <Col>
         <Tree
-          {...relay.variables}
+          {...variables}
           tree={treeContainer.ref.target.tree}
         />
       </Col>

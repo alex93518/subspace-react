@@ -20,18 +20,20 @@ const Tree = ({
   tree: {
     entries,
   },
-  relay,
+  relay: {
+    variables,
+  },
 }) => (
   <TableWhite hover>
     <tbody>
-      {relay.variables.splat ?
+      {variables.splat ?
         <FolderUp
-          {...relay.variables}
+          {...variables}
         /> : null
       }
       {sortEntries(entries).map(treeEntry =>
         <TreeEntry
-          {...relay.variables}
+          {...variables}
           key={treeEntry.oid}
           treeEntry={treeEntry}
         />
