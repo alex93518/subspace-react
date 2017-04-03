@@ -37,9 +37,6 @@ const FilesCol = styled(Col)`
   padding-top: 15px;
 `
 
-const projectPath = relay =>
-  `/${relay.variables.userName}/${relay.variables.projectName}`
-
 const Project = ({
   viewer: {
     repository,
@@ -66,11 +63,8 @@ const Project = ({
     </RepoTitle>
     <NavTabs config={getNavConfig(owner.userName, name)} />
     <Repository
+      {...relay.variables}
       repository={repository}
-      branchHead={relay.variables.branchHead}
-      isTree={relay.variables.isTree}
-      splat={relay.variables.splat}
-      projectPath={projectPath(relay)}
     />
     <FilesCol sm={6} md={6}>
       <Row>
@@ -102,40 +96,20 @@ Project.propTypes = {
 
 export default Relay.createContainer(Project, {
   initialVariables: {
+    branchHead: 'master',
     userName: null,
     projectName: null,
-    isTree: true,
-    branchHead: 'master',
-    treeOrBlob: 'tree',
+    isMainPage: false,
+    isTreePage: false,
+    isBlobPage: false,
+    isCommitsPage: false,
     splat: '',
   },
-  prepareVariables: vars => {
-    if (vars.splat) {
-      return {
-        ...vars,
-        isTree: vars.treeOrBlob === 'tree',
-      }
-    } else if (vars.branchHead) {
-      return {
-        ...vars,
-        treeOrBlob: 'tree',
-        isTree: true,
-        splat: '',
-      }
-    }
-    return {
-      ...vars,
-      branchHead: 'master',
-      treeOrBlob: 'tree',
-      isTree: true,
-      splat: '',
-    }
-  },
   fragments: {
-    viewer: ({ branchHead, isTree, splat }) => Relay.QL`
+    viewer: vars => Relay.QL`
       fragment on Viewer {
         repository(owner: $userName, name: $projectName) {
-          ${Repository.getFragment('repository', { branchHead, isTree, splat })}
+          ${Repository.getFragment('repository', vars)}
           name
           owner {
             userName

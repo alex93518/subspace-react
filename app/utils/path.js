@@ -5,9 +5,9 @@ export const getParentPath = path => {
 }
 
 export const getTreeEntryPath = (
-  projectPath, type, branchHead, currentPath
+  userName, projectName, type, branchHead, currentPath
 ) => {
-  let path = projectPath
+  let path = `/${userName}/${projectName}`
   if (branchHead) path += `/${branchHead.replace('refs/heads/', '')}`
   if (currentPath) {
     path += `/${type === 'tree' ?

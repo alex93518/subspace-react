@@ -20,25 +20,21 @@ const Tree = ({
   tree: {
     entries,
   },
-  projectPath,
   relay,
 }) => (
   <TableWhite hover>
     <tbody>
       {relay.variables.splat ?
         <FolderUp
+          {...relay.variables}
           branchHead={relay.variables.branchHead}
-          path={relay.variables.splat}
-          projectPath={projectPath}
         /> : null
       }
       {sortEntries(entries).map(treeEntry =>
         <TreeEntry
+          {...relay.variables}
           key={treeEntry.oid}
           treeEntry={treeEntry}
-          branchHead={relay.variables.branchHead}
-          path={relay.variables.splat}
-          projectPath={projectPath}
         />
       )}
     </tbody>
@@ -47,23 +43,28 @@ const Tree = ({
 
 Tree.propTypes = {
   tree: PropTypes.object.isRequired,
-  projectPath: PropTypes.string.isRequired,
   relay: PropTypes.object.isRequired,
 }
 
 export default Relay.createContainer(Tree, {
   initialVariables: {
-    branchHead: 'refs/heads/master',
+    branchHead: 'master',
+    userName: null,
+    projectName: null,
+    isMainPage: false,
+    isTreePage: false,
+    isBlobPage: false,
+    isCommitsPage: false,
     splat: '',
   },
   fragments: {
-    tree: ({ branchHead }) => Relay.QL`
+    tree: vars => Relay.QL`
       fragment on Tree {
         entries(path: $splat) {
           oid
           type
           name
-          ${TreeEntry.getFragment('treeEntry', { branchHead })}
+          ${TreeEntry.getFragment('treeEntry', vars)}
         }
       }
     `,

@@ -12,7 +12,7 @@ const ControlLabelSty = styled(ControlLabel)`
 const enhance = compose(
   withHandlers({
     onChange: props => event => {
-      redirect(`${props.projectPath}/${event.target.value}`)
+      redirect(`/${props.userName}/${props.projectName}/${event.target.value}`)
     },
   })
 )
@@ -43,7 +43,6 @@ const BranchSelect = enhance(({
 ))
 
 BranchSelect.propTypes = {
-  projectPath: PropTypes.string.isRequired,
   branchSelect: PropTypes.object.isRequired,
 }
 

@@ -23,15 +23,16 @@ const BlobPage = ({ blobPage, relay }) => (
 
 BlobPage.propTypes = {
   relay: PropTypes.object.isRequired,
+  blobPage: PropTypes.object.isRequired,
 }
 
 export default Relay.createContainer(BlobPage, {
   initialVariables: {
-    branchHead: '',
-    splat: ''
+    branchHead: 'master',
+    splat: '',
   },
   fragments: {
-    blobPage: ({ branchHead, splat }) => Relay.QL`
+    blobPage: ({ splat }) => Relay.QL`
       fragment on Repository {
         ref(refName: $branchHead) {
           target {

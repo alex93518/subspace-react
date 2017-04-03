@@ -9,23 +9,21 @@ const RowSty = styled(Row)`
   padding-top: 15px;
 `
 
-const TreePage = ({ treePage, relay, projectPath }) => (
+const TreePage = ({ treePage, relay }) => (
   <Col md={12}>
     <RowSty>
       <Col>
         <BranchSelect
+          {...relay.variables}
           branchSelect={treePage}
-          projectPath={projectPath}
         />
       </Col>
     </RowSty>
     <RowSty>
       <Col>
         <Tree
+          {...relay.variables}
           tree={treePage.ref.target.tree}
-          splat={relay.variables.splat}
-          branchHead={relay.variables.branchHead}
-          projectPath={projectPath}
         />
       </Col>
     </RowSty>
@@ -34,23 +32,25 @@ const TreePage = ({ treePage, relay, projectPath }) => (
 
 TreePage.propTypes = {
   relay: PropTypes.object.isRequired,
-  projectPath: PropTypes.string.isRequired,
+  treePage: PropTypes.object.isRequired,
 }
 
 export default Relay.createContainer(TreePage, {
   initialVariables: {
     branchHead: 'master',
-    splat: ''
+    userName: null,
+    projectName: null,
+    splat: '',
   },
   fragments: {
-    treePage: ({ branchHead, splat }) => Relay.QL`
+    treePage: vars => Relay.QL`
       fragment on Repository {
-        ${BranchSelect.getFragment('branchSelect')}
+        ${BranchSelect.getFragment('branchSelect', vars)}
         ref(refName: $branchHead) {
           target {
             ... on Commit {
               tree {
-                ${Tree.getFragment('tree', { branchHead, splat })}
+                ${Tree.getFragment('tree', vars)}
               }
             }
           }

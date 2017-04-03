@@ -2,11 +2,6 @@ import React, { PropTypes } from 'react';
 import Relay from 'react-relay';
 import styled from 'styled-components';
 import { Row, Col } from 'react-bootstrap';
-import BranchSelect from 'components/shared/Project/Repository/BranchSelect';
-import Tree from 'components/shared/Project/Repository/Tree';
-import Blob from 'components/shared/Project/Repository/Blob';
-import Readme from './MainPage/Readme';
-import StatusBar from './MainPage/StatusBar';
 import MainPage from './MainPage';
 import TreePage from './TreePage';
 import BlobPage from './BlobPage';
@@ -15,49 +10,33 @@ const RowSty = styled(Row)`
   padding-top: 15px;
 `
 
-const child = (isBase, isTree, repository, ref, projectPath, relay) => {
-  if (isBase) {
-    return (
-      <MainPage
-        mainPage={repository}
-        branchHead={relay.variables.branchHead}
-        projectPath={projectPath}
-      />
-    )
-  } else {
-    if (isTree) {
-      return (
-        <TreePage
-          treePage={repository}
-          splat={relay.variables.splat}
-          branchHead={relay.variables.branchHead}
-          projectPath={projectPath}
-        />
-      )
-    } else {
-      return (
-        <BlobPage
-          blobPage={repository}
-          branchHead={relay.variables.branchHead}
-          splat={relay.variables.splat}
-        />
-      )
-    }
-  }
+const routeName = route =>
+  route.name.replace('_aggregated__', '').replace('__default_viewer', '')
+
+const matchRoute = (route, map) =>
+  map[routeName(route)] ? map[routeName(route)]() : null;
+
+const matchRouteChild = (route, map, repository) =>
+  map[routeName(route)] ?
+    map[routeName(route)](repository, route.params) : null;
+
+const Components = {
+  MainPage: (repository, props) =>
+    <MainPage {...props} mainPage={repository} />,
+  TreePage: (repository, props) =>
+    <TreePage {...props} treePage={repository} />,
+  BlobPage: (repository, props) =>
+    <BlobPage {...props} blobPage={repository} />,
 }
 
 const Repository = ({
-  repository: {
-    ref,
-  },
   repository,
   relay,
-  projectPath,
 }) => (
   <Col md={12}>
     <RowSty>
       <Col>
-        {child(relay.variables.isBase, relay.variables.isTree, repository, ref, projectPath, relay)}
+        {matchRouteChild(relay.route, Components, repository)}
       </Col>
     </RowSty>
   </Col>
@@ -65,35 +44,28 @@ const Repository = ({
 
 Repository.propTypes = {
   repository: PropTypes.object.isRequired,
-  projectPath: PropTypes.string.isRequired,
   relay: PropTypes.object.isRequired,
 }
 
 export default Relay.createContainer(Repository, {
   initialVariables: {
-    splat: '',
-    isBase: true,
-    isTree: true,
     branchHead: 'master',
-  },
-  prepareVariables: vars => {
-    if (!vars.splat) {
-      return {
-        ...vars,
-        isBase: true,
-      }
-    }
-    return {
-      ...vars,
-      isBase: false,
-    }
+    userName: null,
+    projectName: null,
+    isMainPage: false,
+    isTreePage: false,
+    isBlobPage: false,
+    isCommitsPage: false,
+    splat: '',
   },
   fragments: {
-    repository: ({ branchHead, splat }) => Relay.QL`
+    repository: vars => Relay.QL`
       fragment on Repository {
-        ${MainPage.getFragment('mainPage', { branchHead })}
-        ${TreePage.getFragment('treePage', { branchHead, splat })}
-        ${BlobPage.getFragment('blobPage', { splat })}
+        ${route => matchRoute(route, {
+          MainPage: () => MainPage.getFragment('mainPage', vars),
+          TreePage: () => TreePage.getFragment('treePage', vars),
+          BlobPage: () => BlobPage.getFragment('blobPage', vars),
+        })}
       }
     `,
   },

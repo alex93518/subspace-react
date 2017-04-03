@@ -11,31 +11,29 @@ const RowSty = styled(Row)`
   padding-top: 15px;
 `
 
-const MainPage = ({ mainPage, relay, projectPath }) => (
+const MainPage = ({ mainPage, relay }) => (
   <Col md={12}>
     <RowSty>
       <Col md={12}>
         <StatusBar
+          {...relay.variables}
           statusBar={mainPage}
-          branchHead={relay.variables.branchHead}
         />
       </Col>
     </RowSty>
     <RowSty>
       <Col>
         <BranchSelect
+          {...relay.variables}
           branchSelect={mainPage}
-          projectPath={projectPath}
         />
       </Col>
-    </RowSty>    
+    </RowSty>
     <RowSty>
       <Col>
         <Tree
+          {...relay.variables}
           tree={mainPage.ref.target.tree}
-          splat={''}
-          branchHead={relay.variables.branchHead}
-          projectPath={projectPath}
         />
       </Col>
     </RowSty>
@@ -51,23 +49,26 @@ const MainPage = ({ mainPage, relay, projectPath }) => (
 
 MainPage.propTypes = {
   relay: PropTypes.object.isRequired,
-  projectPath: PropTypes.string.isRequired,
+  mainPage: PropTypes.object.isRequired,
 }
 
 export default Relay.createContainer(MainPage, {
   initialVariables: {
     branchHead: 'master',
+    userName: null,
+    projectName: null,
+    splat: '',
   },
   fragments: {
-    mainPage: ({ branchHead }) => Relay.QL`
+    mainPage: vars => Relay.QL`
       fragment on Repository {
-        ${BranchSelect.getFragment('branchSelect')}
-        ${StatusBar.getFragment('statusBar', { branchHead })}
+        ${BranchSelect.getFragment('branchSelect', vars)}
+        ${StatusBar.getFragment('statusBar', vars)}
         ref(refName: $branchHead) {
           target {
             ... on Commit {
               tree {
-                ${Tree.getFragment('tree', { branchHead, splat: '' })}
+                ${Tree.getFragment('tree', vars)}
                 ${Readme.getFragment('readme')}
               }
             }

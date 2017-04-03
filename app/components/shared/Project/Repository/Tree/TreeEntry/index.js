@@ -20,19 +20,24 @@ const TreeEntry = ({
     },
     object,
   },
-  path,
-  projectPath,
-  relay,
+  relay: {
+    variables: {
+      userName,
+      projectName,
+      branchHead,
+      splat,
+    },
+  },
 }) => (
   <tr>
     <td>
       <LinkBlue
         to={
-          getTreeEntryPath(projectPath, type, relay.variables.branchHead, name)
+          getTreeEntryPath(userName, projectName, type, branchHead, name)
         }
       >
         <span style={{ paddingRight: 10 }}>{iconType(type)}</span>
-        {shortName(name, path)}
+        {shortName(name, splat)}
       </LinkBlue>
     </td>
     <td>{byteSize(object)}</td>
@@ -43,14 +48,15 @@ const TreeEntry = ({
 
 TreeEntry.propTypes = {
   treeEntry: PropTypes.object.isRequired,
-  path: PropTypes.string.isRequired,
-  projectPath: PropTypes.string.isRequired,
   relay: PropTypes.object.isRequired,
 }
 
 export default Relay.createContainer(TreeEntry, {
   initialVariables: {
-    branchHead: 'refs/heads/master',
+    branchHead: 'master',
+    userName: null,
+    projectName: null,
+    splat: '',
   },
   fragments: {
     treeEntry: () => Relay.QL`

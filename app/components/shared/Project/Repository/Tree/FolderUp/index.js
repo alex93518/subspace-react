@@ -2,12 +2,15 @@ import React, { PropTypes } from 'react';
 import { LinkBlue, GlyphiconBlue } from 'components/shared/Project/styled'
 import { getTreeEntryPath, getParentPath } from 'utils/path';
 
-const FolderUp = ({ projectPath, branchHead, path }) =>
+const FolderUp = ({ userName, projectName, branchHead, splat }) =>
   <tr>
     <td colSpan="4">
       <LinkBlue
         to={
-          getTreeEntryPath(projectPath, 'tree', branchHead, getParentPath(path))
+          getTreeEntryPath(
+            userName, projectName, 'tree', branchHead,
+            getParentPath(splat)
+          )
         }
       >
         <span style={{ paddingRight: 10 }}>
@@ -20,8 +23,9 @@ const FolderUp = ({ projectPath, branchHead, path }) =>
 
 FolderUp.propTypes = {
   branchHead: PropTypes.string.isRequired,
-  path: PropTypes.string.isRequired,
-  projectPath: PropTypes.string.isRequired,
+  splat: PropTypes.string.isRequired,
+  userName: PropTypes.string.isRequired,
+  projectName: PropTypes.string.isRequired,
 }
 
 export default FolderUp
