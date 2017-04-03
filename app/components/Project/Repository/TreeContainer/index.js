@@ -9,13 +9,13 @@ const RowSty = styled(Row)`
   padding-top: 15px;
 `
 
-const TreePage = ({ treePage, relay }) => (
+const TreeContainer = ({ treeContainer, relay }) => (
   <Col md={12}>
     <RowSty>
       <Col>
         <BranchSelect
           {...relay.variables}
-          branchSelect={treePage}
+          branchSelect={treeContainer}
           currentBranch={relay.variables.branchHead}
         />
       </Col>
@@ -24,19 +24,19 @@ const TreePage = ({ treePage, relay }) => (
       <Col>
         <Tree
           {...relay.variables}
-          tree={treePage.ref.target.tree}
+          tree={treeContainer.ref.target.tree}
         />
       </Col>
     </RowSty>
   </Col>
 )
 
-TreePage.propTypes = {
+TreeContainer.propTypes = {
   relay: PropTypes.object.isRequired,
-  treePage: PropTypes.object.isRequired,
+  treeContainer: PropTypes.object.isRequired,
 }
 
-export default Relay.createContainer(TreePage, {
+export default Relay.createContainer(TreeContainer, {
   initialVariables: {
     branchHead: 'master',
     userName: null,
@@ -44,7 +44,7 @@ export default Relay.createContainer(TreePage, {
     splat: '',
   },
   fragments: {
-    treePage: vars => Relay.QL`
+    treeContainer: vars => Relay.QL`
       fragment on Repository {
         ${BranchSelect.getFragment('branchSelect', vars)}
         ref(refName: $branchHead) {

@@ -11,13 +11,13 @@ const RowSty = styled(Row)`
   padding-top: 15px;
 `
 
-const MainPage = ({ mainPage, relay }) => (
+const MainContainer = ({ mainContainer, relay }) => (
   <Col md={12}>
     <RowSty>
       <Col md={12}>
         <StatusBar
           {...relay.variables}
-          statusBar={mainPage}
+          statusBar={mainContainer}
         />
       </Col>
     </RowSty>
@@ -25,7 +25,7 @@ const MainPage = ({ mainPage, relay }) => (
       <Col>
         <BranchSelect
           {...relay.variables}
-          branchSelect={mainPage}
+          branchSelect={mainContainer}
         />
       </Col>
     </RowSty>
@@ -33,26 +33,26 @@ const MainPage = ({ mainPage, relay }) => (
       <Col>
         <Tree
           {...relay.variables}
-          tree={mainPage.ref.target.tree}
+          tree={mainContainer.ref.target.tree}
         />
       </Col>
     </RowSty>
     <RowSty>
       <Col>
         <Readme
-          readme={mainPage.ref.target.tree}
+          readme={mainContainer.ref.target.tree}
         />
       </Col>
     </RowSty>
   </Col>
 )
 
-MainPage.propTypes = {
+MainContainer.propTypes = {
   relay: PropTypes.object.isRequired,
-  mainPage: PropTypes.object.isRequired,
+  mainContainer: PropTypes.object.isRequired,
 }
 
-export default Relay.createContainer(MainPage, {
+export default Relay.createContainer(MainContainer, {
   initialVariables: {
     branchHead: 'master',
     userName: null,
@@ -60,7 +60,7 @@ export default Relay.createContainer(MainPage, {
     splat: '',
   },
   fragments: {
-    mainPage: vars => Relay.QL`
+    mainContainer: vars => Relay.QL`
       fragment on Repository {
         ${BranchSelect.getFragment('branchSelect', vars)}
         ${StatusBar.getFragment('statusBar', vars)}

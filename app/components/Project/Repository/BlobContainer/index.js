@@ -8,12 +8,12 @@ const RowSty = styled(Row)`
   padding-top: 15px;
 `
 
-const BlobPage = ({ blobPage, relay }) => (
+const BlobContiner = ({ blobContainer, relay }) => (
   <Col md={12}>
     <RowSty>
       <Col>
         <Blob
-          blob={blobPage.ref.target.tree}
+          blob={blobContainer.ref.target.tree}
           splat={relay.variables.splat}
         />
       </Col>
@@ -21,18 +21,18 @@ const BlobPage = ({ blobPage, relay }) => (
   </Col>
 )
 
-BlobPage.propTypes = {
+BlobContiner.propTypes = {
   relay: PropTypes.object.isRequired,
-  blobPage: PropTypes.object.isRequired,
+  blobContainer: PropTypes.object.isRequired,
 }
 
-export default Relay.createContainer(BlobPage, {
+export default Relay.createContainer(BlobContiner, {
   initialVariables: {
     branchHead: 'master',
     splat: '',
   },
   fragments: {
-    blobPage: ({ splat }) => Relay.QL`
+    blobContainer: ({ splat }) => Relay.QL`
       fragment on Repository {
         ref(refName: $branchHead) {
           target {

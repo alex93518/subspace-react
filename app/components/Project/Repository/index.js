@@ -2,9 +2,10 @@ import React, { PropTypes } from 'react';
 import Relay from 'react-relay';
 import styled from 'styled-components';
 import { Row, Col } from 'react-bootstrap';
-import MainPage from './MainPage';
-import TreePage from './TreePage';
-import BlobPage from './BlobPage';
+import MainContainer from './MainContainer';
+import TreeContainer from './TreeContainer';
+import BlobContainer from './BlobContainer';
+import Commits from './Commits';
 
 const RowSty = styled(Row)`
   padding-top: 15px;
@@ -21,12 +22,14 @@ const matchRouteChild = (route, map, repository) =>
     map[routeName(route)](repository, route.params) : null;
 
 const Components = {
-  MainPage: (repository, props) =>
-    <MainPage {...props} mainPage={repository} />,
-  TreePage: (repository, props) =>
-    <TreePage {...props} treePage={repository} />,
-  BlobPage: (repository, props) =>
-    <BlobPage {...props} blobPage={repository} />,
+  MainContainer: (repository, props) =>
+    <MainContainer {...props} mainContainer={repository} />,
+  Tree: (repository, props) =>
+    <TreeContainer {...props} treeContainer={repository} />,
+  Blob: (repository, props) =>
+    <BlobContainer {...props} blobContainer={repository} />,
+  Commits: (repository, props) =>
+    <Commits {...props} commits={repository} />,
 }
 
 const Repository = ({
@@ -52,19 +55,16 @@ export default Relay.createContainer(Repository, {
     branchHead: 'master',
     userName: null,
     projectName: null,
-    isMainPage: false,
-    isTreePage: false,
-    isBlobPage: false,
-    isCommitsPage: false,
     splat: '',
   },
   fragments: {
     repository: vars => Relay.QL`
       fragment on Repository {
         ${route => matchRoute(route, {
-          MainPage: () => MainPage.getFragment('mainPage', vars),
-          TreePage: () => TreePage.getFragment('treePage', vars),
-          BlobPage: () => BlobPage.getFragment('blobPage', vars),
+          MainContainer: () => MainContainer.getFragment('mainContainer', vars),
+          Tree: () => TreeContainer.getFragment('treeContainer', vars),
+          Blob: () => BlobContainer.getFragment('blobContainer', vars),
+          Commits: () => Commits.getFragment('commits', vars),
         })}
       }
     `,

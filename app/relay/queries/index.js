@@ -1,27 +1,11 @@
 import Relay from 'react-relay';
 
 export const viewerQuery = {
-  viewer: (Component, vars) => {
-    const initVars = {
-      branchHead: 'master',
-      userName: null,
-      projectName: null,
-      isMainPage: false,
-      isTreePage: false,
-      isBlobPage: false,
-      isCommitsPage: false,
-      splat: '',
-    }
-    const retVars = {
-      ...initVars,
-      ...vars,
-    }
-    return (Relay.QL`query {
+  viewer: (Component, vars) => (Relay.QL`query {
       viewer {
-        ${Component.getFragment('viewer', retVars)}
+        ${Component.getFragment('viewer', vars)}
       }
-    }`)
-  },
+    }`),
 };
 
 export const userNameQuery = userId => Relay.createQuery(

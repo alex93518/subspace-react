@@ -27,7 +27,6 @@ const Tree = ({
       {relay.variables.splat ?
         <FolderUp
           {...relay.variables}
-          branchHead={relay.variables.branchHead}
         /> : null
       }
       {sortEntries(entries).map(treeEntry =>
@@ -51,10 +50,6 @@ export default Relay.createContainer(Tree, {
     branchHead: 'master',
     userName: null,
     projectName: null,
-    isMainPage: false,
-    isTreePage: false,
-    isBlobPage: false,
-    isCommitsPage: false,
     splat: '',
   },
   fragments: {

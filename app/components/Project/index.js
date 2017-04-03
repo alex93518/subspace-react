@@ -99,10 +99,6 @@ export default Relay.createContainer(Project, {
     branchHead: 'master',
     userName: null,
     projectName: null,
-    isMainPage: false,
-    isTreePage: false,
-    isBlobPage: false,
-    isCommitsPage: false,
     splat: '',
   },
   fragments: {
