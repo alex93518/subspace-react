@@ -101,7 +101,8 @@ export default Relay.createContainer(Project, {
     branchHead: 'master',
     userName: null,
     projectName: null,
-    splat: '',
+    splat: null,
+    commitId: null,
   },
   fragments: {
     viewer: vars => Relay.QL`

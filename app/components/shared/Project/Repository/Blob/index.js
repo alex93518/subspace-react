@@ -23,7 +23,7 @@ Blob.propTypes = {
 
 export default Relay.createContainer(Blob, {
   initialVariables: {
-    splat: '',
+    splat: null,
   },
   fragments: {
     blob: () => Relay.QL`

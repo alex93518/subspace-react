@@ -12,39 +12,41 @@ const RowSty = styled(Row)`
 `
 
 const MainContainer = ({ mainContainer, relay: { variables } }) => (
-  <Col md={12}>
-    <RowSty>
-      <Col md={12}>
-        <StatusBar
-          {...variables}
-          statusBar={mainContainer}
-        />
-      </Col>
-    </RowSty>
-    <RowSty>
-      <Col>
-        <BranchSelect
-          {...variables}
-          branchSelect={mainContainer}
-        />
-      </Col>
-    </RowSty>
-    <RowSty>
-      <Col>
-        <Tree
-          {...variables}
-          tree={mainContainer.ref.target.tree}
-        />
-      </Col>
-    </RowSty>
-    <RowSty>
-      <Col>
-        <Readme
-          readme={mainContainer.ref.target.tree}
-        />
-      </Col>
-    </RowSty>
-  </Col>
+  mainContainer.ref ?
+    <Col md={12}>
+      <RowSty>
+        <Col md={12}>
+          <StatusBar
+            {...variables}
+            statusBar={mainContainer}
+          />
+        </Col>
+      </RowSty>
+      <RowSty>
+        <Col>
+          <BranchSelect
+            {...variables}
+            branchSelect={mainContainer}
+          />
+        </Col>
+      </RowSty>
+      <RowSty>
+        <Col>
+          <Tree
+            {...variables}
+            tree={mainContainer.ref.target.tree}
+          />
+        </Col>
+      </RowSty>
+      <RowSty>
+        <Col>
+          <Readme
+            readme={mainContainer.ref.target.tree}
+          />
+        </Col>
+      </RowSty>
+    </Col> :
+    <div>Empty Repository</div>
 )
 
 MainContainer.propTypes = {
@@ -57,7 +59,7 @@ export default Relay.createContainer(MainContainer, {
     branchHead: 'master',
     userName: null,
     projectName: null,
-    splat: '',
+    splat: null,
   },
   fragments: {
     mainContainer: vars => Relay.QL`

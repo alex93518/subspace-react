@@ -2,24 +2,16 @@ import React, { PropTypes } from 'react';
 import Relay from 'react-relay';
 import styled from 'styled-components';
 import { Row, Col } from 'react-bootstrap';
+import { matchRoute, matchRouteChild } from 'utils/routeMatcher';
 import MainContainer from './MainContainer';
 import TreeContainer from './TreeContainer';
 import BlobContainer from './BlobContainer';
 import Commits from './Commits';
+import CommitDetails from './CommitDetails';
 
 const RowSty = styled(Row)`
   padding-top: 15px;
 `
-
-const routeName = route =>
-  route.name.replace('_aggregated__', '').replace('__default_viewer', '')
-
-const matchRoute = (route, map) =>
-  map[routeName(route)] ? map[routeName(route)]() : null;
-
-const matchRouteChild = (route, map, repository) =>
-  map[routeName(route)] ?
-    map[routeName(route)](repository, route.params) : null;
 
 const Components = {
   MainContainer: (repository, props) =>
@@ -28,8 +20,10 @@ const Components = {
     <TreeContainer {...props} treeContainer={repository} />,
   Blob: (repository, props) =>
     <BlobContainer {...props} blobContainer={repository} />,
-  Commits: (repository, props) =>
+  CommitList: (repository, props) =>
     <Commits {...props} commits={repository} />,
+  CommitDetails: (repository, props) =>
+    <CommitDetails {...props} commitDetails={repository} />,
 }
 
 const Repository = ({
@@ -55,7 +49,8 @@ export default Relay.createContainer(Repository, {
     branchHead: 'master',
     userName: null,
     projectName: null,
-    splat: '',
+    splat: null,
+    commitId: null,
   },
   fragments: {
     repository: vars => Relay.QL`
@@ -64,7 +59,8 @@ export default Relay.createContainer(Repository, {
           MainContainer: () => MainContainer.getFragment('mainContainer', vars),
           Tree: () => TreeContainer.getFragment('treeContainer', vars),
           Blob: () => BlobContainer.getFragment('blobContainer', vars),
-          Commits: () => Commits.getFragment('commits', vars),
+          CommitList: () => Commits.getFragment('commits', vars),
+          CommitDetails: () => CommitDetails.getFragment('commitDetails', vars),
         })}
       }
     `,

@@ -40,7 +40,7 @@ export default Relay.createContainer(TreeContainer, {
     branchHead: 'master',
     userName: null,
     projectName: null,
-    splat: '',
+    splat: null,
   },
   fragments: {
     treeContainer: vars => Relay.QL`

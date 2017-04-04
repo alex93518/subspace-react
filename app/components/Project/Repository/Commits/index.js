@@ -1,28 +1,25 @@
 import React, { PropTypes } from 'react';
 import Relay from 'react-relay';
-import R from 'ramda';
-import moment from 'moment';
-import { TableWhite, RowSty } from 'components/shared/Project/styled';
+import { RowSty } from 'components/shared/Project/styled';
 import { Col } from 'react-bootstrap';
+import { matchRoute, matchRouteChild } from 'utils/routeMatcher';
 import BranchSelect from 'components/shared/Project/Repository/BranchSelect';
-import Commit from './Commit';
+import CommitList from './CommitList';
 
-const commitsByDate = R.groupBy(commit =>
-  moment.unix(commit.node.commitTime).startOf('day').format()
-)
+const Components = {
+  CommitList: (commit, props) =>
+    <CommitList {...props} commitList={commit} />,
+}
 
 const Commits = ({
   commits: {
     ref: {
-      target: {
-        history: {
-          edges,
-        },
-      },
+      target,
     },
   },
   commits,
   relay: {
+    route,
     variables,
   },
 }) => (
@@ -36,26 +33,7 @@ const Commits = ({
         />
       </Col>
     </RowSty>
-    <RowSty>
-      <Col>
-        {
-          R.toPairs(commitsByDate(edges)).map(timeEdge =>
-            <div key={timeEdge[0]}>
-              <div style={{ marginTop: 10, marginBottom: 10 }}>
-                Commits on {moment(timeEdge[0]).format('MMMM DD, YYYY')}
-              </div>
-              <TableWhite>
-                <tbody>
-                  {timeEdge[1].map(edge =>
-                    <Commit key={edge.node.id} commit={edge.node} />
-                  )}
-                </tbody>
-              </TableWhite>
-            </div>
-          )
-        }
-      </Col>
-    </RowSty>
+    {matchRouteChild(route, Components, target)}
   </Col>
 )
 
@@ -77,15 +55,9 @@ export default Relay.createContainer(Commits, {
         ref(refName: $branchHead) {
           target {
             ... on Commit {
-              history(first: 20) {
-                edges {
-                  node {
-                    id,
-                    commitTime,
-                    ${Commit.getFragment('commit')}
-                  }
-                }
-              }
+              ${route => matchRoute(route, {
+                CommitList: () => CommitList.getFragment('commitList', vars),
+              })}
             }
           }
         }

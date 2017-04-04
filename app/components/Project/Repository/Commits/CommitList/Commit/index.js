@@ -4,6 +4,7 @@ import moment from 'moment';
 import styled from 'styled-components';
 import { Link } from 'react-router'
 import { Table, Button } from 'react-bootstrap';
+import { getCommitPath } from 'utils/path';
 
 const TableCommit = styled(Table)`
   background-color: white !important;
@@ -17,11 +18,21 @@ const TableCommit = styled(Table)`
       margin-bottom: 7px;
     }
   }
+  & > tbody > tr > td.thumbs {
+    width: 52px;
+  }
+  & > tbody > tr > td.commitLink {
+    width: 120px;
+    text-align: right;
+  }
 `
 
 const Commit = ({
   commit: {
+    oid,
+    shortId,
     shortMessage,
+    commitTime,
     author: {
       user: {
         userName,
@@ -29,7 +40,9 @@ const Commit = ({
         photoUrl,
       },
     },
-    commitTime,
+  },
+  relay: {
+    variables,
   },
 }) => (
   <tr>
@@ -37,20 +50,25 @@ const Commit = ({
       <TableCommit hover>
         <tbody>
           <tr>
-            <td style={{ width: '52px' }}>
+            <td className={'thumbs'}>
               <Link to={`/profile/${userName}`}>
                 <img alt={fullName} src={photoUrl} width={36} height={36} />
               </Link>
             </td>
             <td>
-              <Link to={'#'}>
+              <Link to={getCommitPath(variables, oid)}>
                 <h4>{shortMessage}</h4>
               </Link>
-              <span><Link to={`/profile/${userName}`}>{userName}</Link> committed {moment.unix(commitTime).fromNow()}</span>
+              <span>
+                <Link
+                  to={`/profile/${userName}`}
+                >
+                  {userName}
+                </Link> committed {moment.unix(commitTime).fromNow()}</span>
             </td>
-            <td>
-              <Link to={'#'}>
-                <Button>Details</Button>
+            <td className={'commitLink'}>
+              <Link to={getCommitPath(variables, oid)}>
+                <Button>{shortId}</Button>
               </Link>
             </td>
           </tr>
@@ -62,13 +80,19 @@ const Commit = ({
 
 Commit.propTypes = {
   commit: PropTypes.object.isRequired,
+  relay: PropTypes.object.isRequired,
 }
 
 export default Relay.createContainer(Commit, {
+  initialVariables: {
+    userName: null,
+    projectName: null,
+  },
   fragments: {
     commit: () => Relay.QL`
       fragment on Commit {
-        id
+        oid
+        shortId
         shortMessage
         commitTime
         author {
