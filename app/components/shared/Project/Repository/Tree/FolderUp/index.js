@@ -8,7 +8,8 @@ const FolderUp = ({ userName, projectName, branchHead, splat }) =>
       <LinkBlue
         to={
           getTreeEntryPath(
-            userName, projectName, 'tree', branchHead,
+            { userName, projectName, branchHead },
+            'tree',
             getParentPath(splat)
           )
         }

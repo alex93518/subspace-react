@@ -7,7 +7,7 @@ import MainContainer from './MainContainer';
 import TreeContainer from './TreeContainer';
 import BlobContainer from './BlobContainer';
 import Commits from './Commits';
-import CommitDetails from './CommitDetails';
+import Commit from './Commit';
 
 const RowSty = styled(Row)`
   padding-top: 15px;
@@ -20,10 +20,10 @@ const Components = {
     <TreeContainer {...props} treeContainer={repository} />,
   Blob: (repository, props) =>
     <BlobContainer {...props} blobContainer={repository} />,
-  CommitList: (repository, props) =>
+  Commits: (repository, props) =>
     <Commits {...props} commits={repository} />,
-  CommitDetails: (repository, props) =>
-    <CommitDetails {...props} commitDetails={repository} />,
+  Commit: (repository, props) =>
+    <Commit {...props} commit={repository} />,
 }
 
 const Repository = ({
@@ -59,8 +59,8 @@ export default Relay.createContainer(Repository, {
           MainContainer: () => MainContainer.getFragment('mainContainer', vars),
           Tree: () => TreeContainer.getFragment('treeContainer', vars),
           Blob: () => BlobContainer.getFragment('blobContainer', vars),
-          CommitList: () => Commits.getFragment('commits', vars),
-          CommitDetails: () => CommitDetails.getFragment('commitDetails', vars),
+          Commits: () => Commits.getFragment('commits', vars),
+          Commit: () => Commit.getFragment('commit', vars),
         })}
       }
     `,

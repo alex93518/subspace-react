@@ -74,31 +74,27 @@ export default [
   },
   {
     path: '/:userName/:projectName/:branchHead/commits',
-    name: 'CommitList',
+    name: 'Commits',
     getComponent: loadModule('Project'),
     queries: viewerQuery,
-    prepareParams: vars => ({ ...vars }),
   },
   {
     path: '/:userName/:projectName/commit/:commitId',
-    name: 'CommitDetails',
+    name: 'Commit',
     getComponent: loadModule('Project'),
     queries: viewerQuery,
-    prepareParams: vars => ({ ...vars }),
   },
   {
     path: '/:userName/:projectName/:branchHead/stashes',
     name: 'Stashes',
     getComponent: loadModule('Project'),
     queries: viewerQuery,
-    prepareParams: vars => ({ ...vars }),
   },
   {
     path: '/:userName/:projectName/:branchHead/branches',
     name: 'Branches',
     getComponent: loadModule('Project'),
     queries: viewerQuery,
-    prepareParams: vars => ({ ...vars }),
   },
   {
     path: '/:userName/:projectName/:branchHead',

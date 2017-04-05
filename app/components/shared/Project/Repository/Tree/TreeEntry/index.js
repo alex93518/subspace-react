@@ -1,8 +1,14 @@
 import React, { PropTypes } from 'react';
 import Relay from 'react-relay';
 import moment from 'moment';
-import { getTreeEntryPath } from 'utils/path';
+import { getTreeEntryPath, getCommitPath } from 'utils/path';
+import { Link } from 'react-router';
+import styled from 'styled-components';
 import { LinkBlue, GlyphiconBlue } from 'components/shared/Project/styled'
+
+const LinkCommit = styled(Link)`
+  color: #586069;
+`
 
 const iconType = type => type === 'blob' ?
   <GlyphiconBlue glyph="file" /> :
@@ -16,33 +22,33 @@ const TreeEntry = ({
     type,
     lastCommit: {
       shortMessage,
+      oid,
       commitTime,
     },
     object,
   },
   relay: {
-    variables: {
-      userName,
-      projectName,
-      branchHead,
-      splat,
-    },
+    variables,
   },
 }) => (
   <tr>
     <td>
       <LinkBlue
         to={
-          getTreeEntryPath(userName, projectName, type, branchHead, name)
+          getTreeEntryPath(variables, type, name)
         }
       >
         <span style={{ paddingRight: 10 }}>{iconType(type)}</span>
-        {shortName(name, splat)}
+        {shortName(name, variables.splat)}
       </LinkBlue>
     </td>
     <td>{byteSize(object)}</td>
-    <td>{shortMessage}</td>
-    <td>{moment.unix(commitTime).fromNow()}</td>
+    <td>
+      <LinkCommit to={getCommitPath(variables, oid)}>
+        {shortMessage}
+      </LinkCommit>
+    </td>
+    <td style={{ textAlign: 'right' }}>{moment.unix(commitTime).fromNow()}</td>
   </tr>
 )
 
@@ -65,6 +71,7 @@ export default Relay.createContainer(TreeEntry, {
         type
         lastCommit(refName: $branchHead) {
           shortMessage
+          oid
           commitTime
         }
         object {

@@ -2,14 +2,8 @@ import React, { PropTypes } from 'react';
 import Relay from 'react-relay';
 import { RowSty } from 'components/shared/Project/styled';
 import { Col } from 'react-bootstrap';
-import { matchRoute, matchRouteChild } from 'utils/routeMatcher';
 import BranchSelect from 'components/shared/Project/Repository/BranchSelect';
 import CommitList from './CommitList';
-
-const Components = {
-  CommitList: (commit, props) =>
-    <CommitList {...props} commitList={commit} />,
-}
 
 const Commits = ({
   commits: {
@@ -19,7 +13,6 @@ const Commits = ({
   },
   commits,
   relay: {
-    route,
     variables,
   },
 }) => (
@@ -33,7 +26,7 @@ const Commits = ({
         />
       </Col>
     </RowSty>
-    {matchRouteChild(route, Components, target)}
+    <CommitList {...variables} commitList={target} />
   </Col>
 )
 
@@ -55,9 +48,7 @@ export default Relay.createContainer(Commits, {
         ref(refName: $branchHead) {
           target {
             ... on Commit {
-              ${route => matchRoute(route, {
-                CommitList: () => CommitList.getFragment('commitList', vars),
-              })}
+              ${CommitList.getFragment('commitList', vars)}
             }
           }
         }

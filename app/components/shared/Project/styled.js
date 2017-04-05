@@ -18,6 +18,10 @@ export const LinkGrey = styled(Link)`
 export const TableWhite = styled(Table)`
   background: white;
   border: 1px solid #DDD;
+  & > tbody > tr > td {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
 `
 
 export const RowSty = styled(Row)`
