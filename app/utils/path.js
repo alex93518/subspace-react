@@ -2,33 +2,27 @@ import path from 'path'
 
 export const getParentPath = currentPath => path.normalize(`${currentPath}/..`)
 
-export const getBasePath = (userName, projectName) =>
-  `/${userName}/${projectName}`
+export const getBasePath = relayVars =>
+  `/${relayVars.userName}/${relayVars.projectName}`
 
 export const getUserProfilePath = userName =>
   `/profile/${userName}`
 
 export const getBlobPath = (relayVars, pathName) =>
-  `${getBaseProjectPath(
-    relayVars.userName,
-    relayVars.projectName,
-    relayVars.branchHead
-  )}/blob/${pathName}`
+  `${getBaseProjectPath(relayVars)}/blob/${pathName}`
 
-export const getBaseProjectPath = (userName, projectName, branchHead) => {
-  let resPath = getBasePath(userName, projectName)
-  if (branchHead) resPath += `/${branchHead.replace('refs/heads/', '')}`
+export const getBaseProjectPath = relayVars => {
+  let resPath = getBasePath(relayVars)
+  if (relayVars.branchHead) {
+    resPath += `/${relayVars.branchHead.replace('refs/heads/', '')}`
+  }
   return resPath;
 }
 
 export const getTreeEntryPath = (
   relayVars, type, currentPath
 ) => {
-  let resPath = getBaseProjectPath(
-    relayVars.userName,
-    relayVars.projectName,
-    relayVars.branchHead
-  )
+  let resPath = getBaseProjectPath(relayVars)
   if (currentPath && currentPath !== '.') {
     resPath += `/${type === 'tree' ? 'tree' : 'blob'}/${currentPath}`
   }
@@ -37,6 +31,4 @@ export const getTreeEntryPath = (
 }
 
 export const getCommitPath = (relayVars, commitId) =>
-  `${getBasePath(
-    relayVars.userName, relayVars.projectName
-  )}/commit/${commitId}`
+  `${getBasePath(relayVars)}/commit/${commitId}`

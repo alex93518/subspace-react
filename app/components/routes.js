@@ -91,7 +91,7 @@ export default [
     queries: viewerQuery,
   },
   {
-    path: '/:userName/:projectName/:branchHead/branches',
+    path: '/:userName/:projectName/branches',
     name: 'Branches',
     getComponent: loadModule('Project'),
     queries: viewerQuery,

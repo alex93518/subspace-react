@@ -30,11 +30,11 @@ const CommitList = ({
             </div>
             <TableWhite>
               <tbody>
-                {timeEdge[1].map(edge =>
+                {timeEdge[1].map(({node}) =>
                   <Commit
                     {...variables}
-                    key={edge.node.id}
-                    commit={edge.node}
+                    key={node.id}
+                    commit={node}
                   />
                 )}
               </tbody>

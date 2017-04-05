@@ -8,6 +8,7 @@ import TreeContainer from './TreeContainer';
 import BlobContainer from './BlobContainer';
 import Commits from './Commits';
 import Commit from './Commit';
+import Branches from './Branches';
 
 const RowSty = styled(Row)`
   padding-top: 15px;
@@ -24,6 +25,8 @@ const Components = {
     <Commits {...props} commits={repository} />,
   Commit: (repository, props) =>
     <Commit {...props} commit={repository} />,
+  Branches: (repository, props) =>
+    <Branches {...props} branches={repository} />,
 }
 
 const Repository = ({
@@ -61,6 +64,7 @@ export default Relay.createContainer(Repository, {
           Blob: () => BlobContainer.getFragment('blobContainer', vars),
           Commits: () => Commits.getFragment('commits', vars),
           Commit: () => Commit.getFragment('commit', vars),
+          Branches: () => Branches.getFragment('branches', vars),
         })}
       }
     `,

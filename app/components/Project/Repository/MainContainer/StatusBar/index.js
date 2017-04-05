@@ -3,7 +3,7 @@ import Relay from 'react-relay';
 import { Row, Col, Glyphicon } from 'react-bootstrap';
 import styled from 'styled-components';
 import { LinkGrey, GlyphiconGrey } from 'components/shared/Project/styled'
-import { getBaseProjectPath } from 'utils/path';
+import { getBaseProjectPath, getBasePath } from 'utils/path';
 
 const RowSty = styled(Row)`
   background-color: white;
@@ -29,24 +29,24 @@ const StatusBar = ({
     },
   },
   relay: {
-    variables: {
-      userName,
-      projectName,
-      branchHead,
-    },
+    variables,
   },
 }) => (
   <RowSty>
     <ColSty md={4}>
       <LinkGrey
-        to={`${getBaseProjectPath(userName, projectName, branchHead)}/commits`}
+        to={`${getBaseProjectPath(variables)}/commits`}
       >
         <GlyphiconGrey glyph="time" /> <bold>{commitTotal}</bold> Commits
       </LinkGrey>
     </ColSty>
     <ColSty md={4}>Pending Pushes</ColSty>
     <ColSty md={4}>
-      <Glyphicon glyph="tasks" /> <bold>{branchTotal}</bold> Branches
+      <LinkGrey
+        to={`${getBasePath(variables)}/branches`}
+      >
+        <Glyphicon glyph="tasks" /> <bold>{branchTotal}</bold> Branches
+      </LinkGrey>
     </ColSty>
   </RowSty>
 )

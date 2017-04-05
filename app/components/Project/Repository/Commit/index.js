@@ -4,7 +4,11 @@ import styled from 'styled-components';
 import moment from 'moment';
 import { Link } from 'react-router';
 import { Table, Row, Col, Glyphicon } from 'react-bootstrap';
-import { getBaseProjectPath, getUserProfilePath, getBlobPath } from 'utils/path';
+import {
+  getBaseProjectPath,
+  getUserProfilePath,
+  getBlobPath,
+} from 'utils/path';
 
 const TableHead = styled(Table)`
   margin-top: 15px;
@@ -44,7 +48,10 @@ const Commit = ({
         diff,
         commitTime,
         author: {
-          user,
+          user: {
+            userName,
+            photoUrl,
+          },
         },
       },
     },
@@ -53,8 +60,6 @@ const Commit = ({
     variables,
     variables: {
       branchHead,
-      projectName,
-      userName,
     },
   },
 }) => (
@@ -68,7 +73,7 @@ const Commit = ({
             </p>
             <p>
               <Glyphicon glyph={'open'} />
-              <Link to={getBaseProjectPath(userName, projectName, branchHead)}>
+              <Link to={getBaseProjectPath(variables)}>
                 {branchHead}
               </Link>
             </p>
@@ -79,13 +84,13 @@ const Commit = ({
             <Row>
               <Col md={6}>
                 <img
-                  src={user.photoUrl}
-                  alt={`@${user.userName}`}
+                  src={photoUrl}
+                  alt={`@${userName}`}
                   width={24}
                   height={24}
                 />
-                <Link to={getUserProfilePath(user.userName)}>
-                  {user.userName}
+                <Link to={getUserProfilePath(userName)}>
+                  {userName}
                 </Link> committed {moment.unix(commitTime).fromNow()}
               </Col>
               <Col md={6} className={'commitId'}>
