@@ -68,7 +68,7 @@ const Commit = ({
             </td>
             <td className={'commitLink'}>
               <Link to={getCommitPath(variables, oid)}>
-                <Button>{shortId}</Button>
+                <Button className="btn btn-sm">{shortId}</Button>
               </Link>
             </td>
           </tr>

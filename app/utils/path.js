@@ -2,8 +2,8 @@ import path from 'path'
 
 export const getParentPath = currentPath => path.normalize(`${currentPath}/..`)
 
-export const getBasePath = relayVars =>
-  `/${relayVars.userName}/${relayVars.projectName}`
+export const getBasePath = ({ userName, projectName }) =>
+  `/${userName}/${projectName}`
 
 export const getUserProfilePath = userName =>
   `/profile/${userName}`

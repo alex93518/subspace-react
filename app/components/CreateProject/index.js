@@ -10,12 +10,12 @@ export class CreateProject extends Component {
   };
 
   // eslint-disable-next-line
-  handleSubmit = ({ repoAccess, topics, ...repository }) => {
+  handleSubmit = ({ repoAccess, repoPushVote, topics, ...repository }) => {
     CurrentRelay.Store.commitUpdate(
       new CreateProjectMutation({
         repository: {
           ...repository,
-          isPushVote: false,
+          isPushVote: repoPushVote !== 'standard',
           isPrivate: repoAccess === 'private',
           ownerId: this.props.auth.user.uid,
           topics: topics ? topics.split(' ') : undefined, // TODO: add array input field to project form

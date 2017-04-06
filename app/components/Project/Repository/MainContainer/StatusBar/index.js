@@ -9,16 +9,18 @@ const RowSty = styled(Row)`
   background-color: white;
   border: 1px solid #DDD;
   padding: 10px;
-`
-
-const ColSty = styled(Col)`
-  text-align: center;
+  & > div {
+    text-align: center;
+  }
 `
 
 const StatusBar = ({
   statusBar: {
     refs: {
       branchTotal,
+    },
+    stashes: {
+      stashesTotal,
     },
     ref: {
       target: {
@@ -33,21 +35,33 @@ const StatusBar = ({
   },
 }) => (
   <RowSty>
-    <ColSty md={4}>
+    <Col md={4}>
       <LinkGrey
         to={`${getBaseProjectPath(variables)}/commits`}
       >
-        <GlyphiconGrey glyph="time" /> <bold>{commitTotal}</bold> Commits
+        <GlyphiconGrey glyph="time" />
+        {' '}
+        {commitTotal} Commits
       </LinkGrey>
-    </ColSty>
-    <ColSty md={4}>Pending Pushes</ColSty>
-    <ColSty md={4}>
+    </Col>
+    <Col md={4}>
+      <LinkGrey
+        to={`${getBaseProjectPath(variables)}/stashes`}
+      >
+        <Glyphicon glyph="warning-sign" />
+        {' '}
+        {stashesTotal} Pending Pushes
+      </LinkGrey>
+    </Col>
+    <Col md={4}>
       <LinkGrey
         to={`${getBasePath(variables)}/branches`}
       >
-        <Glyphicon glyph="tasks" /> <bold>{branchTotal}</bold> Branches
+        <Glyphicon glyph="tasks" />
+        {' '}
+        {branchTotal} Branches
       </LinkGrey>
-    </ColSty>
+    </Col>
   </RowSty>
 )
 
@@ -67,6 +81,9 @@ export default Relay.createContainer(StatusBar, {
       fragment on Repository {
         refs {
           branchTotal: totalCount
+        }
+        stashes {
+          stashesTotal: totalCount
         }
         ref(refName: $branchHead) {
           target {

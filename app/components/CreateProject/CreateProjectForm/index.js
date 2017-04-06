@@ -37,6 +37,21 @@ const CreateProjectForm = ({ handleSubmit }) => (
         value="private"
       /> Private
     </FormGroup>
+    <FormGroup>
+      <Field
+        name="repoPushVote"
+        component="input"
+        type="radio"
+        value="pushVote"
+      /> Vote For Push
+      <div></div>
+      <Field
+        name="repoPushVote"
+        component="input"
+        type="radio"
+        value="standard"
+      /> Standard
+    </FormGroup>
     <Button type="submit">Create Repository</Button>
   </form>
 )

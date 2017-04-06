@@ -9,6 +9,7 @@ import BlobContainer from './BlobContainer';
 import Commits from './Commits';
 import Commit from './Commit';
 import Branches from './Branches';
+import Stashes from './Stashes';
 
 const RowSty = styled(Row)`
   padding-top: 15px;
@@ -27,6 +28,8 @@ const Components = {
     <Commit {...props} commit={repository} />,
   Branches: (repository, props) =>
     <Branches {...props} branches={repository} />,
+  Stashes: (repository, props) =>
+    <Stashes {...props} stashes={repository} />,
 }
 
 const Repository = ({
@@ -65,6 +68,7 @@ export default Relay.createContainer(Repository, {
           Commits: () => Commits.getFragment('commits', vars),
           Commit: () => Commit.getFragment('commit', vars),
           Branches: () => Branches.getFragment('branches', vars),
+          Stashes: () => Stashes.getFragment('stashes', vars),
         })}
       }
     `,

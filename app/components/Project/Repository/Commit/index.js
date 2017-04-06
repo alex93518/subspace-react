@@ -110,9 +110,9 @@ const Commit = ({
           <div key={`${file.oldPath}${file.newPath}`}>
             {
               file.changeType === 'DELETE' ?
-                file.oldPath :
-                <Link to={getBlobPath(variables, file.oldPath)}>
-                  {file.oldPath}
+                file.newPath :
+                <Link to={getBlobPath(variables, file.newPath)}>
+                  {file.newPath}
                 </Link>
              } - {file.changeType}
           </div>
