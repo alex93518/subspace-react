@@ -2,9 +2,18 @@ import React, { PropTypes } from 'react';
 import Relay from 'react-relay';
 import R from 'ramda';
 import moment from 'moment';
-import { TableWhite, RowSty } from 'components/shared/Project/styled';
-import { Col } from 'react-bootstrap';
+import styled from 'styled-components';
+import { Table, Row, Col } from 'react-bootstrap';
 import Commit from './Commit';
+
+const TableWhite = styled(Table)`
+  background: white;
+  border: 1px solid #DDD;
+`
+
+const RowSty = styled(Row)`
+  padding-top: 15px;
+`
 
 const commitsByDate = R.groupBy(commit =>
   moment.unix(commit.node.commitTime).startOf('day').format()

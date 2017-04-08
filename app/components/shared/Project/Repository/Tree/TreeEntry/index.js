@@ -1,18 +1,25 @@
 import React, { PropTypes } from 'react';
 import Relay from 'react-relay';
 import moment from 'moment';
-import { getTreeEntryPath, getCommitPath } from 'utils/path';
-import { Link } from 'react-router';
 import styled from 'styled-components';
-import { LinkBlue, GlyphiconBlue } from 'components/shared/Project/styled'
+import { Glyphicon } from 'react-bootstrap';
+import { LinkTreeEntry, LinkCommit } from 'components/shared/Links';
 
-const LinkCommit = styled(Link)`
-  color: #586069;
+const GlyphTreeEntry = styled(Glyphicon)`
+  color: rgba(3,47,98,0.5);
+`
+
+const LinkTree = styled(LinkTreeEntry)`
+  color: #0366d6;
+`
+
+const LinkCommitMsg = styled(LinkCommit)`
+  color: #0366d6;
 `
 
 const iconType = type => type === 'blob' ?
-  <GlyphiconBlue glyph="file" /> :
-  <GlyphiconBlue glyph="folder-open" />
+  <GlyphTreeEntry glyph="file" /> :
+  <GlyphTreeEntry glyph="folder-open" />
 const byteSize = obj => obj.byteSize ? `${obj.byteSize}b` : ''
 const shortName = (name, path) => path ? name.replace(`${path}/`, '') : name
 
@@ -33,20 +40,16 @@ const TreeEntry = ({
 }) => (
   <tr>
     <td>
-      <LinkBlue
-        to={
-          getTreeEntryPath(variables, type, name)
-        }
-      >
+      <LinkTree vars={{ ...variables, type, pathName: name }}>
         <span style={{ paddingRight: 10 }}>{iconType(type)}</span>
         {shortName(name, variables.splat)}
-      </LinkBlue>
+      </LinkTree>
     </td>
     <td>{byteSize(object)}</td>
     <td>
-      <LinkCommit to={getCommitPath(variables, oid)}>
+      <LinkCommitMsg vars={{ ...variables, commitId: oid }}>
         {shortMessage}
-      </LinkCommit>
+      </LinkCommitMsg>
     </td>
     <td style={{ textAlign: 'right' }}>{moment.unix(commitTime).fromNow()}</td>
   </tr>

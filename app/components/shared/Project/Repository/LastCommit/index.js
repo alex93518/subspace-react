@@ -1,10 +1,13 @@
 import React, { PropTypes } from 'react';
 import Relay from 'react-relay';
 import styled from 'styled-components';
-import { Link } from 'react-router';
-import moment from 'moment';
 import { Row, Col } from 'react-bootstrap';
-import { getCommitPath, getUserProfilePath } from 'utils/path';
+import {
+  LinkUserName,
+  LinkUserPhoto,
+  LinkCommit,
+} from 'components/shared/Links';
+import { timeFromNow } from 'utils/string';
 
 const RowSty = styled(Row)`
   padding-top: 10px;
@@ -20,22 +23,20 @@ const RowSty = styled(Row)`
   border-bottom-left-radius:0;
 `
 
-const LinkUserName = styled(Link)`
+const LinkUser = styled(LinkUserName)`
   margin-left: 10px;
-  color: #777;
-  font-weight: 600;
 `
 
-const LinkCommit = styled(Link)`
-  margin-left: 7px;
-  color: #586069;
-`
-
-const LinkShortId = styled(Link)`
+const LinkShortId = styled(LinkCommit)`
   font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
   color: #586069;
   margin-left: 7px;
   margin-right: 7px;
+`
+
+const LinkShortMsg = styled(LinkCommit)`
+  color: #586069;
+  margin-left: 7px;
 `
 
 const ColSty = styled(Col)`
@@ -54,10 +55,7 @@ const LastCommit = ({
     shortId,
     oid,
     author: {
-      user: {
-        userName,
-        photoUrl,
-      },
+      user,
     },
   },
   relay: {
@@ -66,25 +64,18 @@ const LastCommit = ({
 }) => (
   <RowSty>
     <ColSty md={6}>
-      <img
-        alt={`@${userName}`}
-        src={photoUrl}
-        height={20}
-        width={20}
-      />
-      <LinkUserName to={getUserProfilePath(userName)}>
-        {userName}
-      </LinkUserName>
-      <LinkCommit to={getCommitPath(variables, oid)}>
+      <LinkUserPhoto user={user} width={20} height={20} />
+      <LinkUser user={user} />
+      <LinkShortMsg vars={{ ...variables, commitId: oid }}>
         {shortMessage}
-      </LinkCommit>
+      </LinkShortMsg>
     </ColSty>
     <ColTime md={6}>
       Latest commit
-      <LinkShortId to={getCommitPath(variables, oid)}>
+      <LinkShortId vars={{ ...variables, commitId: oid }}>
         {shortId}
       </LinkShortId>
-      {moment.unix(commitTime).fromNow()}
+      {timeFromNow(commitTime)}
     </ColTime>
   </RowSty>
 )
@@ -96,6 +87,7 @@ LastCommit.propTypes = {
 
 export default Relay.createContainer(LastCommit, {
   initialVariables: {
+    branchHead: 'master',
     userName: null,
     projectName: null,
   },
@@ -108,8 +100,8 @@ export default Relay.createContainer(LastCommit, {
         oid
         author {
           user {
-            userName
-            photoUrl
+            ${LinkUserName.getFragment('user')}
+            ${LinkUserPhoto.getFragment('user')}
           }
         }
       }

@@ -1,9 +1,13 @@
 import React, { PropTypes } from 'react';
 import Relay from 'react-relay';
-import { RowSty } from 'components/shared/Project/styled';
-import { Col } from 'react-bootstrap';
+import { Row, Col } from 'react-bootstrap';
+import styled from 'styled-components';
 import BranchSelect from 'components/shared/Project/Repository/BranchSelect';
 import CommitList from './CommitList';
+
+const RowSty = styled(Row)`
+  padding-top: 15px;
+`
 
 const Commits = ({
   commits: {

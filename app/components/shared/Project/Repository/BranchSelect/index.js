@@ -5,26 +5,32 @@ import { createContainer } from 'recompose-relay'
 import { compose, withHandlers } from 'recompose'
 import { redirect } from 'redux/utils'
 import { Form, FormGroup, ControlLabel, FormControl } from 'react-bootstrap';
+import { getProjectPath } from 'utils/path';
 
 const ControlLabelSty = styled(ControlLabel)`
   padding-right: 10px;
 `
 
 const BranchSelect = ({
-  branchSelect: { refs },
+  branchSelect: { branches },
   handleBranchChange,
-  branchHead,
+  relay: {
+    variables: {
+      branchHead,
+      isStashes,
+    },
+  },
 }) => (
   <Form inline>
     <FormGroup controlId="formInlineName">
-      <ControlLabelSty>Branch:</ControlLabelSty>
+      <ControlLabelSty>{isStashes ? 'Stash' : 'Branch'}:</ControlLabelSty>
       <FormControl
         name="branch"
         value={branchHead}
         componentClass="select"
         onChange={handleBranchChange}
       >
-        {refs.edges.map(refNode => {
+        {branches.edges.map(refNode => {
           const name = refNode.node.name.replace('refs/heads/', '')
           return (
             <option key={name} value={name}>
@@ -40,7 +46,7 @@ const BranchSelect = ({
 BranchSelect.propTypes = {
   handleBranchChange: PropTypes.func.isRequired,
   branchSelect: PropTypes.object.isRequired,
-  branchHead: PropTypes.string.isRequired,
+  relay: PropTypes.object.isRequired,
 }
 
 export default compose(
@@ -49,11 +55,29 @@ export default compose(
       branchHead: 'master',
       userName: null,
       projectName: null,
+      isStashes: false,
+    },
+    prepareVariables: vars => {
+      if (vars.branchHead.indexOf('stash-') !== -1) {
+        return {
+          ...vars,
+          isStashes: true,
+        }
+      }
+      return vars
     },
     fragments: {
+      /*eslint-disable */
       branchSelect: () => Relay.QL`
         fragment on Repository {
-          refs(first: 99) {
+          branches: refs(first: 99) @skip(if: $isStashes) {
+            edges {
+              node {
+                name
+              }
+            }
+          }
+          branches: stashes(first: 99) @include(if: $isStashes) {
             edges {
               node {
                 name
@@ -62,12 +86,13 @@ export default compose(
           }
         }
       `,
+      /*eslint-disable */
     },
   }),
   withHandlers({
-    handleBranchChange: props => event => {
-      const suffix = props.suffix ? `/${props.suffix}` : ''
-      redirect(`/${props.relay.variables.userName}/${props.relay.variables.projectName}/${event.target.value}${suffix}`)
+    handleBranchChange: ({ suffix, relay: { variables } }) => event => {
+      const suffixPath = suffix ? `/${suffix}` : ''
+      redirect(`${getProjectPath(variables)}/${event.target.value}${suffixPath}`)
     },
   }),
 )(BranchSelect)

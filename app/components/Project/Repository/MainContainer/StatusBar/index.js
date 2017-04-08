@@ -2,26 +2,25 @@ import React, { PropTypes } from 'react';
 import Relay from 'react-relay';
 import { Row, Col, Glyphicon } from 'react-bootstrap';
 import styled from 'styled-components';
-import { LinkGrey, GlyphiconGrey } from 'components/shared/Project/styled'
-import { getBaseProjectPath, getBasePath } from 'utils/path';
+import { LinkBranch, LinkProject } from 'components/shared/Links';
 
 const RowSty = styled(Row)`
   background-color: white;
   border: 1px solid #DDD;
   padding: 10px;
-  & > div {
-    text-align: center;
+  & a {
+    color: #444 !important;
   }
+`
+
+const ColSty = styled(Col)`
+  text-align: center;
 `
 
 const StatusBar = ({
   statusBar: {
-    refs: {
-      branchTotal,
-    },
-    stashes: {
-      stashesTotal,
-    },
+    refs: { branchTotal },
+    stashes: { stashesTotal },
     ref: {
       target: {
         history: {
@@ -30,38 +29,30 @@ const StatusBar = ({
       },
     },
   },
-  relay: {
-    variables,
-  },
+  relay: { variables },
 }) => (
   <RowSty>
-    <Col md={4}>
-      <LinkGrey
-        to={`${getBaseProjectPath(variables)}/commits`}
-      >
-        <GlyphiconGrey glyph="time" />
+    <ColSty md={4}>
+      <LinkBranch to={'commits'} vars={variables}>
+        <Glyphicon glyph="time" />
         {' '}
         {commitTotal} Commits
-      </LinkGrey>
-    </Col>
-    <Col md={4}>
-      <LinkGrey
-        to={`${getBaseProjectPath(variables)}/stashes`}
-      >
+      </LinkBranch>
+    </ColSty>
+    <ColSty md={4}>
+      <LinkBranch to={'stashes'} vars={variables}>
         <Glyphicon glyph="warning-sign" />
         {' '}
         {stashesTotal} Pending Pushes
-      </LinkGrey>
-    </Col>
-    <Col md={4}>
-      <LinkGrey
-        to={`${getBasePath(variables)}/branches`}
-      >
+      </LinkBranch>
+    </ColSty>
+    <ColSty md={4}>
+      <LinkProject to={'branches'} vars={variables}>
         <Glyphicon glyph="tasks" />
         {' '}
         {branchTotal} Branches
-      </LinkGrey>
-    </Col>
+      </LinkProject>
+    </ColSty>
   </RowSty>
 )
 

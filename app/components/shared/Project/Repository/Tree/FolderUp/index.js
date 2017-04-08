@@ -1,24 +1,34 @@
 import React, { PropTypes } from 'react';
-import { LinkBlue, GlyphiconBlue } from 'components/shared/Project/styled'
-import { getTreeEntryPath, getParentPath } from 'utils/path';
+import { LinkTreeEntry } from 'components/shared/Links';
+import styled from 'styled-components';
+import { Glyphicon } from 'react-bootstrap';
+import { getParentPath } from 'utils/path';
+
+const GlyphTreeEntry = styled(Glyphicon)`
+  color: rgba(3,47,98,0.5);
+`
+
+const LinkTree = styled(LinkTreeEntry)`
+  color: #0366d6;
+`
 
 const FolderUp = ({ userName, projectName, branchHead, splat }) =>
   <tr>
     <td colSpan="4">
-      <LinkBlue
-        to={
-          getTreeEntryPath(
-            { userName, projectName, branchHead },
-            'tree',
-            getParentPath(splat)
-          )
-        }
+      <LinkTree
+        vars={{
+          userName,
+          projectName,
+          branchHead,
+          type: 'tree',
+          pathName: getParentPath(splat),
+        }}
       >
         <span style={{ paddingRight: 10 }}>
-          <GlyphiconBlue glyph="folder-open" />
+          <GlyphTreeEntry glyph="folder-open" />
         </span>
         ..
-      </LinkBlue>
+      </LinkTree>
     </td>
   </tr>
 

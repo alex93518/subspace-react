@@ -39,25 +39,17 @@ const MainContainer = ({
       </RowSty>
       <RowSty>
         <Col md={12}>
-          <LastCommit
-            {...variables}
-            lastCommit={target}
-          />
+          <LastCommit lastCommit={target} {...variables} />
         </Col>
       </RowSty>
       <RowSty>
         <Col>
-          <Tree
-            {...variables}
-            tree={target.tree}
-          />
+          <Tree tree={target.tree} {...variables} />
         </Col>
       </RowSty>
       <RowSty>
         <Col>
-          <Readme
-            readme={target.tree}
-          />
+          <Readme readme={target.tree} />
         </Col>
       </RowSty>
     </Col> :

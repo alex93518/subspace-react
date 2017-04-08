@@ -1,30 +1,37 @@
 import React, { PropTypes } from 'react';
 import Relay from 'react-relay';
-import moment from 'moment';
 import styled from 'styled-components';
-import { Link } from 'react-router'
 import { Table, Button } from 'react-bootstrap';
-import { getCommitPath } from 'utils/path';
+import { timeFromNow } from 'utils/string';
+import {
+  LinkUserName,
+  LinkUserPhoto,
+  LinkCommit,
+} from 'components/shared/Links';
 
 const TableCommit = styled(Table)`
   background-color: white !important;
-  margin-bottom: 5px;
-  & > tbody > tr > td {
-    vertical-align: middle;
-    padding: 8px;
-    border-top: none;
-    & > a > h4 {
-      margin-top: 0px;
-      margin-bottom: 7px;
-    }
-  }
-  & > tbody > tr > td.thumbs {
-    width: 52px;
-  }
-  & > tbody > tr > td.commitLink {
-    width: 120px;
-    text-align: right;
-  }
+  margin: 3px;
+`
+
+const Td = styled.td`
+  vertical-align: middle !important;
+  padding: 8px !important;
+  border-top: none !important;
+`
+
+const TdThumb = styled(Td)`
+  width: 52px;
+`
+
+const TdCommitLink = styled(Td)`
+  width: 120px;
+  text-align: right;
+`
+
+const CommitMessage = styled.h4`
+  margin-top: 0px;
+  margin-bottom: 7px;
 `
 
 const Commit = ({
@@ -34,11 +41,7 @@ const Commit = ({
     shortMessage,
     commitTime,
     author: {
-      user: {
-        userName,
-        fullName,
-        photoUrl,
-      },
+      user,
     },
   },
   relay: {
@@ -50,27 +53,24 @@ const Commit = ({
       <TableCommit hover>
         <tbody>
           <tr>
-            <td className={'thumbs'}>
-              <Link to={`/profile/${userName}`}>
-                <img alt={fullName} src={photoUrl} width={36} height={36} />
-              </Link>
-            </td>
-            <td>
-              <Link to={getCommitPath(variables, oid)}>
-                <h4>{shortMessage}</h4>
-              </Link>
+            <TdThumb>
+              <LinkUserPhoto user={user} width={36} height={36} />
+            </TdThumb>
+            <Td>
+              <LinkCommit vars={{ ...variables, commitId: oid }}>
+                <CommitMessage>{shortMessage}</CommitMessage>
+              </LinkCommit>
               <span>
-                <Link
-                  to={`/profile/${userName}`}
-                >
-                  {userName}
-                </Link> committed {moment.unix(commitTime).fromNow()}</span>
-            </td>
-            <td className={'commitLink'}>
-              <Link to={getCommitPath(variables, oid)}>
+                <LinkUserName user={user} />
+                {' '}
+                committed {timeFromNow(commitTime)}
+              </span>
+            </Td>
+            <TdCommitLink>
+              <LinkCommit vars={{ ...variables, commitId: oid }}>
                 <Button className="btn btn-sm">{shortId}</Button>
-              </Link>
-            </td>
+              </LinkCommit>
+            </TdCommitLink>
           </tr>
         </tbody>
       </TableCommit>
@@ -85,6 +85,7 @@ Commit.propTypes = {
 
 export default Relay.createContainer(Commit, {
   initialVariables: {
+    branchHead: 'master',
     userName: null,
     projectName: null,
   },
@@ -97,9 +98,8 @@ export default Relay.createContainer(Commit, {
         commitTime
         author {
           user {
-            userName
-            fullName
-            photoUrl
+            ${LinkUserName.getFragment('user')}
+            ${LinkUserPhoto.getFragment('user')}
           }
         }
       }
