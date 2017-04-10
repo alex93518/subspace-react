@@ -116,6 +116,7 @@
     "ramda": "^0.23.0",
     "react": "^15.4.2",
     "react-bootstrap": "^0.30.7",
+    "react-copy-to-clipboard": "^4.2.3",
     "react-dom": "^15.4.2",
     "react-helmet": "^4.0.0",
     "react-intl": "^2.2.3",
