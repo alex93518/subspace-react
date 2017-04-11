@@ -1,11 +1,16 @@
 import React, { PropTypes } from 'react';
 import { Link } from 'react-router';
 import { LinkContainer } from 'react-router-bootstrap';
+import styled from 'styled-components';
 import { Navbar, Nav, NavItem, Button } from 'react-bootstrap';
 import { authActions } from 'redux/auth/actions'
 
+const TopNavbar = styled(Navbar)`
+  margin-bottom: 0px;
+`
+
 const Header = ({ authenticated, displayName, userName }) => (
-  <Navbar>
+  <TopNavbar>
     <Navbar.Header>
       <Navbar.Brand>
         <Link to="/">Terrella</Link>
@@ -52,7 +57,7 @@ const Header = ({ authenticated, displayName, userName }) => (
         <NavItem eventKey={6}>Projects</NavItem>
       </LinkContainer>
     </Nav>
-  </Navbar>
+  </TopNavbar>
 )
 
 Header.propTypes = {

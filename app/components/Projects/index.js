@@ -2,10 +2,11 @@ import React, { PropTypes } from 'react'
 import Helmet from 'react-helmet'
 import Relay from 'react-relay'
 import R from 'ramda'
+import MainGrid from 'components/shared/MainGrid';
 import Project from './Project'
 
 export const Projects = ({ viewer: { repositories } }) => (
-  <div>
+  <MainGrid>
     <Helmet
       title="Projects"
       meta={[
@@ -22,7 +23,7 @@ export const Projects = ({ viewer: { repositories } }) => (
         R.map(node => <Project key={node.id} project={node} />),
       )(repositories)
     }
-  </div>
+  </MainGrid>
 )
 
 Projects.propTypes = {

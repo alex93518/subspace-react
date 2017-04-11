@@ -38,9 +38,7 @@ const Repository = ({
 }) => (
   <Col md={12}>
     <RowSty>
-      <Col>
-        {matchRouteChild(relay.route, Components, repository)}
-      </Col>
+      {matchRouteChild(relay.route, Components, repository)}
     </RowSty>
   </Col>
 )

@@ -1,7 +1,8 @@
 import React, { PropTypes } from 'react';
 import Relay from 'react-relay';
-import { Row, Col, OverlayTrigger, Button, Glyphicon, Popover } from 'react-bootstrap';
+import { Row, Col } from 'react-bootstrap';
 import styled from 'styled-components';
+import moment from 'moment';
 import Tree from 'components/shared/Project/Repository/Tree';
 import BranchSelect from 'components/shared/Project/Repository/BranchSelect';
 import LastCommit from 'components/shared/Project/Repository/LastCommit';
@@ -19,24 +20,31 @@ const CloneCol = styled(Col)`
   padding-right: 0px;
 `
 
-const CloneButton = styled(Button)`
-  font-size: 12px;
-  color: #fff;
-  background-color: #28a745;
-  background-image: linear-gradient(-180deg, #34d058 0%, #28a745 90%);
-  1px solid rgba(27,31,35,0.2);
-  padding: 5px 10px;
+const DescriptionCol = styled(Col)`
+  font-size: 16px;
   margin-top: 5px;
-  border: none;
+  padding-left: 0px;
 `
 
 const MainContainer = ({
   mainContainer,
-  mainContainer: { ref, url },
+  mainContainer: {
+    ref,
+    createdAt,
+    project: {
+      goals,
+      description,
+    },
+  },
   relay: { variables },
 }) => (
   ref ?
     <Col md={12}>
+      <Row>
+        <DescriptionCol md={12}>
+          {description}
+        </DescriptionCol>
+      </Row>
       <RowSty>
         <Col md={12}>
           <StatusBar
@@ -53,21 +61,7 @@ const MainContainer = ({
           />
         </Col>
         <CloneCol md={6}>
-          <OverlayTrigger
-            trigger="click"
-            placement="bottom"
-            overlay={
-              <Popover id="popover-positioned-bottom">
-                {url}
-              </Popover>
-            }
-          >
-            <CloneButton>
-              Clone or download
-              {' '}
-              <Glyphicon glyph="triangle-bottom" />
-            </CloneButton>
-          </OverlayTrigger>
+          <CloneUrlBox cloneUrlBox={mainContainer} />
         </CloneCol>
       </RowSty>
       <RowSty>
@@ -83,6 +77,12 @@ const MainContainer = ({
       <RowSty>
         <Col>
           <Readme readme={ref.target.tree} />
+        </Col>
+      </RowSty>
+      <RowSty>
+        <Col>
+          <div>Goals: {goals}</div>
+          <div>Created: {moment(createdAt).format('MMMM Do YYYY')}</div>
         </Col>
       </RowSty>
     </Col> :
@@ -108,7 +108,6 @@ export default Relay.createContainer(MainContainer, {
         ${StatusBar.getFragment('statusBar', vars)}
         ${EmptyRepo.getFragment('emptyRepo')}
         ${CloneUrlBox.getFragment('cloneUrlBox')}
-        url
         ref(refName: $branchHead) {
           target {
             ... on Commit {
@@ -119,6 +118,11 @@ export default Relay.createContainer(MainContainer, {
               }
             }
           }
+        }
+        createdAt
+        project {
+          goals
+          description
         }
       }
     `,

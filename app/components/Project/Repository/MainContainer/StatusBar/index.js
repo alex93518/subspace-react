@@ -1,8 +1,14 @@
 import React, { PropTypes } from 'react';
 import Relay from 'react-relay';
-import { Row, Col, Glyphicon } from 'react-bootstrap';
+import { Row, Col } from 'react-bootstrap';
 import styled from 'styled-components';
 import { LinkBranch, LinkProject } from 'components/shared/Links';
+import {
+  GoHistory,
+  GoRepoPush,
+  GoGitBranch,
+  GoOrganization,
+} from 'react-icons/lib/go'
 
 const RowSty = styled(Row)`
   background-color: white;
@@ -15,6 +21,11 @@ const RowSty = styled(Row)`
 
 const ColSty = styled(Col)`
   text-align: center;
+`
+
+const Icon = styled.span`
+  font-size: 18px;
+  color: #777;
 `
 
 const StatusBar = ({
@@ -32,26 +43,31 @@ const StatusBar = ({
   relay: { variables },
 }) => (
   <RowSty>
-    <ColSty md={4}>
+    <ColSty md={3}>
       <LinkBranch to={'commits'} vars={variables}>
-        <Glyphicon glyph="time" />
+        <Icon><GoHistory /></Icon>
         {' '}
         {commitTotal} Commits
       </LinkBranch>
     </ColSty>
-    <ColSty md={4}>
+    <ColSty md={3}>
       <LinkBranch to={'stashes'} vars={variables}>
-        <Glyphicon glyph="warning-sign" />
+        <Icon><GoRepoPush /></Icon>
         {' '}
         {stashesTotal} Pending Pushes
       </LinkBranch>
     </ColSty>
-    <ColSty md={4}>
+    <ColSty md={3}>
       <LinkProject to={'branches'} vars={variables}>
-        <Glyphicon glyph="tasks" />
+        <Icon><GoGitBranch /></Icon>
         {' '}
         {branchTotal} Branches
       </LinkProject>
+    </ColSty>
+    <ColSty md={3}>
+      <Icon><GoOrganization /></Icon>
+      {' '}
+      n Contributors
     </ColSty>
   </RowSty>
 )

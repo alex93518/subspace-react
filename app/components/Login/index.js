@@ -3,6 +3,7 @@ import Helmet from 'react-helmet';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
 import { makeSelectAuth } from 'redux/selectors';
+import MainGrid from 'components/shared/MainGrid';
 import LoginWidget from './LoginWidget';
 
 export class Login extends React.Component { // eslint-disable-line react/prefer-stateless-function
@@ -10,13 +11,13 @@ export class Login extends React.Component { // eslint-disable-line react/prefer
     const { authenticated, showLoginStep } = this.props.auth;
 
     return (
-      <div>
+      <MainGrid>
         <Helmet title="Login" meta={[{ name: 'description', content: 'Description of Login' }]} />
         <LoginWidget
           authenticated={authenticated}
           showLoginStep={showLoginStep}
         />
-      </div>
+      </MainGrid>
     );
   }
 }

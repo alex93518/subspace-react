@@ -2,6 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import Helmet from 'react-helmet';
 import { redirect } from 'redux/utils'
 import CurrentRelay, { CreateProjectMutation } from 'relay';
+import MainGrid from 'components/shared/MainGrid';
 import CreateProjectForm from './CreateProjectForm';
 
 export class CreateProject extends Component {
@@ -30,7 +31,7 @@ export class CreateProject extends Component {
 
   render() {
     return (
-      <div>
+      <MainGrid>
         <Helmet
           title="CreateProject"
           meta={[{
@@ -39,7 +40,7 @@ export class CreateProject extends Component {
           }]}
         />
         <CreateProjectForm onSubmit={this.handleSubmit} />
-      </div>
+      </MainGrid>
     )
   }
 }

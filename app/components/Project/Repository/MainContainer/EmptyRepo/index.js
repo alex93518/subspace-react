@@ -24,7 +24,7 @@ const InputUrl = styled.input`
 
 const AbsBox = styled.span`
   position: absolute;
-  right: 24px;
+  right: 25px;
 `
 
 const TdRepo = styled.td`

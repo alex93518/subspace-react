@@ -1,8 +1,9 @@
 import React from 'react';
 import styled from 'styled-components'
 import { compose, withState, withHandlers } from 'recompose'
-import { Button, Glyphicon, Tooltip, OverlayTrigger } from 'react-bootstrap';
+import { Button, Tooltip, OverlayTrigger } from 'react-bootstrap';
 import CopyToClipboard from 'react-copy-to-clipboard';
+import { GoClippy } from 'react-icons/lib/go'
 
 const ButtonCopy = styled(Button)`
   background-color: #eff3f6;
@@ -48,7 +49,7 @@ const CopyClipboardButton = enhance(({
       onExit={onExit}
     >
       <ButtonCopy onClick={onClick}>
-        <Glyphicon glyph="copy" />
+        <GoClippy />
       </ButtonCopy>
     </OverlayTrigger>
   </CopyToClipboard>

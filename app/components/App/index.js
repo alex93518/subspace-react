@@ -1,8 +1,8 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { Grid } from 'react-bootstrap';
 import { createStructuredSelector } from 'reselect';
 import Header from 'components/layout/Header';
+import Footer from 'components/layout/Footer';
 import { makeSelectAuth } from 'redux/selectors';
 
 const App = ({ auth, children }) => {
@@ -17,9 +17,8 @@ const App = ({ auth, children }) => {
         displayName={displayName}
         userName={userName}
       />
-      <Grid>
-        {React.cloneElement(children, { auth })}
-      </Grid>
+      {React.cloneElement(children, { auth })}
+      <Footer />
     </div>
   )
 }
