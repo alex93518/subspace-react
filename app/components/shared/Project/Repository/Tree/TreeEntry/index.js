@@ -2,11 +2,13 @@ import React, { PropTypes } from 'react';
 import Relay from 'react-relay';
 import moment from 'moment';
 import styled from 'styled-components';
-import { Glyphicon } from 'react-bootstrap';
 import { LinkTreeEntry, LinkCommit } from 'components/shared/Links';
+import { GoFileDirectory, GoFileText } from 'react-icons/lib/go';
 
-const GlyphTreeEntry = styled(Glyphicon)`
+const IconBlue = styled.span`
   color: rgba(3,47,98,0.5);
+  font-size: 14px;
+  margin-left: 2px;
 `
 
 const LinkTree = styled(LinkTreeEntry)`
@@ -17,9 +19,17 @@ const LinkCommitMsg = styled(LinkCommit)`
   color: #0366d6;
 `
 
-const iconType = type => type === 'blob' ?
-  <GlyphTreeEntry glyph="file" /> :
-  <GlyphTreeEntry glyph="folder-open" />
+const TdBytes = styled.td`
+  text-align: right;
+  margin-right: 20px;
+`
+
+const iconType = type => (
+  <IconBlue>
+    {type === 'blob' ? <GoFileText /> : <GoFileDirectory />}
+  </IconBlue>
+)
+
 const byteSize = obj => obj.byteSize ? `${obj.byteSize}b` : ''
 const shortName = (name, path) => path ? name.replace(`${path}/`, '') : name
 
@@ -45,7 +55,7 @@ const TreeEntry = ({
         {shortName(name, variables.splat)}
       </LinkTree>
     </td>
-    <td>{byteSize(object)}</td>
+    <TdBytes>{byteSize(object)}</TdBytes>
     <td>
       <LinkCommitMsg vars={{ ...variables, commitId: oid }}>
         {shortMessage}

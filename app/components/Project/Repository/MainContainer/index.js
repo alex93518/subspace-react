@@ -74,11 +74,11 @@ const MainContainer = ({
           <Tree tree={ref.target.tree} {...variables} />
         </Col>
       </RowSty>
-      <RowSty>
+      <Row>
         <Col>
           <Readme readme={ref.target.tree} />
         </Col>
-      </RowSty>
+      </Row>
       <RowSty>
         <Col>
           <div>Goals: {goals}</div>
