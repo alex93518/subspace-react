@@ -24,6 +24,10 @@ const TdBytes = styled.td`
   margin-right: 20px;
 `
 
+const TdTime = styled.td`
+  text-align: right;
+`
+
 const iconType = type => (
   <IconBlue>
     {type === 'blob' ? <GoFileText /> : <GoFileDirectory />}
@@ -37,11 +41,7 @@ const TreeEntry = ({
   treeEntry: {
     name,
     type,
-    lastCommit: {
-      shortMessage,
-      oid,
-      commitTime,
-    },
+    history: { edges },
     object,
   },
   relay: {
@@ -57,11 +57,11 @@ const TreeEntry = ({
     </td>
     <TdBytes>{byteSize(object)}</TdBytes>
     <td>
-      <LinkCommitMsg vars={{ ...variables, commitId: oid }}>
-        {shortMessage}
+      <LinkCommitMsg vars={{ ...variables, commitId: edges[0].node.oid }}>
+        {edges[0].node.shortMessage}
       </LinkCommitMsg>
     </td>
-    <td style={{ textAlign: 'right' }}>{moment.unix(commitTime).fromNow()}</td>
+    <TdTime>{moment.unix(edges[0].node.commitTime).fromNow()}</TdTime>
   </tr>
 )
 
@@ -82,10 +82,14 @@ export default Relay.createContainer(TreeEntry, {
       fragment on TreeEntry {
         name
         type
-        lastCommit(refName: $branchHead) {
-          shortMessage
-          oid
-          commitTime
+        history(first: 1, refName: $branchHead) {
+          edges {
+            node {
+              shortMessage
+              oid
+              commitTime
+            }
+          }
         }
         object {
           ... on Blob {

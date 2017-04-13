@@ -65,12 +65,8 @@ const MainContainer = ({
         </CloneCol>
       </RowSty>
       <RowSty>
-        <Col md={12}>
-          <LastCommit lastCommit={ref.target} {...variables} />
-        </Col>
-      </RowSty>
-      <RowSty>
         <Col>
+          <LastCommit lastCommit={ref.target} {...variables} />
           <Tree tree={ref.target.tree} {...variables} />
         </Col>
       </RowSty>

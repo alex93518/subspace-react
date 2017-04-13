@@ -63,7 +63,7 @@ export default Relay.createContainer(StashCommitStatus, {
   },
   fragments: {
     stashCommitStatus: vars => Relay.QL`
-      fragment on Ref {
+      fragment on Commit {
         history(first: 99, isStash: true) {
           edges {
             node {

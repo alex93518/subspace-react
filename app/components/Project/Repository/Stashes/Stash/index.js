@@ -17,7 +17,7 @@ const Stash = ({ stash, relay: { variables } }) => (
   <TableStashes>
     <tbody>
       <StashHead stashHead={stash} {...variables} />
-      <StashCommitStatus stashCommitStatus={stash} {...variables} />
+      <StashCommitStatus stashCommitStatus={stash.target} {...variables} />
     </tbody>
   </TableStashes>
 )
@@ -37,7 +37,11 @@ export default Relay.createContainer(Stash, {
     stash: vars => Relay.QL`
       fragment on Ref {
         ${StashHead.getFragment('stashHead', vars)}
-        ${StashCommitStatus.getFragment('stashCommitStatus', vars)}
+        target {
+          ... on Commit {
+            ${StashCommitStatus.getFragment('stashCommitStatus', vars)}
+          }
+        }
       }
     `,
   },

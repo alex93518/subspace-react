@@ -1,7 +1,6 @@
 import React, { PropTypes } from 'react';
 import Relay from 'react-relay';
 import styled from 'styled-components';
-import { Row, Col } from 'react-bootstrap';
 import {
   LinkUserName,
   LinkUserPhoto,
@@ -9,10 +8,9 @@ import {
 } from 'components/shared/Links';
 import { timeFromNow } from 'utils/string';
 
-const RowSty = styled(Row)`
-  padding-top: 10px;
-  padding-bottom: 10px;
-  margin-bottom:-16px;
+const DivCommit = styled.div`
+  padding: 10px;
+  margin-bottom:-1px;
   font-size:13px;
   line-height:20px;
   color:#586069;
@@ -21,6 +19,7 @@ const RowSty = styled(Row)`
   border-radius:3px;
   border-bottom-right-radius:0;
   border-bottom-left-radius:0;
+  clear: both;
 `
 
 const LinkUser = styled(LinkUserName)`
@@ -39,13 +38,13 @@ const LinkShortMsg = styled(LinkCommit)`
   margin-left: 7px;
 `
 
-const ColSty = styled(Col)`
-  padding-left: 10px !important;
-  padding-right: 10px !important;
+const DivUser = styled.div`
+  display: inline-block;
 `
 
-const ColTime = styled(ColSty)`
-  text-align: right;
+const DivStatus = styled.div`
+  display: inline-block;
+  float: right;
 `
 
 const LastCommit = ({
@@ -62,22 +61,22 @@ const LastCommit = ({
     variables,
   },
 }) => (
-  <RowSty>
-    <ColSty md={6}>
+  <DivCommit>
+    <DivUser>
       <LinkUserPhoto user={user} width={20} height={20} />
       <LinkUser user={user} />
       <LinkShortMsg vars={{ ...variables, commitId: oid }}>
         {shortMessage}
       </LinkShortMsg>
-    </ColSty>
-    <ColTime md={6}>
+    </DivUser>
+    <DivStatus>
       Latest commit
       <LinkShortId vars={{ ...variables, commitId: oid }}>
         {shortId}
       </LinkShortId>
       {timeFromNow(commitTime)}
-    </ColTime>
-  </RowSty>
+    </DivStatus>
+  </DivCommit>
 )
 
 LastCommit.propTypes = {

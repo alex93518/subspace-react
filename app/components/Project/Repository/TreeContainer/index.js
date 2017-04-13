@@ -14,7 +14,7 @@ const TreeContainer = ({
   treeContainer,
   treeContainer: {
     ref: {
-      lastCommit,
+      target: { history: { edges } },
     },
   },
   relay: { variables },
@@ -32,7 +32,7 @@ const TreeContainer = ({
       <Col md={12}>
         <LastCommit
           {...variables}
-          lastCommit={lastCommit}
+          lastCommit={edges[0].node}
         />
       </Col>
     </RowSty>
@@ -64,11 +64,15 @@ export default Relay.createContainer(TreeContainer, {
       fragment on Repository {
         ${BranchSelect.getFragment('branchSelect', vars)}
         ref(refName: $branchHead) {
-          lastCommit(refName: $branchHead, path: $splat){
-            ${LastCommit.getFragment('lastCommit', vars)}
-          }
           target {
             ... on Commit {
+              history(first: 1) {
+                edges {
+                  node {
+                    ${LastCommit.getFragment('lastCommit', vars)}
+                  }
+                }
+              }
               tree {
                 ${Tree.getFragment('tree', vars)}
               }

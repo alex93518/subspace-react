@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
 import Relay from 'react-relay';
 import { createContainer } from 'recompose-relay'
-import { compose, branch, renderComponent } from 'recompose';
+import { compose, mapProps, branch, renderComponent } from 'recompose';
 import { Table, Alert } from 'react-bootstrap';
 import styled from 'styled-components';
 import { GoBook } from 'react-icons/lib/go'
@@ -35,7 +35,7 @@ const TdBlob = styled.td`
   border-top: 0px !important;
 `
 
-const Readme = ({ readme }) => (
+const Readme = ({ entry }) => (
   <Table>
     <tbody>
       <tr>
@@ -45,7 +45,7 @@ const Readme = ({ readme }) => (
       </tr>
       <tr>
         <TdBlob>
-          <Blob blob={readme} splat={'README.md'} />
+          <Blob blob={entry} />
         </TdBlob>
       </tr>
     </tbody>
@@ -53,7 +53,7 @@ const Readme = ({ readme }) => (
 )
 
 Readme.propTypes = {
-  readme: PropTypes.object.isRequired,
+  entry: PropTypes.object.isRequired,
 }
 
 export default compose(
@@ -63,8 +63,8 @@ export default compose(
         fragment on Tree {
           entries(path: "README.md") {
             oid
+            ${Blob.getFragment('blob')}
           }
-          ${Blob.getFragment('blob', { splat: 'README.md' })}
         }
       `,
     },
@@ -72,5 +72,6 @@ export default compose(
   branch(
     props => !props.readme.entries.length,
     renderComponent(NoReadme)
-  )
+  ),
+  mapProps(({ readme: { entries } }) => ({ entry: entries[0] })),
 )(Readme)

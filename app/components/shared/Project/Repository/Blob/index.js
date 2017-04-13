@@ -31,29 +31,22 @@ Blob.propTypes = {
 
 export default compose(
   createContainer({
-    initialVariables: {
-      splat: null,
-    },
     fragments: {
       blob: () => Relay.QL`
-        fragment on Tree {
-          entries(path: $splat) {
-            name
-            object {
-              ... on Blob {
-                text
-              }
+        fragment on TreeEntry {
+          name
+          object {
+            ... on Blob {
+              text
             }
           }
         }
       `,
     },
   }),
-  mapProps(({
-    blob: { entries: [firstEntry] },
-  }) => ({
-    text: firstEntry.object.text,
-    name: firstEntry.name,
+  mapProps(({ blob }) => ({
+    text: blob.object.text,
+    name: blob.name,
   })),
   branch(
     props => path.extname(props.name).toLowerCase() === '.md',
