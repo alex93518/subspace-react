@@ -4,6 +4,7 @@ import moment from 'moment';
 import styled from 'styled-components';
 import { LinkTreeEntry, LinkCommit } from 'components/shared/Links';
 import { GoFileDirectory, GoFileText } from 'react-icons/lib/go';
+import { bytesToSize } from 'utils/string';
 
 const IconBlue = styled.span`
   color: rgba(3,47,98,0.5);
@@ -34,7 +35,7 @@ const iconType = type => (
   </IconBlue>
 )
 
-const byteSize = obj => obj.byteSize ? `${obj.byteSize}b` : ''
+const byteSize = obj => obj.byteSize ? bytesToSize(obj.byteSize, 2) : ''
 const shortName = (name, path) => path ? name.replace(`${path}/`, '') : name
 
 const TreeEntry = ({

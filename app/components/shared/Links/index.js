@@ -34,5 +34,8 @@ export const LinkBlob = ({ ...props }) =>
 export const LinkCommit = ({ ...props }) =>
   <LinkBase pathFunc={links.getCommitPath} {...props} />
 
+export const LinkCommitsFile = ({ ...props }) =>
+  <LinkBase pathFunc={links.getCommitsFilePath} {...props} />
+
 export * from './LinkUserName';
 export * from './LinkUserPhoto';

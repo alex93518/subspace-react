@@ -79,6 +79,12 @@ export default [
     queries: viewerQuery,
   },
   {
+    path: '/:userName/:projectName/:branchHead/commits/**',
+    name: 'Commits',
+    getComponent: loadModule('Project'),
+    queries: viewerQuery,
+  },
+  {
     path: '/:userName/:projectName/:branchHead/commit/:commitId',
     name: 'Commit',
     getComponent: loadModule('Project'),

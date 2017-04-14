@@ -27,3 +27,6 @@ export const getTreeEntryPath = ({ type, pathName, ...props }) =>
 
 export const getCommitPath = ({ commitId, ...props }) =>
   path.join(getBranchPath(props), 'commit', commitId)
+
+export const getCommitsFilePath = ({ pathName, ...props }) =>
+  path.join(getBranchPath(props), '/commits/', pathName)

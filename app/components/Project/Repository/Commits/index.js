@@ -1,12 +1,11 @@
 import React, { PropTypes } from 'react';
 import Relay from 'react-relay';
-import { Row, Col } from 'react-bootstrap';
 import styled from 'styled-components';
 import BranchSelect from 'components/shared/Project/Repository/BranchSelect';
 import CommitList from './CommitList';
 
-const RowSty = styled(Row)`
-  padding-top: 15px;
+const DivCommits = styled.div`
+  margin-top: 15px;
 `
 
 const Commits = ({
@@ -20,18 +19,14 @@ const Commits = ({
     variables,
   },
 }) => (
-  <Col md={12}>
-    <RowSty>
-      <Col>
-        <BranchSelect
-          {...variables}
-          branchSelect={commits}
-          suffix={'commits'}
-        />
-      </Col>
-    </RowSty>
+  <DivCommits>
+    <BranchSelect
+      {...variables}
+      branchSelect={commits}
+      suffix={`commits${variables.splat ? `/${variables.splat}` : ''}`}
+    />
     <CommitList {...variables} commitList={target} />
-  </Col>
+  </DivCommits>
 )
 
 Commits.propTypes = {
@@ -44,6 +39,7 @@ export default Relay.createContainer(Commits, {
     branchHead: 'master',
     userName: null,
     projectName: null,
+    splat: null,
   },
   fragments: {
     commits: vars => Relay.QL`

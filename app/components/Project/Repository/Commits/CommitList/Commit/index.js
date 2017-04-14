@@ -1,17 +1,18 @@
 import React, { PropTypes } from 'react';
 import Relay from 'react-relay';
 import styled from 'styled-components';
-import { Table, Button } from 'react-bootstrap';
+import { ButtonGroup } from 'react-bootstrap';
 import { timeFromNow } from 'utils/string';
+import { ButtonGit } from 'components/shared/ButtonGit'
+import CopyClipboardButton from 'components/shared/CopyClipboardButton'
 import {
   LinkUserName,
   LinkUserPhoto,
   LinkCommit,
 } from 'components/shared/Links';
 
-const TableCommit = styled(Table)`
-  background-color: white !important;
-  margin: 3px;
+const Tr = styled.tr`
+  border-top: 1px solid #ddd;
 `
 
 const Td = styled.td`
@@ -21,17 +22,33 @@ const Td = styled.td`
 `
 
 const TdThumb = styled(Td)`
+  padding-left: 15px !important;
   width: 52px;
 `
 
 const TdCommitLink = styled(Td)`
-  width: 120px;
+  padding-right: 15px !important;
   text-align: right;
 `
 
 const CommitMessage = styled.h4`
   margin-top: 0px;
   margin-bottom: 7px;
+`
+
+const LinkCommitGit = styled(LinkCommit)`
+  color: #777;
+  &:focus,:hover {
+    color: #999 !important;
+  }
+`
+
+const ButtonCommit = styled(ButtonGit)`
+  height: 28px;
+`
+
+const CopyClipboard = styled(CopyClipboardButton)`
+  height: 28px;
 `
 
 const Commit = ({
@@ -48,34 +65,33 @@ const Commit = ({
     variables,
   },
 }) => (
-  <tr>
-    <td>
-      <TableCommit hover>
-        <tbody>
-          <tr>
-            <TdThumb>
-              <LinkUserPhoto user={user} width={36} height={36} />
-            </TdThumb>
-            <Td>
-              <LinkCommit vars={{ ...variables, commitId: oid }}>
-                <CommitMessage>{shortMessage}</CommitMessage>
-              </LinkCommit>
-              <span>
-                <LinkUserName user={user} />
-                {' '}
-                committed {timeFromNow(commitTime)}
-              </span>
-            </Td>
-            <TdCommitLink>
-              <LinkCommit vars={{ ...variables, commitId: oid }}>
-                <Button className="btn btn-sm">{shortId}</Button>
-              </LinkCommit>
-            </TdCommitLink>
-          </tr>
-        </tbody>
-      </TableCommit>
-    </td>
-  </tr>
+  <Tr>
+    <TdThumb>
+      <LinkUserPhoto user={user} width={36} height={36} />
+    </TdThumb>
+    <Td>
+      <LinkCommit vars={{ ...variables, commitId: oid }}>
+        <CommitMessage>{shortMessage}</CommitMessage>
+      </LinkCommit>
+      <span>
+        <LinkUserName user={user} />
+        {' '}
+        committed {timeFromNow(commitTime)}
+      </span>
+    </Td>
+    <TdCommitLink>
+      <ButtonGroup>
+        <CopyClipboard text={oid} />
+        <ButtonCommit>
+          <LinkCommitGit
+            vars={{ ...variables, commitId: oid }}
+          >
+            {shortId}
+          </LinkCommitGit>
+        </ButtonCommit>
+      </ButtonGroup>
+    </TdCommitLink>
+  </Tr>
 )
 
 Commit.propTypes = {

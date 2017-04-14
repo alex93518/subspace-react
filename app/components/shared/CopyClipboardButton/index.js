@@ -40,7 +40,7 @@ const enhance = compose(
 )
 
 const CopyClipboardButton = enhance(({
-  isCopied, setIsCopied, onClick, onExit, ...props
+  isCopied, setIsCopied, onClick, onExit, className, ...props
 }) => (
   <CopyToClipboard {...props}>
     <OverlayTrigger
@@ -48,7 +48,7 @@ const CopyClipboardButton = enhance(({
       placement="bottom"
       onExit={onExit}
     >
-      <ButtonCopy onClick={onClick}>
+      <ButtonCopy className={className} onClick={onClick}>
         <GoClippy />
       </ButtonCopy>
     </OverlayTrigger>
