@@ -33,7 +33,7 @@ const enhance = compose(
     },
     onExit: props => () => {
       setTimeout(() => (
-        props.setIsCopied(false)
+        props && props.setIsCopied(false)
       ), 500)
     },
   })

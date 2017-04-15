@@ -29,15 +29,11 @@ const TreeContainer = ({
       </Col>
     </RowSty>
     <RowSty>
-      <Col md={12}>
+      <Col>
         <LastCommit
           {...variables}
           lastCommit={edges[0].node}
         />
-      </Col>
-    </RowSty>
-    <RowSty>
-      <Col>
         <Tree
           {...variables}
           tree={treeContainer.ref.target.tree}
