@@ -5,7 +5,6 @@ import { Grid } from 'react-bootstrap';
 const MainContainer = styled.div`
   border-top: 1px solid #eaecef;
 `
-
 const FooterContainer = styled(Grid)`
   padding-top: 20px;
   padding-bottom: 20px;
@@ -23,8 +22,5 @@ const Footer = () => (
     </FooterContainer>
   </MainContainer>
 )
-
-Footer.propTypes = {
-}
 
 export default Footer

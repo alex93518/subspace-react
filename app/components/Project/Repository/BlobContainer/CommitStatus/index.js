@@ -42,7 +42,6 @@ export default compose(
                 ${LastCommit.getFragment('lastCommit', vars)}
               }
             }
-            
           }
         }
       `,

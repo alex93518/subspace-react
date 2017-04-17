@@ -14,12 +14,10 @@ const TdMain = styled.td`
   padding: 10px 18px !important;
   vertical-align: middle !important;
 `
-
 const TdAcceptStash = styled.td`
   text-align: right;
   padding-right: 24px !important;
 `
-
 const StashLabel = styled.span`
   font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
   font-weight: 600;

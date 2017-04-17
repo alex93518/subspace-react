@@ -47,7 +47,7 @@ export default compose(
     fragments: {
       blobContainer: vars => Relay.QL`
         fragment on Repository {
-          ${BranchSelect.getFragment('branchSelect', vars)}        
+          ${BranchSelect.getFragment('branchSelect', vars)}
           ref(refName: $branchHead) {
             target {
               ... on Commit {

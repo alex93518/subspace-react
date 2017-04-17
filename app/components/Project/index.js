@@ -2,9 +2,9 @@ import React, { PropTypes } from 'react';
 import Relay from 'react-relay';
 import styled from 'styled-components'
 import { Grid } from 'react-bootstrap';
+import { GoCode, GoIssueOpened, GoQuestion } from 'react-icons/lib/go'
 import NavTabs from 'components/shared/NavTabs';
 import RepoLink from 'components/shared/repo/TitleLink'
-import { GoCode, GoIssueOpened, GoQuestion } from 'react-icons/lib/go'
 import Repository from './Repository'
 
 const NavLabel = styled.span`
@@ -24,10 +24,6 @@ const getNavConfig = (owner, name) => [
     link: `/${owner}/${name}#qa`,
     label: (<NavLabel><GoQuestion /> Q&amp;A</NavLabel>),
   },
-  {
-    link: '/projects',
-    label: 'Projects',
-  },
 ]
 
 const RepoTitle = styled.h3`
@@ -37,7 +33,6 @@ const TopContainer = styled.div`
   background-color: #fafbfc;
   border-bottom: 1px solid #dddddd;
 `
-
 const MainContainer = styled.div`
   background-color: #fff;
   padding-bottom: 30px;
