@@ -3,9 +3,12 @@ import Relay from 'react-relay';
 import { Row, Col } from 'react-bootstrap';
 import styled from 'styled-components';
 import moment from 'moment';
+import { compose, mapProps, branch, renderComponent } from 'recompose';
+import { createContainer } from 'recompose-relay'
 import Tree from 'components/shared/Project/Repository/Tree';
 import BranchSelect from 'components/shared/Project/Repository/BranchSelect';
 import LastCommit from 'components/shared/Project/Repository/LastCommit';
+import MainGrid from 'components/shared/MainGrid';
 import Readme from './Readme';
 import StatusBar from './StatusBar';
 import EmptyRepo from './EmptyRepo';
@@ -27,18 +30,10 @@ const DescriptionCol = styled(Col)`
 `
 
 const MainContainer = ({
-  mainContainer,
-  mainContainer: {
-    ref,
-    createdAt,
-    project: {
-      goals,
-      description,
-    },
-  },
-  relay: { variables },
+  mainContainer, target, tree, createdAt,
+  goals, description, variables,
 }) => (
-  ref ?
+  <MainGrid>
     <Col md={12}>
       <Row>
         <DescriptionCol md={12}>
@@ -66,13 +61,13 @@ const MainContainer = ({
       </RowSty>
       <RowSty>
         <Col>
-          <LastCommit lastCommit={ref.target} {...variables} />
-          <Tree tree={ref.target.tree} {...variables} />
+          <LastCommit lastCommit={target} {...variables} />
+          <Tree tree={tree} {...variables} />
         </Col>
       </RowSty>
       <Row>
         <Col>
-          <Readme readme={ref.target.tree} />
+          <Readme readme={tree} />
         </Col>
       </Row>
       <RowSty>
@@ -81,46 +76,69 @@ const MainContainer = ({
           <div>Created: {moment(createdAt).format('MMMM Do YYYY')}</div>
         </Col>
       </RowSty>
-    </Col> :
-    <EmptyRepo emptyRepo={mainContainer} />
+    </Col>
+  </MainGrid>
 )
 
 MainContainer.propTypes = {
   mainContainer: PropTypes.object.isRequired,
-  relay: PropTypes.object.isRequired,
+  target: PropTypes.object.isRequired,
+  tree: PropTypes.object.isRequired,
+  createdAt: PropTypes.number.isRequired,
+  goals: PropTypes.string.isRequired,
+  description: PropTypes.string.isRequired,
+  variables: PropTypes.object.isRequired,
 }
 
-export default Relay.createContainer(MainContainer, {
-  initialVariables: {
-    branchHead: 'master',
-    userName: null,
-    projectName: null,
-    splat: null,
-  },
-  fragments: {
-    mainContainer: vars => Relay.QL`
-      fragment on Repository {
-        ${BranchSelect.getFragment('branchSelect', vars)}
-        ${StatusBar.getFragment('statusBar', vars)}
-        ${EmptyRepo.getFragment('emptyRepo')}
-        ${CloneUrlBox.getFragment('cloneUrlBox')}
-        ref(refName: $branchHead) {
-          target {
-            ... on Commit {
-              ${LastCommit.getFragment('lastCommit', vars)}
-              tree {
-                ${Tree.getFragment('tree', vars)}
-                ${Readme.getFragment('readme')}
+export default compose(
+  createContainer({
+    initialVariables: {
+      branchHead: 'master',
+      userName: null,
+      projectName: null,
+      splat: null,
+    },
+    fragments: {
+      mainContainer: vars => Relay.QL`
+        fragment on Repository {
+          ${BranchSelect.getFragment('branchSelect', vars)}
+          ${StatusBar.getFragment('statusBar', vars)}
+          ${EmptyRepo.getFragment('emptyRepo')}
+          ${CloneUrlBox.getFragment('cloneUrlBox')}
+          ref(refName: $branchHead) {
+            target {
+              ... on Commit {
+                ${LastCommit.getFragment('lastCommit', vars)}
+                tree {
+                  ${Tree.getFragment('tree', vars)}
+                  ${Readme.getFragment('readme')}
+                }
               }
             }
           }
+          createdAt
+          project {
+            goals
+            description
+          }
         }
-        createdAt
-        project {
-          goals
-          description
-        }
-      }
-    `,
-  },
-})
+      `,
+    },
+  }),
+  mapProps(({
+    mainContainer,
+    mainContainer: { ref, project },
+    relay: { variables },
+  }) => ({
+    mainContainer,
+    ...project,
+    createdAt: mainContainer.createdAt,
+    target: ref ? ref.target : null,
+    tree: ref ? ref.target.tree : null,
+    variables,
+  })),
+  branch(
+    props => props.target === null,
+    renderComponent(props => <EmptyRepo emptyRepo={props.mainContainer} />)
+  ),
+)(MainContainer)

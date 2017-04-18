@@ -65,12 +65,10 @@ const Project = ({
       </Grid>
     </TopContainer>
     <MainContainer>
-      <Grid>
-        <Repository
-          {...variables}
-          repository={repository}
-        />
-      </Grid>
+      <Repository
+        {...variables}
+        repository={repository}
+      />
     </MainContainer>
   </div>
 )

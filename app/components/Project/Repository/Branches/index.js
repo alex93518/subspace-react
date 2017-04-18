@@ -4,6 +4,7 @@ import { createContainer } from 'recompose-relay'
 import { compose, mapProps } from 'recompose';
 import styled from 'styled-components';
 import { Table } from 'react-bootstrap';
+import MainGrid from 'components/shared/MainGrid';
 import Branch from './Branch';
 
 const TableBranches = styled(Table)`
@@ -15,17 +16,19 @@ const TableBranches = styled(Table)`
 `
 
 const Branches = ({ edges, variables }) => (
-  <TableBranches>
-    <tbody>
-      {
-        edges.map(({ node, node: { id } }) => (
-          <tr key={id}>
-            <Branch branch={node} {...variables} />
-          </tr>
-        ))
-      }
-    </tbody>
-  </TableBranches>
+  <MainGrid>
+    <TableBranches>
+      <tbody>
+        {
+          edges.map(({ node, node: { id } }) => (
+            <tr key={id}>
+              <Branch branch={node} {...variables} />
+            </tr>
+          ))
+        }
+      </tbody>
+    </TableBranches>
+  </MainGrid>
 )
 
 Branches.propTypes = {

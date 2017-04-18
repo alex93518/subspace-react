@@ -1,7 +1,5 @@
 import React, { PropTypes } from 'react';
 import Relay from 'react-relay';
-import styled from 'styled-components';
-import { Row, Col } from 'react-bootstrap';
 import { matchRoute, matchRouteChild } from 'utils/routeMatcher';
 import MainContainer from './MainContainer';
 import TreeContainer from './TreeContainer';
@@ -10,10 +8,6 @@ import Commits from './Commits';
 import Commit from './Commit';
 import Branches from './Branches';
 import Stashes from './Stashes';
-
-const RowSty = styled(Row)`
-  padding-top: 15px;
-`
 
 const Components = {
   MainContainer: (repository, props) =>
@@ -36,11 +30,9 @@ const Repository = ({
   repository,
   relay,
 }) => (
-  <Col md={12}>
-    <RowSty>
-      {matchRouteChild(relay.route, Components, repository)}
-    </RowSty>
-  </Col>
+  <div>
+    {matchRouteChild(relay.route, Components, repository)}
+  </div>
 )
 
 Repository.propTypes = {

@@ -2,6 +2,7 @@ import React, { PropTypes } from 'react';
 import Relay from 'react-relay';
 import styled from 'styled-components';
 import BranchSelect from 'components/shared/Project/Repository/BranchSelect';
+import MainGrid from 'components/shared/MainGrid';
 import CommitList from './CommitList';
 
 const DivCommits = styled.div`
@@ -19,14 +20,16 @@ const Commits = ({
     variables,
   },
 }) => (
-  <DivCommits>
-    <BranchSelect
-      {...variables}
-      branchSelect={commits}
-      suffix={`commits${variables.splat ? `/${variables.splat}` : ''}`}
-    />
-    <CommitList {...variables} commitList={target} />
-  </DivCommits>
+  <MainGrid>
+    <DivCommits>
+      <BranchSelect
+        {...variables}
+        branchSelect={commits}
+        suffix={`commits${variables.splat ? `/${variables.splat}` : ''}`}
+      />
+      <CommitList {...variables} commitList={target} />
+    </DivCommits>
+  </MainGrid>
 )
 
 Commits.propTypes = {
