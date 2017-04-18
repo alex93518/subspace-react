@@ -3,13 +3,42 @@ import { Link } from 'react-router';
 import { LinkContainer } from 'react-router-bootstrap';
 import styled from 'styled-components';
 import { Navbar, Nav, NavItem, Button } from 'react-bootstrap';
+import { makeSelectAuth } from 'redux/selectors';
+import { injectSelectors } from 'redux/utils'
 import { authActions } from 'redux/auth/actions'
 
 const TopNavbar = styled(Navbar)`
   margin-bottom: 0px;
 `
+const SignoutButton = styled(Button)`
+  display: inline;
+  padding: 0 6px;
+`
 
-const Header = ({ authenticated, displayName, userName }) => (
+const ProtectedNav = ({ user: { displayName, userName } }) => (
+  <Nav pullRight>
+    {
+      userName &&
+      <LinkContainer to={`/profile/${userName}`}>
+        <NavItem eventKey={3}>{displayName}<i> @{userName}</i></NavItem>
+      </LinkContainer>
+    }
+    <LinkContainer to="/createproject">
+      <NavItem eventKey={4}>Create Project</NavItem>
+    </LinkContainer>
+    <NavItem>
+      <SignoutButton onClick={authActions.signOut.init}>
+        Sign out
+      </SignoutButton>
+    </NavItem>
+  </Nav>
+)
+
+ProtectedNav.propTypes = {
+  user: PropTypes.object.isRequired,
+}
+
+const Header = ({ auth: { authenticated, user } }) => (
   <TopNavbar>
     <Navbar.Header>
       <Navbar.Brand>
@@ -26,26 +55,9 @@ const Header = ({ authenticated, displayName, userName }) => (
         <NavItem eventKey={2}>How It Works</NavItem>
       </LinkContainer>
     </Nav>
-    {authenticated ?
-      <Nav pullRight>
-        {
-          userName &&
-          <LinkContainer to={`/profile/${userName}`}>
-            <NavItem eventKey={3}>{displayName}<i> @{userName}</i></NavItem>
-          </LinkContainer>
-        }
-        <LinkContainer to="/createproject">
-          <NavItem eventKey={4}>Create Project</NavItem>
-        </LinkContainer>
-        <NavItem>
-          <Button
-            onClick={authActions.signOut.init}
-            style={{ display: 'inline', padding: '0 6px' }}
-          >
-            Sign out
-          </Button>
-        </NavItem>
-      </Nav> :
+    {authenticated && <ProtectedNav user={user} />}
+    {
+      !authenticated &&
       <Nav pullRight>
         <LinkContainer to="/login">
           <NavItem eventKey={5}>Sign In</NavItem>
@@ -61,9 +73,9 @@ const Header = ({ authenticated, displayName, userName }) => (
 )
 
 Header.propTypes = {
-  authenticated: PropTypes.bool.isRequired,
-  displayName: PropTypes.string,
-  userName: PropTypes.string,
+  auth: PropTypes.object.isRequired,
 }
 
-export default Header
+export default injectSelectors({
+  auth: makeSelectAuth(),
+})(Header)

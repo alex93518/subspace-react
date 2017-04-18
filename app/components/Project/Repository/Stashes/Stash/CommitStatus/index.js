@@ -5,11 +5,9 @@ import styled from 'styled-components';
 import { LinkProject } from 'components/shared/Links';
 import Commit from 'components/Project/Repository/Commits/CommitList/Commit'
 
-
 const TableCommit = styled(Table)`
   background-color: white !important;
 `
-
 const BranchLabel = styled.span`
   font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
   font-weight: 600;

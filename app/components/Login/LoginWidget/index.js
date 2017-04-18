@@ -5,13 +5,17 @@ import {
   signInWithGithub,
   signInWithGoogle,
 } from 'redux/auth/actions'
+import { makeSelectAuth } from 'redux/selectors';
+import { injectSelectors } from 'redux/utils'
 import EmailLoginForm from '../EmailLoginForm';
 import LoginStep from '../LoginStep';
 
-function LoginWidget({
-  authenticated,
-  showLoginStep,
-}) {
+const LoginWidget = ({
+  auth: {
+    authenticated,
+    showLoginStep,
+  },
+}) => {
   if (showLoginStep) {
     return (
       <LoginStep
@@ -43,8 +47,9 @@ function LoginWidget({
 }
 
 LoginWidget.propTypes = {
-  authenticated: PropTypes.bool.isRequired,
-  showLoginStep: PropTypes.string,
+  auth: PropTypes.object.isRequired,
 }
 
-export default LoginWidget;
+export default injectSelectors({
+  auth: makeSelectAuth(),
+})(LoginWidget)
