@@ -1,17 +1,16 @@
 import React, { PropTypes } from 'react';
 import Relay from 'react-relay';
-import parse from 'parse-diff';
 import styled from 'styled-components';
 import { compose, mapProps } from 'recompose';
 import { createContainer } from 'recompose-relay'
-import R from 'ramda';
+import { parseDiff, totalHunk } from 'utils/diff'
 import DiffHunks from './DiffHunks';
 
 const Strong = styled.span`
   font-weight: 600;
 `
 
-const CommitDiff = ({ diff, additions, deletions }) => (
+const CommitDiff = ({ diff, additions, deletions, variables }) => (
   <div>
     <div>
       Showing {diff.length} changed files with
@@ -25,8 +24,7 @@ const CommitDiff = ({ diff, additions, deletions }) => (
         <DiffHunks
           key={`${file.oldPath}${file.newPath}`}
           hunks={file.hunks}
-          oldText={file.oldText}
-          newText={file.newText}
+          variables={variables}
         />
       )
     }
@@ -37,6 +35,7 @@ CommitDiff.propTypes = {
   diff: PropTypes.array.isRequired,
   additions: PropTypes.number.isRequired,
   deletions: PropTypes.number.isRequired,
+  variables: PropTypes.object.isRequired,
 }
 
 export default compose(
@@ -50,12 +49,6 @@ export default compose(
       commitDiff: () => Relay.QL`
         fragment on Commit {
           diff {
-            oldObjectId {
-              text
-            }
-            newObjectId {
-              text
-            }
             changeType
             oldPath
             newPath
@@ -65,24 +58,13 @@ export default compose(
       `,
     },
   }),
-  mapProps(({ commitDiff }) => {
-    const diff = commitDiff.diff.map(file => ({
-      ...file,
-      oldText: file.oldObjectId ? file.oldObjectId.text : null,
-      newText: file.newObjectId.text,
-      hunks: parse(file.diff),
-    }))
-    const totalHunk = propName => R.pipe(
-      R.map(R.path(['hunks'])),
-      R.map(R.map(R.prop(propName))),
-      R.flatten,
-      R.reduce(R.add, 1),
-      R.add(-1)
-    )(diff)
+  mapProps(({ commitDiff, relay: { variables } }) => {
+    const diff = parseDiff(commitDiff)
     return ({
       diff,
-      additions: totalHunk('additions'),
-      deletions: totalHunk('deletions'),
+      variables,
+      additions: totalHunk('additions', diff),
+      deletions: totalHunk('deletions', diff),
     })
   })
 )(CommitDiff)

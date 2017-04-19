@@ -139,6 +139,16 @@ export default compose(
   })),
   branch(
     props => props.target === null,
-    renderComponent(props => <EmptyRepo emptyRepo={props.mainContainer} />)
+    renderComponent(props => (
+      <MainGrid>
+        <Col md={12}>
+          <Row>
+            <Col>
+              <EmptyRepo emptyRepo={props.mainContainer} />
+            </Col>
+          </Row>
+        </Col>
+      </MainGrid>
+    ))
   ),
 )(MainContainer)

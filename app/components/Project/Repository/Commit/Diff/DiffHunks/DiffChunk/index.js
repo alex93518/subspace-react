@@ -16,49 +16,78 @@ const CodeBlock = styled(SyntaxHighlighter)`
   }
 `
 
+const styleHeight = (nullIdx, lineNumber) => {
+  const defaultHeight = 20;
+  const chunkSeqIdx = nullIdx.idx.indexOf(lineNumber)
+  if (chunkSeqIdx !== -1) {
+    return defaultHeight + (nullIdx.seq[chunkSeqIdx] * defaultHeight);
+  }
+
+  return defaultHeight;
+}
+
+const DiffCodeBlock = ({ content, start, addDel, bgColor, nullIdx }) =>
+  <CodeBlock
+    style={xcode}
+    showLineNumbers
+    wrapLines
+    startingLineNumber={start}
+    customStyle={({
+      border: 0,
+      margin: 0,
+      padding: 0,
+      borderRadius: 0,
+    })}
+    lineStyle={lineNumber => {
+      const style = {
+        display: 'block',
+        width: '100%',
+        height: styleHeight(nullIdx, lineNumber),
+      };
+      if (addDel.includes(lineNumber)) {
+        style.backgroundColor = bgColor;
+      }
+      return style;
+    }}
+    lineNumberStyle={oriLineNumber => {
+      const lineNumber = (oriLineNumber - start) + 1
+      const style = {
+        display: 'block',
+        height: styleHeight(nullIdx, lineNumber),
+      };
+      return style;
+    }}
+  >
+    {content || ''}
+  </CodeBlock>
+
+DiffCodeBlock.propTypes = {
+  content: PropTypes.string.isRequired,
+  start: PropTypes.number.isRequired,
+  addDel: PropTypes.array.isRequired,
+  bgColor: PropTypes.string.isRequired,
+  nullIdx: PropTypes.object.isRequired,
+}
+
 const DiffChunk = ({ chunk }) => (
   <Row>
     <Col md={6}>
-      {console.log(chunk)}
-      <CodeBlock
-        style={xcode}
-        showLineNumbers
-        wrapLines
-        startingLineNumber={chunk.oldStart}
-        lineStyle={lineNumber => {
-          const style = {
-            display: 'block',
-            height: 20,
-          };
-          console.log(lineNumber)
-          if (chunk.oldDel.includes(lineNumber)) {
-            style.backgroundColor = '#ffecec';
-          }
-          return style;
-        }}
-      >
-        {chunk.oldText || ''}
-      </CodeBlock>
+      <DiffCodeBlock
+        content={chunk.oldContent}
+        start={chunk.oldStart}
+        addDel={chunk.oldDel}
+        bgColor={'#ffecec'}
+        nullIdx={chunk.oldNullIdx}
+      />
     </Col>
     <Col md={6}>
-      <CodeBlock
-        style={xcode}
-        showLineNumbers
-        wrapLines
-        startingLineNumber={chunk.newStart}
-        lineStyle={lineNumber => {
-          const style = {
-            display: 'block',
-            height: 20,
-          };
-          if (chunk.newAdd.includes(lineNumber)) {
-            style.backgroundColor = '#eaffea';
-          }
-          return style;
-        }}
-      >
-        {chunk.newText || ''}
-      </CodeBlock>
+      <DiffCodeBlock
+        content={chunk.newContent}
+        start={chunk.newStart}
+        addDel={chunk.newAdd}
+        bgColor={'#eaffea'}
+        nullIdx={chunk.newNullIdx}
+      />
     </Col>
   </Row>
 )

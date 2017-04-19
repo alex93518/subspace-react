@@ -1,16 +1,14 @@
 import React, { PropTypes } from 'react';
 import styled from 'styled-components';
-import R from 'ramda';
+import { getDiffContent, getDiffChanges } from 'utils/diff';
+import { LinkTreeEntry } from 'components/shared/Links';
 import DiffChunk from './DiffChunk';
 
 const FileStatusHunk = styled.div`
   width: 100%;
-  border: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
   background-color: #f9f9f9;
   padding: 10px;
-  margin-top: 15px;
-  border-top-left-radius: 2px;
-  border-top-right-radius: 2px;
 `
 
 const SpanAddition = styled.span`
@@ -27,75 +25,38 @@ const SpanDeletion = styled.span`
 
 const ChunkStatus = styled.div`
   background-color: #f3f8ff;
-  padding: 4px 10px;
+  padding: 8px 10px;
   color: rgba(27,31,35,0.3);
 `
 
+const MainDiv = styled.div`
+  border: 1px solid #ddd;
+  margin-top: 20px;
+  border-radius: 2px;
+`
+
 const blockText = chunk => {
-  const text = type => R.pipe(
-    R.filter(_ => _.type === 'normal' || _.type === type),
-    R.map(R.prop('content'))
-  )(chunk.changes)
+  const diffContent = getDiffContent(chunk)
 
-  const changes = type => R.pipe(
-    R.filter(_ => _.type === type),
-    R.map(R.prop('ln')),
-    R.map(R.add(type === 'del' ? -(chunk.oldStart - 1) : -(chunk.newStart - 1)))
-  )(chunk.changes)
-
-  const line = type => {
-    let lineDiff = chunk.oldStart - chunk.newStart
-    const retChanges = []
-    if (type === 'ln1') {
-      chunk.changes.forEach(change => {
-        if (!change.ln) {
-          retChanges.push(change.ln1 - change.ln2 - lineDiff)
-        } else if (change.type === 'del') {
-          retChanges.push(0)
-          lineDiff += 1
-        }
-      })
-    } else if (type === 'ln2') {
-      chunk.changes.forEach(change => {
-        if (!change.ln) {
-          retChanges.push(change.ln2 - change.ln1)
-        } else if (change.type === 'add') {
-          retChanges.push(0)
-        }
-      })
-    }
-
-    return retChanges
-  }
-
-  const oldText = text('del')
-  const newText = text('add')
-  const oldDel = changes('del')
-  const newAdd = changes('add')
-  const oldLn = line('ln1')
-  const newLn = line('ln2')
-
-  console.log(oldLn)
-  console.log(newLn)
+  const oldDel = getDiffChanges(chunk, 'del')
+  const newAdd = getDiffChanges(chunk, 'add')
 
   return {
-    oldText: oldText.join('\r\n'),
-    newText: newText.join('\r\n'),
+    ...diffContent,
     oldStart: chunk.oldStart,
     newStart: chunk.newStart,
     oldDel,
     newAdd,
-    oldLn,
-    newLn,
   }
 }
 
-const DiffHunks = ({ hunks }) => (
+const DiffHunks = ({ hunks, variables }) => (
   <div>
     {hunks.map(hunk =>
       <FileDiff
         key={`${hunk.from}${hunk.to}`}
         hunk={hunk}
+        variables={variables}
       />
     )}
   </div>
@@ -103,22 +64,25 @@ const DiffHunks = ({ hunks }) => (
 
 DiffHunks.propTypes = {
   hunks: PropTypes.array.isRequired,
+  variables: PropTypes.object.isRequired,
 }
 
 const FileDiff = ({
   hunk: { from, to, additions, deletions, chunks },
+  variables,
 }) => (
-  <div>
+  <MainDiv>
     <FileStatusHunk>
       <SpanDeletion>-{deletions}</SpanDeletion>
       <SpanAddition>+{additions}</SpanAddition>
-      {to}
+      <LinkTreeEntry vars={{ ...variables, type: 'blob', pathName: to }}>
+        {to}
+      </LinkTreeEntry>
     </FileStatusHunk>
     <div>
       {
         chunks.map(chunk =>
           <div key={`${from}${to}${chunk.content}`}>
-            {console.log(chunk)}
             <ChunkStatus>
               {chunk.content}
             </ChunkStatus>
@@ -127,11 +91,12 @@ const FileDiff = ({
         )
       }
     </div>
-  </div>
+  </MainDiv>
 )
 
 FileDiff.propTypes = {
   hunk: PropTypes.object.isRequired,
+  variables: PropTypes.object.isRequired,
 }
 
 export default DiffHunks
