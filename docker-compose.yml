@@ -2,7 +2,7 @@ version: '3'
 
 services:
   client:
-    build: .
+    image: subspacenet/terrella-react
     depends_on:
       - api
     expose:
@@ -21,7 +21,7 @@ services:
     #   timeout: 10s
     #   retries: 5
   api:
-    image: terrella-api
+    image: subspacenet/terrella-api
     depends_on:
       - db
       - gitblit
