@@ -13,7 +13,6 @@ try {
 
 export const firebaseApp = firebase;
 export const firebaseAuth = firebaseApp.auth();
-export const firebaseDb = firebaseApp.database();
 
 export const getToken = async () => {
   const auth = await firebaseAuth.getToken()

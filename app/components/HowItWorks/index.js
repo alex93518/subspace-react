@@ -1,29 +1,15 @@
-import React, { PropTypes } from 'react';
-import { connect } from 'react-redux';
-import Helmet from 'react-helmet';
+import React from 'react'
+import Helmet from 'react-helmet'
+import MainGrid from 'components/shared/MainGrid'
 
-export class HowItWorks extends React.Component { // eslint-disable-line react/prefer-stateless-function
-  render() {
-    return (
-      <div>
-        <Helmet
-          title="HowItWorks"
-          meta={[{ name: 'description', content: 'Description of HowItWorks' }]}
-        />
-        <h1>How it works</h1>
-      </div>
-    );
-  }
-}
+export const HowItWorks = () => (
+  <MainGrid>
+    <Helmet
+      title="HowItWorks"
+      meta={[{ name: 'description', content: 'Description of HowItWorks' }]}
+    />
+    <h1>How it works</h1>
+  </MainGrid>
+)
 
-HowItWorks.propTypes = {
-  dispatch: PropTypes.func.isRequired,
-};
-
-function mapDispatchToProps(dispatch) {
-  return {
-    dispatch,
-  };
-}
-
-export default connect(null, mapDispatchToProps)(HowItWorks);
+export default HowItWorks

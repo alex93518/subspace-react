@@ -1,10 +1,11 @@
 import React from 'react';
 import Relay from 'react-relay';
 import Helmet from 'react-helmet';
+import MainGrid from 'components/shared/MainGrid';
 import Profile from './Profile';
 
 export const UserProfile = ({ viewer }) => !viewer ? null : (
-  <div>
+  <MainGrid>
     <Helmet
       title={viewer.actor.fullName}
       meta={[{
@@ -13,7 +14,7 @@ export const UserProfile = ({ viewer }) => !viewer ? null : (
       }]}
     />
     <Profile user={viewer.actor} />
-  </div>
+  </MainGrid>
 )
 
 UserProfile.propTypes = {

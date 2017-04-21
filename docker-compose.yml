@@ -1,0 +1,61 @@
+version: '3'
+
+services:
+  client:
+    build: .
+    depends_on:
+      - api
+    expose:
+      - 3000
+    volumes:
+      - .:/app/:rw
+    environment:
+      NODE_ENV: development
+      RELAY_PLUGIN_URL: http://api:9000/graphql
+      GRAPHQL_ENDPOINT: http://terrella-api.com/graphql
+      VIRTUAL_HOST: terrella.com
+      VIRTUAL_PORT: 9000
+    # healthcheck:
+    #   test: ["CMD", "curl", "-f", "http://api:9000"]
+    #   interval: 30s
+    #   timeout: 10s
+    #   retries: 5
+  api:
+    image: terrella-api
+    depends_on:
+      - db
+      - gitblit
+    expose:
+      - 9000
+    stdin_open: true
+    volumes:
+      - gitblit_volume:/opt/gitblit-data
+    environment:
+      DB_HOST: db:3306
+      DB_USER_NAME: root
+      DB_USER_PASS: password
+      GITBLIT_PATH: /opt/gitblit-data/git/
+      GITBLIT_SERVER_URL: http://gitblit
+      VIRTUAL_HOST: terrella-api.com
+      VIRTUAL_PORT: 9000
+  db:
+    image: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: terrella
+  gitblit:
+    image: webratio/gitblit
+    volumes:
+      - gitblit_volume:/opt/gitblit-data
+    environment:
+      VIRTUAL_HOST: terrella-git
+      VIRTUAL_PORT: 80
+  nginx-proxy:
+    image: jwilder/nginx-proxy
+    container_name: nginx-proxy
+    ports:
+      - 80:80
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+volumes:
+  gitblit_volume: {}

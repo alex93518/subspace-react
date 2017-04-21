@@ -1,36 +1,17 @@
 import React, { PropTypes } from 'react';
-import { connect } from 'react-redux';
-import { Grid } from 'react-bootstrap';
-import { createStructuredSelector } from 'reselect';
 import Header from 'components/layout/Header';
-import { makeSelectAuth } from 'redux/selectors';
+import Footer from 'components/layout/Footer';
 
-const App = ({ auth, children }) => {
-  const { authenticated, user } = auth
-  const displayName = authenticated ? auth.user.displayName : null;
-  const userName = user ? auth.userName : null;
-
-  return (
-    <div>
-      <Header
-        authenticated={authenticated}
-        displayName={displayName}
-        userName={userName}
-      />
-      <Grid>
-        {React.cloneElement(children, { auth })}
-      </Grid>
-    </div>
-  )
-}
+const App = ({ children }) => (
+  <div>
+    <Header />
+    {children}
+    <Footer />
+  </div>
+)
 
 App.propTypes = {
   children: PropTypes.node,
-  auth: PropTypes.object.isRequired,
 }
 
-export default connect(
-  createStructuredSelector({
-    auth: makeSelectAuth(),
-  }),
-)(App)
+export default App
