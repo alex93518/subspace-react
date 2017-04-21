@@ -9,7 +9,7 @@
     // ['transform-class-properties', {
     //   spec: true,
     // }],
-    "react-relay",
+    // "react-relay",
   ],
   "presets": [
     [

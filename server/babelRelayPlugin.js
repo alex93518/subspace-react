@@ -3,16 +3,25 @@ const getBabelRelayPlugin = require('babel-relay-plugin')
 const introspectionQuery = require('graphql/utilities').introspectionQuery
 const request = require('sync-request')
 
-const graphqlEndpoint = process.env.GRAPHQL_ENDPOINT || 'http://localhost:9000/graphql'
-const response = request('POST', graphqlEndpoint, {
-  json: {
-    query: introspectionQuery,
-  },
-})
+let schema
+const graphqlEndpoint = (
+  process.env.RELAY_PLUGIN_URL ||
+  'http://localhost:9000/graphql'
+)
 
-const schemaString = response.body.toString('utf-8')
-const schema = JSON.parse(schemaString)
-fs.writeFileSync('schema.json', schemaString)
+try {
+  const response = request('POST', graphqlEndpoint, {
+    json: {
+      query: introspectionQuery,
+    },
+  })
+
+  const schemaString = response.body.toString('utf-8')
+  schema = JSON.parse(schemaString)
+  fs.writeFileSync('schema.json', schemaString)
+} catch (err) {
+  schema = require('../schema.json') // eslint-disable-line global-require
+}
 
 module.exports = {
   plugins: [getBabelRelayPlugin(schema.data, { abortOnError: true })],
