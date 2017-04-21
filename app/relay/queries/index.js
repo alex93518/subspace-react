@@ -1,30 +1,11 @@
 import Relay from 'react-relay';
 
 export const viewerQuery = {
-  viewer: (Component, vars) => {
-    let retVars;
-    if (vars.splat) {
-      retVars = vars
-    } else if (vars.branchHead) {
-      retVars = {
-        ...vars,
-        splat: '',
-        treeOrBlob: 'tree',
-      }
-    } else {
-      retVars = {
-        ...vars,
-        splat: '',
-        treeOrBlob: 'tree',
-        branchHead: 'master',
-      }
-    }
-    return (Relay.QL`query {
+  viewer: (Component, vars) => (Relay.QL`query {
       viewer {
-        ${Component.getFragment('viewer', retVars)}
+        ${Component.getFragment('viewer', vars)}
       }
-    }`)
-  },
+    }`),
 };
 
 export const userNameQuery = userId => Relay.createQuery(

@@ -1,40 +1,41 @@
 import React, { PropTypes } from 'react';
 import Relay from 'react-relay';
-import moment from 'moment'
 import styled from 'styled-components'
-import { Row, Col } from 'react-bootstrap';
+import { Grid } from 'react-bootstrap';
+import { GoCode, GoIssueOpened, GoQuestion } from 'react-icons/lib/go'
 import NavTabs from 'components/shared/NavTabs';
 import RepoLink from 'components/shared/repo/TitleLink'
 import Repository from './Repository'
 
+const NavLabel = styled.span`
+  color: #777;
+`
+
 const getNavConfig = (owner, name) => [
   {
     link: `/${owner}/${name}`,
-    label: 'Code',
+    label: (<NavLabel><GoCode /> Code</NavLabel>),
   },
   {
-    link: `/${owner}/${name}/readme`,
-    label: 'ReadMe',
+    link: `/${owner}/${name}#issues`,
+    label: (<NavLabel><GoIssueOpened /> Issues</NavLabel>),
   },
   {
-    link: `/${owner}/${name}/objectives`,
-    label: 'Objectives',
-  },
-  {
-    link: `/${owner}/${name}/commits`,
-    label: 'Commits',
-  },
-  {
-    link: '/projects',
-    label: 'Projects',
+    link: `/${owner}/${name}#qa`,
+    label: (<NavLabel><GoQuestion /> Q&amp;A</NavLabel>),
   },
 ]
 
 const RepoTitle = styled.h3`
   margin-bottom: 25px;
 `
-const FilesCol = styled(Col)`
-  padding-top: 15px;
+const TopContainer = styled.div`
+  background-color: #fafbfc;
+  border-bottom: 1px solid #dddddd;
+`
+const MainContainer = styled.div`
+  background-color: #fff;
+  padding-bottom: 30px;
 `
 
 const Project = ({
@@ -43,56 +44,34 @@ const Project = ({
     repository: {
       name,
       owner,
-      createdAt,
       isPrivate,
-      project: {
-        goals,
-        description,
-      },
     },
   },
   relay: {
-    variables: {
-      userName,
-      projectName,
-      ...restVariables
-    },
+    variables,
   },
 }) => (
   <div>
-    <RepoTitle>
-      <RepoLink
-        repoName={name}
-        isPrivate={isPrivate}
-        userName={owner.userName}
-      />
-    </RepoTitle>
-    <NavTabs config={getNavConfig(owner.userName, name)} />
-    <Repository
-      repository={repository}
-      projectPath={`/${userName}/${projectName}`}
-      {...restVariables}
-    />
-    <FilesCol sm={6} md={6}>
-      <Row>
-        Goals: {goals}
-      </Row>
-      <Row>
-        Description: {description}
-      </Row>
-      <Row><Col>Contributors</Col></Row>
-      <Row><Col>Live Users</Col></Row>
-      <Row>
-        <Col>
-          Created: {moment(createdAt).format('MMMM Do YYYY')}
-        </Col>
-      </Row>
-    </FilesCol>
-    <FilesCol sm={6} md={6}>
-      <Row>
-        TODO: show README from repo file
-      </Row>
-    </FilesCol>
+    <TopContainer>
+      <Grid>
+        <RepoTitle>
+          <RepoLink
+            repoName={name}
+            isPrivate={isPrivate}
+            userName={owner.userName}
+          />
+        </RepoTitle>
+        <NavTabs config={getNavConfig(owner.userName, name)} />
+      </Grid>
+    </TopContainer>
+    <MainContainer>
+      <Grid>
+        <Repository
+          {...variables}
+          repository={repository}
+        />
+      </Grid>
+    </MainContainer>
   </div>
 )
 
@@ -103,39 +82,22 @@ Project.propTypes = {
 
 export default Relay.createContainer(Project, {
   initialVariables: {
+    branchHead: 'master',
     userName: null,
     projectName: null,
-    isTree: true,
-    branchHead: 'master',
-    treeOrBlob: 'tree',
-    splat: '',
+    splat: null,
+    commitId: null,
   },
-  prepareVariables: ({
-    treeOrBlob,
-    splat = '',
-    branchHead = 'master',
-    ...rest
-  }) => ({
-    ...rest,
-    splat,
-    branchHead,
-    isTree: typeof treeOrBlob === 'undefined' || treeOrBlob === 'tree',
-  }),
   fragments: {
-    viewer: ({ branchHead, isTree, splat }) => Relay.QL`
+    viewer: vars => Relay.QL`
       fragment on Viewer {
         repository(owner: $userName, name: $projectName) {
-          ${Repository.getFragment('repository', { branchHead, isTree, splat })}
+          ${Repository.getFragment('repository', vars)}
           name
           owner {
             userName
           }
-          createdAt
           isPrivate
-          project {
-            goals
-            description
-          }
         }
       }
     `,

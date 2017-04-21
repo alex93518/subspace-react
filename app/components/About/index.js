@@ -1,14 +1,15 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import Helmet from 'react-helmet';
+import MainGrid from 'components/shared/MainGrid';
 
 export class About extends React.Component { // eslint-disable-line react/prefer-stateless-function
   render() {
     return (
-      <div>
+      <MainGrid>
         <Helmet title="About" meta={[{ name: 'description', content: 'Description of About' }]} />
         <h1>About</h1>
-      </div>
+      </MainGrid>
     );
   }
 }

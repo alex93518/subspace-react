@@ -1,9 +1,14 @@
 import React, { PropTypes } from 'react'
 import { redirect } from 'redux/utils'
+import styled from 'styled-components'
 import { Nav, NavItem } from 'react-bootstrap';
 
+const MainNavTabs = styled(Nav)`
+  border: none;
+`
+
 const NavTabs = ({ config }) => (
-  <Nav
+  <MainNavTabs
     bsStyle="tabs"
     onSelect={redirect}
     activeKey={config[0].link}
@@ -13,7 +18,7 @@ const NavTabs = ({ config }) => (
         {label}
       </NavItem>
     ))}
-  </Nav>
+  </MainNavTabs>
 )
 
 NavTabs.propTypes = {

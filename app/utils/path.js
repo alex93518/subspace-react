@@ -1,15 +1,32 @@
-import path from 'path'
+import path from 'path';
+import { shortBranchName } from './string';
 
 export const getParentPath = currentPath => path.normalize(`${currentPath}/..`)
 
-export const getTreeEntryPath = (
-  projectPath, type, branchHead, currentPath
-) => {
-  let resPath = projectPath
-  if (branchHead) resPath += `/${branchHead.replace('refs/heads/', '')}`
-  if (currentPath && currentPath !== '.') {
-    resPath += `/${type === 'tree' ? 'tree' : 'blob'}/${currentPath}`
-  }
+export const getProjectPath = ({ userName, projectName }) =>
+  path.join('/', userName, projectName)
 
-  return resPath
-}
+export const getUserProfilePath = userName =>
+  path.join('/profile/', userName)
+
+export const getBlobPath = ({ pathName, ...props }) =>
+  path.join(getBranchPath(props), '/blob/', pathName)
+
+export const getBranchPath = ({ branchHead, ...props }) =>
+  path.join(
+    getProjectPath(props),
+    branchHead ? shortBranchName(branchHead) : ''
+  )
+
+export const getTreeEntryPath = ({ type, pathName, ...props }) =>
+  path.join(
+    getBranchPath(props),
+    (pathName && pathName !== '.') ?
+      `/${type === 'tree' ? 'tree' : 'blob'}/${pathName}` : ''
+  )
+
+export const getCommitPath = ({ commitId, ...props }) =>
+  path.join(getBranchPath(props), 'commit', commitId)
+
+export const getCommitsFilePath = ({ pathName, ...props }) =>
+  path.join(getBranchPath(props), '/commits/', pathName)

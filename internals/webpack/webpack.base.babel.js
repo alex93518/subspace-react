@@ -77,6 +77,7 @@ module.exports = options => ({
       },
     }),
     new webpack.NamedModulesPlugin(),
+    // new webpack.IgnorePlugin(/\.\/locale$/),
   ]),
   resolve: {
     modules: ['app', 'node_modules'],
