@@ -3,7 +3,6 @@ coverage
 build
 node_modules
 stats.json
-schema.json
 app/utils/firebase/config.js
 
 # Cruft
