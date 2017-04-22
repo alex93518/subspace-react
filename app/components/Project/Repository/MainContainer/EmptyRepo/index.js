@@ -13,7 +13,6 @@ const TdQuickSetup = styled.td`
     color: #fff;
   }
 `
-
 const InputUrl = styled.input`
   background-color: #fff;
   line-height: 20px;
@@ -21,19 +20,16 @@ const InputUrl = styled.input`
   border: 1px solid #d1d5da;
   width: 80%;
 `
-
 const AbsBox = styled.span`
   position: absolute;
   right: 25px;
 `
-
 const TdRepo = styled.td`
   border: 1px solid #e1e4e8;
   border-top-color: transparent;
   padding-left: 24px !important;
   padding-right: 24px !important;
 `
-
 const TextInstruction = styled.textarea`
   width: 100%;
   border: 1px solid #d1d5da;
@@ -42,7 +38,6 @@ const TextInstruction = styled.textarea`
   font-size: 14px;
   color: #24292e;
 `
-
 const QuickSetupRecommend = styled.div`
   margin-top: 8px;
   margin-bottom: 10px;

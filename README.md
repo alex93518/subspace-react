@@ -1,8 +1,14 @@
-## Terrella Frontend
+## Terrella Client
+
+### Development
 
 ```
-npm install
-npm start
+yarn
+yarn start
 ```
 
-Clear the browser cache first if you have problem with next.js error (Prev. version).
+### Docker
+
+- Add hosts from `.env` to your local `/etc/hosts`
+- Development `yarn run docker:dev -- up`
+- Production `yarn run docker:prod -- up`

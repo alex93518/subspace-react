@@ -8,8 +8,8 @@ services:
       - 3000
     environment:
       RELAY_PLUGIN_URL: http://api:9000/graphql
-      GRAPHQL_ENDPOINT: http://terrella-api.com/graphql
-      VIRTUAL_HOST: terrella.com
+      GRAPHQL_ENDPOINT: http://${API_CLIENT_HOST}/graphql
+      VIRTUAL_HOST: ${CLIENT_HOST}
       VIRTUAL_PORT: 3000
   api:
     image: subspacenet/terrella-api
@@ -27,7 +27,8 @@ services:
       DB_USER_PASS: password
       GITBLIT_PATH: /opt/gitblit-data/git/
       GITBLIT_SERVER_URL: http://gitblit
-      VIRTUAL_HOST: terrella-api.com
+      GITBLIT_CLIENT_URL: http://${GITBLIT_CLIENT_HOST}
+      VIRTUAL_HOST: ${API_CLIENT_HOST}
       VIRTUAL_PORT: 9000
   db:
     image: mysql
@@ -39,7 +40,7 @@ services:
     volumes:
       - gitblit_volume:/opt/gitblit-data
     environment:
-      VIRTUAL_HOST: terrella-git
+      VIRTUAL_HOST: ${GITBLIT_CLIENT_HOST}
       VIRTUAL_PORT: 80
   nginx-proxy:
     image: jwilder/nginx-proxy
