@@ -7,13 +7,13 @@ import Profile from './Profile';
 export const UserProfile = ({ viewer }) => !viewer ? null : (
   <MainGrid>
     <Helmet
-      title={viewer.actor.fullName}
+      title={viewer.user.fullName}
       meta={[{
         name: 'description',
-        content: `${viewer.actor.fullName} profile`,
+        content: `${viewer.user.fullName} profile`,
       }]}
     />
-    <Profile user={viewer.actor} />
+    <Profile user={viewer.user} />
   </MainGrid>
 )
 
@@ -22,10 +22,13 @@ UserProfile.propTypes = {
 };
 
 export default Relay.createContainer(UserProfile, {
+  initialVariables: {
+    login: null,
+  },
   fragments: {
     viewer: () => Relay.QL`
       fragment on Viewer {
-        actor {
+        user(login: $login) {
           userName
           fullName
           photoUrl

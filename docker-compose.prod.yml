@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+  client:
+    image: subspacenet/terrella-react
+    restart: always
+    environment:
+      NODE_ENV: production
+  api:
+    image: subspacenet/terrella-api
+    restart: always
+  db:
+    restart: always
+  gitblit:
+    restart: always
+  nginx-proxy:
+    restart: always

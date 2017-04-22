@@ -13,6 +13,7 @@ export const userNameQuery = userId => Relay.createQuery(
     viewer {
       user(id: $userId) {
         id
+        userName
       }
     }
   }`,

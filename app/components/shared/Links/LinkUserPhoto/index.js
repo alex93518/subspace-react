@@ -5,7 +5,7 @@ import { getUserProfilePath } from 'utils/path';
 
 const LinkUserPhotoBase = ({
   user: { userName, photoUrl },
-  relay,
+  relay, // eslint-disable-line no-unused-vars
   ...props
 }) => (
   <Link to={getUserProfilePath(userName)}>

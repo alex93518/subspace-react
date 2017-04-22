@@ -9,6 +9,7 @@ const LinkSty = styled(Link)`
   font-weight: 600;
 `
 
+// eslint-disable-next-line no-unused-vars
 const LinkUserNameBase = ({ user: { userName }, relay, ...props }) => (
   <LinkSty to={getUserProfilePath(userName)} {...props}>
     {userName}

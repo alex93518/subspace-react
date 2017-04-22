@@ -1,5 +1,7 @@
 FROM node:latest
 
+ARG GRAPHQL_ENDPOINT
+
 # Create folder
 RUN mkdir -p /app /home/dev \
     && groupadd -r dev \
@@ -23,8 +25,8 @@ RUN chown -R dev:dev $APP && chgrp -R dev $APP && chown -R dev /usr/local
 
 WORKDIR $APP
 USER dev
+RUN yarn run build
 
 EXPOSE 3000
-# ENV NODE_ENV production
 
 CMD ["yarn", "run", "start:docker"]

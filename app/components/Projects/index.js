@@ -3,7 +3,7 @@ import Helmet from 'react-helmet'
 import Relay from 'react-relay'
 import R from 'ramda'
 import MainGrid from 'components/shared/MainGrid';
-import Project from 'components/Project'
+import Project from './Project'
 
 export const Projects = ({ viewer: { repositories } }) => (
   <MainGrid>

@@ -42,7 +42,7 @@ function* signIn({ payload: { authProvider } }) {
 
   yield call(CurrentRelay.reset)
   localStorage.setItem('providerAuthEmail', user.email)
-  let { userName } = yield call(getUserName, user.uid)
+  let { user: { userName } } = yield call(getUserName, user.uid)
 
   if (!userName) {
     userName = yield call(getNameAndCreateUser, user)
@@ -75,7 +75,7 @@ function* signInWithEmailPassword({ payload: { email, password } }) {
     password
   );
 
-  const { userName } = yield call(getUserName, user.uid)
+  const { user: { userName } } = yield call(getUserName, user.uid)
   if (userName) {
     yield call(CurrentRelay.reset)
     return { user, userName }

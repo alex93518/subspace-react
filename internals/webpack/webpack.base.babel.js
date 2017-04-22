@@ -1,7 +1,3 @@
-/**
- * COMMON WEBPACK CONFIGURATION
- */
-
 const path = require('path');
 const webpack = require('webpack');
 
@@ -18,11 +14,6 @@ module.exports = options => ({
       exclude: /node_modules/,
       query: options.babelQuery,
     }, {
-      // Do not transform vendor's CSS with CSS-modules
-      // The point is that they remain in global scope.
-      // Since we require these CSS files in our JS or CSS files,
-      // they will be a part of our compilation either way.
-      // So, no need for ExtractTextPlugin here.
       test: /\.css$/,
       include: /node_modules/,
       loaders: ['style-loader', 'css-loader'],
@@ -33,31 +24,11 @@ module.exports = options => ({
       test: /\.(jpg|png|gif)$/,
       loaders: [
         'file-loader',
-        {
-          loader: 'image-webpack-loader',
-          query: {
-            progressive: true,
-            optimizationLevel: 7,
-            interlaced: false,
-            pngquant: {
-              quality: '65-90',
-              speed: 4,
-            },
-          },
-        },
+        'image-webpack-loader',
       ],
     }, {
       test: /\.html$/,
       loader: 'html-loader',
-    }, {
-      test: /\.json$/,
-      loader: 'json-loader',
-    }, {
-      test: /\.(mp4|webm)$/,
-      loader: 'url-loader',
-      query: {
-        limit: 10000,
-      },
     }],
   },
   plugins: options.plugins.concat([

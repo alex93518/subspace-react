@@ -2,32 +2,23 @@ version: '3'
 
 services:
   client:
-    image: subspacenet/terrella-react
     depends_on:
       - api
     expose:
       - 3000
-    volumes:
-      - .:/app/:rw
     environment:
-      NODE_ENV: development
       RELAY_PLUGIN_URL: http://api:9000/graphql
       GRAPHQL_ENDPOINT: http://terrella-api.com/graphql
       VIRTUAL_HOST: terrella.com
-      VIRTUAL_PORT: 9000
-    # healthcheck:
-    #   test: ["CMD", "curl", "-f", "http://api:9000"]
-    #   interval: 30s
-    #   timeout: 10s
-    #   retries: 5
+      VIRTUAL_PORT: 3000
   api:
     image: subspacenet/terrella-api
     depends_on:
       - db
       - gitblit
+    stdin_open: true
     expose:
       - 9000
-    stdin_open: true
     volumes:
       - gitblit_volume:/opt/gitblit-data
     environment:

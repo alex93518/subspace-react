@@ -7,10 +7,15 @@ import {
   loggerMiddleware, // eslint-disable-line
 } from 'react-relay-network-layer'
 
+window.graph_url = process.env.GRAPHQL_ENDPOINT
+
 const getCustomNetworkLayer = token => new RelayNetworkLayer(
   [
     urlMiddleware({
-      url: () => process.env.GRAPHQL_ENDPOINT,
+      url: () => (
+        process.env.GRAPHQL_ENDPOINT ||
+        'http://terrella-api.com/graphql'
+      ),
     }),
     // loggerMiddleware(),
     authMiddleware({

@@ -44,7 +44,7 @@ export default [
     getComponent: loadModule('Login'),
   },
   {
-    path: '/profile/:userName',
+    path: '/profile/:login',
     name: 'userProfile',
     getComponent: loadModule('UserProfile'),
     queries: viewerQuery,
