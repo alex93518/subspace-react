@@ -1,4 +1,5 @@
 import firebase from 'firebase';
+import { path } from 'ramda'
 import { call, take } from 'redux-saga/effects';
 import { firebaseAuth } from 'utils/firebase';
 import { actionsGenerator, redirect } from 'redux/utils'
@@ -42,7 +43,8 @@ function* signIn({ payload: { authProvider } }) {
 
   yield call(CurrentRelay.reset)
   localStorage.setItem('providerAuthEmail', user.email)
-  let { user: { userName } } = yield call(getUserName, user.uid)
+  const userInfo = yield call(getUserName, user.uid)
+  let userName = path(['user', 'userName'], userInfo)
 
   if (!userName) {
     userName = yield call(getNameAndCreateUser, user)
@@ -75,7 +77,9 @@ function* signInWithEmailPassword({ payload: { email, password } }) {
     password
   );
 
-  const { user: { userName } } = yield call(getUserName, user.uid)
+  const userInfo = yield call(getUserName, user.uid)
+  const userName = path(['user', 'userName'], userInfo)
+
   if (userName) {
     yield call(CurrentRelay.reset)
     return { user, userName }
