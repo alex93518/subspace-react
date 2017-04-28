@@ -14,7 +14,7 @@ yarn start
 - Add hosts from `.env` to your local `/etc/hosts`
 - Start docker-compose with `yarn run docker:prod -- up`
 
-##### Production
+##### Development
 
 - Add hosts from `.env` to your local `/etc/hosts`
 - Build local `terrella-git` image from [terrella-git repo](https://github.com/terrella-io/terrella-git/)
