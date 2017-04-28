@@ -6,6 +6,10 @@ import CommitHead from './Head';
 import CommitStatus from './Status';
 import CommitDiff from './Diff';
 
+const MainDiv = styled.div`
+  margin: 20px;
+`
+
 const TableHead = styled(Table)`
   margin-top: 15px;
   border: 1px solid rgba(27,31,35,0.15);
@@ -18,7 +22,7 @@ const Commit = ({
   commit: { ref: { commit } },
   relay: { variables },
 }) => (
-  <div>
+  <MainDiv>
     <TableHead>
       <tbody>
         <CommitHead commitHead={commit} {...variables} />
@@ -26,7 +30,7 @@ const Commit = ({
       </tbody>
     </TableHead>
     <CommitDiff commitDiff={commit} {...variables} />
-  </div>
+  </MainDiv>
 )
 
 Commit.propTypes = {

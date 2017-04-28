@@ -5,6 +5,7 @@ import styled from 'styled-components';
 import Tree from 'components/shared/Project/Repository/Tree';
 import BranchSelect from 'components/shared/Project/Repository/BranchSelect';
 import LastCommit from 'components/shared/Project/Repository/LastCommit';
+import MainGrid from 'components/shared/MainGrid';
 
 const RowSty = styled(Row)`
   padding-top: 15px;
@@ -19,32 +20,30 @@ const TreeContainer = ({
   },
   relay: { variables },
 }) => (
-  <Col md={12}>
-    <RowSty>
-      <Col>
-        <BranchSelect
-          {...variables}
-          branchSelect={treeContainer}
-        />
-      </Col>
-    </RowSty>
-    <RowSty>
-      <Col md={12}>
-        <LastCommit
-          {...variables}
-          lastCommit={edges[0].node}
-        />
-      </Col>
-    </RowSty>
-    <RowSty>
-      <Col>
-        <Tree
-          {...variables}
-          tree={treeContainer.ref.target.tree}
-        />
-      </Col>
-    </RowSty>
-  </Col>
+  <MainGrid>
+    <Col md={12}>
+      <RowSty>
+        <Col>
+          <BranchSelect
+            {...variables}
+            branchSelect={treeContainer}
+          />
+        </Col>
+      </RowSty>
+      <RowSty>
+        <Col>
+          <LastCommit
+            {...variables}
+            lastCommit={edges[0].node}
+          />
+          <Tree
+            {...variables}
+            tree={treeContainer.ref.target.tree}
+          />
+        </Col>
+      </RowSty>
+    </Col>
+  </MainGrid>
 )
 
 TreeContainer.propTypes = {

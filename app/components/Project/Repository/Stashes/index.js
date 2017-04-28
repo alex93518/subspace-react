@@ -1,18 +1,21 @@
 import React, { PropTypes } from 'react';
 import Relay from 'react-relay';
+import MainGrid from 'components/shared/MainGrid';
 import Stash from './Stash'
 
 const Stashes = ({
   stashes: { stashes: { edges } },
   relay: { variables },
 }) => (
-  <div>
-    {
-      edges.map(({ node, node: { id } }) =>
-        <Stash key={id} stash={node} {...variables} />
-      )
-    }
-  </div>
+  <MainGrid>
+    <div>
+      {
+        edges.map(({ node, node: { id } }) =>
+          <Stash key={id} stash={node} {...variables} />
+        )
+      }
+    </div>
+  </MainGrid>
 )
 
 Stashes.propTypes = {

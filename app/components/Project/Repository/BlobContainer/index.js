@@ -6,6 +6,7 @@ import { createContainer } from 'recompose-relay'
 import { compose, branch, mapProps, renderComponent } from 'recompose';
 import Blob from 'components/shared/Project/Repository/Blob';
 import BranchSelect from 'components/shared/Project/Repository/BranchSelect';
+import MainGrid from 'components/shared/MainGrid';
 import CommitStatus from './CommitStatus';
 import FileStatus from './FileStatus';
 
@@ -14,20 +15,22 @@ const RowSty = styled(Row)`
 `
 
 const BlobContiner = ({ blobContainer, treeEntry, vars }) => (
-  <Col md={12}>
-    <RowSty>
-      <Col>
-        <BranchSelect
-          {...vars}
-          branchSelect={blobContainer}
-          suffix={`blob/${vars.splat}`}
-        />
-        <CommitStatus commitStatus={treeEntry} {...vars} />
-        <FileStatus fileStatus={treeEntry} {...vars} />
-        <Blob blob={treeEntry} />
-      </Col>
-    </RowSty>
-  </Col>
+  <MainGrid>
+    <Col md={12}>
+      <RowSty>
+        <Col>
+          <BranchSelect
+            {...vars}
+            branchSelect={blobContainer}
+            suffix={`blob/${vars.splat}`}
+          />
+          <CommitStatus commitStatus={treeEntry} {...vars} />
+          <FileStatus fileStatus={treeEntry} {...vars} />
+          <Blob blob={treeEntry} />
+        </Col>
+      </RowSty>
+    </Col>
+  </MainGrid>
 )
 
 BlobContiner.propTypes = {
