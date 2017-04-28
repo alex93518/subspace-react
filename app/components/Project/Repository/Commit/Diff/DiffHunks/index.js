@@ -35,37 +35,13 @@ const MainDiv = styled.div`
   border-radius: 2px;
 `
 
-const blockText = chunk => {
-  const diffContent = getDiffContent(chunk)
-
-  const oldDel = getDiffChanges(chunk, 'del')
-  const newAdd = getDiffChanges(chunk, 'add')
-
-  return {
-    ...diffContent,
-    oldStart: chunk.oldStart,
-    newStart: chunk.newStart,
-    oldDel,
-    newAdd,
-  }
-}
-
-const DiffHunks = ({ hunks, variables }) => (
-  <div>
-    {hunks.map(hunk =>
-      <FileDiff
-        key={`${hunk.from}${hunk.to}`}
-        hunk={hunk}
-        variables={variables}
-      />
-    )}
-  </div>
-)
-
-DiffHunks.propTypes = {
-  hunks: PropTypes.array.isRequired,
-  variables: PropTypes.object.isRequired,
-}
+const blockText = chunk => ({
+  ...getDiffContent(chunk),
+  oldStart: chunk.oldStart,
+  newStart: chunk.newStart,
+  oldDel: getDiffChanges(chunk, 'del'),
+  newAdd: getDiffChanges(chunk, 'add'),
+})
 
 const FileDiff = ({
   hunk: { from, to, additions, deletions, chunks },
@@ -96,6 +72,23 @@ const FileDiff = ({
 
 FileDiff.propTypes = {
   hunk: PropTypes.object.isRequired,
+  variables: PropTypes.object.isRequired,
+}
+
+const DiffHunks = ({ hunks, variables }) => (
+  <div>
+    {hunks.map(hunk =>
+      <FileDiff
+        key={`${hunk.from}${hunk.to}`}
+        hunk={hunk}
+        variables={variables}
+      />
+    )}
+  </div>
+)
+
+DiffHunks.propTypes = {
+  hunks: PropTypes.array.isRequired,
   variables: PropTypes.object.isRequired,
 }
 

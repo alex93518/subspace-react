@@ -14,51 +14,33 @@ export const totalHunk = (propName, diff) => R.pipe(
   R.add(-1)
 )(diff)
 
-const arrayToSeq = array => {
-  const nullIdx = []
-  const seqNum = []
-  let setStart = null
-  let current = null
-  let seqFound = 1
-  for (let i = 0; i < array.length; i += 1) {
-    if (current === null) {
-      setStart = array[i]
-      current = array[i]
-    }
-    if (array[i + 1] && array[i] === array[i + 1] - 1) {
-      seqFound += 1
-    } else {
-      nullIdx.push(setStart)
-      seqNum.push(seqFound)
-      setStart = null
-      current = null
-      seqFound = 1
-    }
-  }
-  return { idx: nullIdx, seq: seqNum }
-}
+const getLinesNumber = (content, nullSeq) =>
+  content.length + Object.values(nullSeq).reduce(R.add, 0)
 
 export const getDiffContent = chunk => {
   const oldContent = []
   const newContent = []
+
+  // Empty sequence descriptors { [startLine]: sequenceLength }
+  const oldNullSeq = {}
+  const newNullSeq = {}
+
   let lineDiff = chunk.oldStart - chunk.newStart
+
   chunk.changes.forEach(change => {
     if (change.content !== '\\ No newline at end of file') {
-      if (change.ln1) {
+      if (change.type === 'normal') {
         const changeLineDiff = change.ln1 - change.ln2
+        const emptyLinesNumber = Math.abs(lineDiff - changeLineDiff)
+
         if (changeLineDiff < lineDiff) {
-          const nullNum = lineDiff - changeLineDiff
-          for (let index = 0; index < nullNum; index += 1) {
-            oldContent.push(null)
-          }
-          lineDiff -= nullNum
+          oldNullSeq[oldContent.length] = emptyLinesNumber
+          lineDiff -= emptyLinesNumber
         } else if (changeLineDiff > lineDiff) {
-          const nullNum = changeLineDiff - lineDiff
-          for (let index = 0; index < nullNum; index += 1) {
-            newContent.push(null)
-          }
-          lineDiff += nullNum
+          newNullSeq[newContent.length] = emptyLinesNumber
+          lineDiff += emptyLinesNumber
         }
+
         oldContent.push(change.content)
         newContent.push(change.content)
       } else if (change.type === 'del') {
@@ -68,31 +50,24 @@ export const getDiffContent = chunk => {
       }
     }
   })
-  if (oldContent.length !== newContent.length) {
-    const lineDiffEof = oldContent.length - newContent.length
-    if (lineDiffEof < 0) {
-      for (let i = 0; i < -(lineDiffEof); i += 1) {
-        oldContent.push(null)
-      }
-    } else {
-      for (let i = 0; i < lineDiffEof; i += 1) {
-        newContent.push(null)
-      }
-    }
+
+  const oldLength = getLinesNumber(oldContent, oldNullSeq)
+  const newLength = getLinesNumber(newContent, newNullSeq)
+
+  // Add empty lines to the largest content
+  if (oldLength === newLength) {
+    const lineNumberDiff = oldLength - newLength
+
+    lineNumberDiff < 0
+      ? oldNullSeq[oldLength] = lineNumberDiff
+      : newNullSeq[newLength] = lineNumberDiff
   }
 
-  const contentNotNull = R.filter(_ => _ !== null)
-  const nullIndex = R.pipe(
-      R.addIndex(R.map)((val, idx) => ({ val, idx })),
-      R.filter(_ => _.val === null),
-      R.map(R.prop('idx'))
-    )
-
   return {
-    oldContent: contentNotNull(oldContent).join('\r\n'),
-    newContent: contentNotNull(newContent).join('\r\n'),
-    oldNullIdx: arrayToSeq(nullIndex(oldContent)),
-    newNullIdx: arrayToSeq(nullIndex(newContent)),
+    oldContent: oldContent.join('\r\n'),
+    newContent: newContent.join('\r\n'),
+    oldNullSeq,
+    newNullSeq,
   }
 }
 
