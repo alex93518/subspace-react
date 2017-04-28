@@ -23,10 +23,11 @@ services:
       - gitblit_volume:/opt/gitblit-data
     environment:
       DB_HOST: db:3306
-      DB_USER_NAME: root
-      DB_USER_PASS: password
+      DB_NAME: ${DB_NAME}
+      DB_USER_NAME: ${DB_USER_NAME}
+      DB_USER_PASS: ${DB_USER_PASS}
       GITBLIT_PATH: /opt/gitblit-data/git/
-      GITBLIT_SERVER_URL: http://gitblit
+      GITBLIT_SERVER_URL: http://gitblit:8443
       GITBLIT_CLIENT_URL: http://${GITBLIT_CLIENT_HOST}
       VIRTUAL_HOST: ${API_CLIENT_HOST}
       VIRTUAL_PORT: 9000
@@ -34,14 +35,20 @@ services:
     image: mysql
     environment:
       MYSQL_ROOT_PASSWORD: password
-      MYSQL_DATABASE: terrella
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER_NAME}
+      MYSQL_PASSWORD: ${DB_USER_PASS}
   gitblit:
-    image: webratio/gitblit
+    image: subspacenet/terrella-git
     volumes:
       - gitblit_volume:/opt/gitblit-data
     environment:
+      DB_HOST: db
+      DB_NAME: ${DB_NAME}
+      DB_USER_NAME: ${DB_USER_NAME}
+      DB_USER_PASS: ${DB_USER_PASS}
       VIRTUAL_HOST: ${GITBLIT_CLIENT_HOST}
-      VIRTUAL_PORT: 80
+      VIRTUAL_PORT: 8443
   nginx-proxy:
     image: jwilder/nginx-proxy
     container_name: nginx-proxy

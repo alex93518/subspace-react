@@ -12,3 +12,5 @@ services:
       NODE_ENV: development
   api:
     image: terrella-api
+  gitblit:
+    image: terrella-git
