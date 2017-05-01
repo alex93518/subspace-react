@@ -3,6 +3,7 @@ import Relay from 'react-relay';
 import styled from 'styled-components'
 import { Grid } from 'react-bootstrap';
 import { GoCode, GoIssueOpened, GoQuestion } from 'react-icons/lib/go'
+import { MdInsertChart } from 'react-icons/lib/md'
 import NavTabs from 'components/shared/NavTabs';
 import RepoLink from 'components/shared/repo/TitleLink'
 import Repository from './Repository'
@@ -23,6 +24,10 @@ const getNavConfig = (owner, name) => [
   {
     link: `/${owner}/${name}#qa`,
     label: (<NavLabel><GoQuestion /> Q&amp;A</NavLabel>),
+  },
+  {
+    link: `/${owner}/${name}/diagrams`,
+    label: (<NavLabel><MdInsertChart /> Diagrams</NavLabel>),
   },
 ]
 

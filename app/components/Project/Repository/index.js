@@ -8,6 +8,7 @@ import Commits from './Commits';
 import Commit from './Commit';
 import Branches from './Branches';
 import Stashes from './Stashes';
+import DiagramEditor from './Diagrams/DiagramEditor'
 
 const Components = {
   MainContainer: (repository, props) =>
@@ -24,6 +25,8 @@ const Components = {
     <Branches {...props} branches={repository} />,
   Stashes: (repository, props) =>
     <Stashes {...props} stashes={repository} />,
+  Diagrams: () =>
+    <DiagramEditor />,
 }
 
 const Repository = ({

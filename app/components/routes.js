@@ -103,6 +103,12 @@ export default [
     queries: viewerQuery,
   },
   {
+    path: '/:userName/:projectName/diagrams',
+    name: 'Diagrams',
+    getComponent: loadModule('Project'),
+    queries: viewerQuery,
+  },
+  {
     path: '/:userName/:projectName/:branchHead',
     name: 'MainContainer',
     getComponent: loadModule('Project'),
