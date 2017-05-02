@@ -21,6 +21,10 @@ const PalettDiv = styled.div`
 const CanvasDiv = styled.div`
   border: solid 1px rgba(0,0,0,0.3);
   height: 520px;
+  & textarea {
+    background: white !important;
+    border: solid 1px rgba(0,0,0,0.3) !important;
+  }
 `
 
 const DescriptionDiv = styled.div`

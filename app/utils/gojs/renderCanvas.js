@@ -30,17 +30,41 @@ export const renderCanvas = (handleModelChanged, modelData) => {
     } else if (idx >= 0) document.title = document.title.substr(0, idx);
   });
 
+  // Manipulate object after dropped from palette to canvas
   canvasEditor.addDiagramListener('ExternalObjectsDropped', () => {
-    canvasEditor.selection.each(({ part: { data } }) => {
+    canvasEditor.selection.each(({ part, part: { data } }) => {
+      // Change the object width and height
       canvasEditor.model.setDataProperty(data, 'width', data.width * 1.7)
       canvasEditor.model.setDataProperty(data, 'height', data.height * 1.7)
+
+      // Change focus to textBox
+      canvasEditor.commandHandler.editTextBlock(part.findObject('TEXTLABEL'))
     });
   })
 
+  // Callback function on model changed
   canvasEditor.addModelChangedListener(e => {
     if (e.isTransactionFinished) {
       handleModelChanged(JSON.parse(canvasEditor.model.toJson()))
     }
+  })
+
+  // Auto resize shape when text edited
+  canvasEditor.addDiagramListener('TextEdited', e => {
+    if (e.subject.text !== '') {
+      canvasEditor.selection.each(({ part: { data } }) => {
+        // Change the object width and height
+        canvasEditor.model.setDataProperty(data, 'width', NaN)
+        canvasEditor.model.setDataProperty(data, 'height', NaN)
+      });
+    }
+  })
+
+  // Focus text on double click
+  canvasEditor.addDiagramListener('ObjectDoubleClicked', () => {
+    canvasEditor.selection.each(({ part }) => {
+      canvasEditor.commandHandler.editTextBlock(part.findObject('TEXTLABEL'))
+    });
   })
 
   // Define a function for creating a "port" that is normally transparent.
@@ -66,50 +90,62 @@ export const renderCanvas = (handleModelChanged, modelData) => {
     );
   }
 
-  canvasEditor.nodeTemplateMap.add('',  // the default category
-    goObj(go.Node, 'Spot',
+  function nodeStyle() {
+    return [
+      // The Node.location comes from the "loc" property of the node data,
+      // converted by the Point.parse static method.
+      // If the Node.location is changed, it updates the "loc" property of the node data,
+      // converting back using the Point.stringify static method.
+      new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify),
       {
-        locationSpot: go.Spot.Center,  // the location is the center of the Shape
-        locationObjectName: 'SHAPE',
+        // the Node.location is at the center of each node
+        locationSpot: go.Spot.Center,
         selectionAdorned: false,  // no selection handle when selected
         resizable: true,
         resizeObjectName: 'SHAPE',  // user can resize the Shape
-        rotatable: true,
-        rotateObjectName: 'SHAPE',  // rotate the Shape without rotating the label
-        // don't re-layout when node changes size
+        // isShadowed: true,
+        // shadowColor: "#888",
+        // handle mouse enter/leave events to show/hide the ports
         mouseEnter(e, obj) { showPorts(obj.part, true); },
         mouseLeave(e, obj) { showPorts(obj.part, false); },
       },
-      goObj(go.Shape,
+    ];
+  }
+
+  canvasEditor.nodeTemplateMap.add('',  // the default category
+    goObj(go.Node, 'Spot', nodeStyle(),
+      // the main object is a Panel that surrounds a TextBlock with a rectangular Shape
+      goObj(go.Panel, 'Auto',
         {
-          name: 'SHAPE',  // named so that the above properties can refer to this GraphObject
-          stroke: 'rgba(0, 0, 0, 0.9)',
-          fill: 'rgba(255, 255, 255, 1)',
-          strokeWidth: 1,
           margin: new go.Margin(15, 5, 5, 5),
         },
-        // bind the Shape.figure to the figure name, which automatically gives the Shape a Geometry
-        new go.Binding('figure', 'figure'),
-        new go.Binding('width', 'width').makeTwoWay(),
-        new go.Binding('height', 'height').makeTwoWay(),
-        new go.Binding('angle', 'angle').makeTwoWay(),
+        goObj(go.Shape, 'Rectangle',
+          {
+            name: 'SHAPE',
+            stroke: 'rgba(0,0,0,0.9)',
+            fill: 'rgba(255,255,255,1)',
+          },
+          new go.Binding('figure'),
+          new go.Binding('width').makeTwoWay(),
+          new go.Binding('height').makeTwoWay()
+        ),
+        goObj(go.TextBlock,
+          {
+            font: 'bold 11pt Helvetica, Arial, sans-serif',
+            stroke: 'rgba(0,0,0,0.9)',
+            margin: 8,
+            maxSize: new go.Size(160, NaN),
+            wrap: go.TextBlock.WrapFit,
+            editable: true,
+          },
+          new go.Binding('text').makeTwoWay())
       ),
-      goObj(go.TextBlock,  // the label
-        {
-          margin: 4,
-          font: 'bold 18px sans-serif',
-          background: 'white',
-        },
-        new go.Binding('visible', 'isHighlighted').ofObject(),
-        new go.Binding('text', 'key')
-      ),
-      new go.Binding('location', 'loc').makeTwoWay(),
+      // four named ports, one on each side:
       makePort('T', go.Spot.Top),
       makePort('L', go.Spot.Left),
       makePort('R', go.Spot.Right),
       makePort('B', go.Spot.Bottom)
-    )
-  );
+    ));
 
   // replace the default Link template in the linkTemplateMap
   canvasEditor.linkTemplate =
@@ -137,8 +173,6 @@ export const renderCanvas = (handleModelChanged, modelData) => {
       goObj(go.Panel, 'Auto',  // the link label, normally not visible
         { visible: false, name: 'LABEL', segmentIndex: 2, segmentFraction: 0.5 },
         new go.Binding('visible', 'visible').makeTwoWay(),
-        goObj(go.Shape, 'RoundedRectangle',  // the label shape
-          { fill: '#F8F8F8', stroke: null }),
         goObj(go.TextBlock, '',  // the label
           {
             textAlign: 'center',
@@ -155,7 +189,7 @@ export const renderCanvas = (handleModelChanged, modelData) => {
   // This listener is called by the "LinkDrawn" and "LinkRelinked" DiagramEvents.
   function showLinkLabel(e) {
     const label = e.subject.findObject('LABEL');
-    if (label !== null) label.visible = (e.subject.fromNode.data.figure === 'Diamond');
+    if (label !== null) label.visible = true;
   }
 
   // temporary links used by LinkingTool and RelinkingTool are also orthogonal:
