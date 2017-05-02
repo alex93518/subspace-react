@@ -7,11 +7,11 @@ const MainNavTabs = styled(Nav)`
   border: none;
 `
 
-const NavTabs = ({ config }) => (
+const NavTabs = ({ configActive: { config, activeKey } }) => (
   <MainNavTabs
     bsStyle="tabs"
     onSelect={redirect}
-    activeKey={config[0].link}
+    activeKey={activeKey || config[0].link}
   >
     {config.map(({ link, label }) => (
       <NavItem key={link} eventKey={link}>
@@ -22,7 +22,7 @@ const NavTabs = ({ config }) => (
 )
 
 NavTabs.propTypes = {
-  config: PropTypes.array.isRequired,
+  configActive: PropTypes.object.isRequired,
 }
 
 export default NavTabs

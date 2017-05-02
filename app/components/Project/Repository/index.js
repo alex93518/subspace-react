@@ -25,8 +25,8 @@ const Components = {
     <Branches {...props} branches={repository} />,
   Stashes: (repository, props) =>
     <Stashes {...props} stashes={repository} />,
-  Diagrams: () =>
-    <DiagramEditor />,
+  Diagrams: (repository, props) =>
+    <DiagramEditor {...props} diagramEditor={repository} />,
 }
 
 const Repository = ({
@@ -62,6 +62,7 @@ export default Relay.createContainer(Repository, {
           Commit: () => Commit.getFragment('commit', vars),
           Branches: () => Branches.getFragment('branches', vars),
           Stashes: () => Stashes.getFragment('stashes', vars),
+          Diagrams: () => DiagramEditor.getFragment('diagramEditor', vars),
         })}
       }
     `,

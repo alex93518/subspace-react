@@ -1,4 +1,4 @@
-const routeName = route =>
+export const routeName = route =>
   route.name.replace('_aggregated__', '').replace('__default_viewer', '')
 
 export const matchRoute = (route, map) =>

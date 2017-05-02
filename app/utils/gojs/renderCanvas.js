@@ -24,9 +24,9 @@ export const renderCanvas = (handleModelChanged, modelData) => {
   canvasEditor.addDiagramListener('Modified', () => {
     const button = document.getElementById('SaveButton');
     if (button) button.disabled = !canvasEditor.isModified;
-    const idx = document.title.indexOf('*');
+    const idx = document.title.indexOf(' - Draft *');
     if (canvasEditor.isModified) {
-      if (idx < 0) document.title += '*';
+      if (idx < 0) document.title += ' - Draft *';
     } else if (idx >= 0) document.title = document.title.substr(0, idx);
   });
 

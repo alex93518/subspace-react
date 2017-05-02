@@ -6,6 +6,7 @@ import { GoCode, GoIssueOpened, GoQuestion } from 'react-icons/lib/go'
 import { MdInsertChart } from 'react-icons/lib/md'
 import NavTabs from 'components/shared/NavTabs';
 import RepoLink from 'components/shared/repo/TitleLink'
+import { routeName } from 'utils/routeMatcher'
 import Repository from './Repository'
 
 const NavLabel = styled.span`
@@ -43,6 +44,20 @@ const MainContainer = styled.div`
   padding-bottom: 30px;
 `
 
+const getConfigActiveKey = (owner, name, route) => {
+  const config = getNavConfig(owner, name)
+  if (routeName(route) === 'Diagrams') {
+    return {
+      config,
+      activeKey: config[3].link,
+    }
+  }
+  return {
+    config,
+    activeKey: config[0].link,
+  }
+}
+
 const Project = ({
   viewer: {
     repository,
@@ -54,6 +69,7 @@ const Project = ({
   },
   relay: {
     variables,
+    route,
   },
 }) => (
   <div>
@@ -66,7 +82,9 @@ const Project = ({
             userName={owner.userName}
           />
         </RepoTitle>
-        <NavTabs config={getNavConfig(owner.userName, name)} />
+        <NavTabs
+          configActive={getConfigActiveKey(owner.userName, name, route)}
+        />
       </Grid>
     </TopContainer>
     <MainContainer>

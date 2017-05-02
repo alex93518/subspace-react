@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
+import Relay from 'react-relay';
 import styled from 'styled-components';
 import { Row, Col } from 'react-bootstrap';
 import GoJsCanvas from './GoJsCanvas';
@@ -60,4 +61,22 @@ const DiagramEditor = () =>
     </ChildContainer>
   </MainContainer>
 
-export default DiagramEditor
+DiagramEditor.propTypes = {
+  diagramEditor: PropTypes.object.isRequired,
+  relay: PropTypes.object.isRequired,
+}
+
+export default Relay.createContainer(DiagramEditor, {
+  initialVariables: {
+    branchHead: 'master',
+    userName: null,
+    projectName: null,
+  },
+  fragments: {
+    diagramEditor: () => Relay.QL`
+      fragment on Repository {
+        id
+      }
+    `,
+  },
+})
