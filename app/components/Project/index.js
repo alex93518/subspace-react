@@ -46,7 +46,7 @@ const MainContainer = styled.div`
 
 const getConfigActiveKey = (owner, name, route) => {
   const config = getNavConfig(owner, name)
-  if (routeName(route) === 'Diagrams') {
+  if (routeName(route) === 'Diagrams' || routeName(route) === 'DiagramEditor') {
     return {
       config,
       activeKey: config[3].link,
@@ -108,6 +108,7 @@ export default Relay.createContainer(Project, {
     projectName: null,
     splat: null,
     commitId: null,
+    diagramId: null,
   },
   fragments: {
     viewer: vars => Relay.QL`

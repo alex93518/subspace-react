@@ -8,7 +8,8 @@ import Commits from './Commits';
 import Commit from './Commit';
 import Branches from './Branches';
 import Stashes from './Stashes';
-import DiagramEditor from './Diagrams/DiagramEditor'
+import Diagrams from './Diagrams';
+import DiagramEditor from './DiagramEditor';
 
 const Components = {
   MainContainer: (repository, props) =>
@@ -26,6 +27,8 @@ const Components = {
   Stashes: (repository, props) =>
     <Stashes {...props} stashes={repository} />,
   Diagrams: (repository, props) =>
+    <Diagrams {...props} diagrams={repository} />,
+  DiagramEditor: (repository, props) =>
     <DiagramEditor {...props} diagramEditor={repository} />,
 }
 
@@ -50,6 +53,7 @@ export default Relay.createContainer(Repository, {
     projectName: null,
     splat: null,
     commitId: null,
+    diagramId: null,
   },
   fragments: {
     repository: vars => Relay.QL`
@@ -62,7 +66,8 @@ export default Relay.createContainer(Repository, {
           Commit: () => Commit.getFragment('commit', vars),
           Branches: () => Branches.getFragment('branches', vars),
           Stashes: () => Stashes.getFragment('stashes', vars),
-          Diagrams: () => DiagramEditor.getFragment('diagramEditor', vars),
+          Diagrams: () => Diagrams.getFragment('diagrams', vars),
+          DiagramEditor: () => DiagramEditor.getFragment('diagramEditor', vars),
         })}
       }
     `,

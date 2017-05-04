@@ -45,6 +45,7 @@ export const renderCanvas = (handleModelChanged, modelData) => {
   // Callback function on model changed
   canvasEditor.addModelChangedListener(e => {
     if (e.isTransactionFinished) {
+      console.log(JSON.parse(canvasEditor.model.toJson()))
       handleModelChanged(JSON.parse(canvasEditor.model.toJson()))
     }
   })

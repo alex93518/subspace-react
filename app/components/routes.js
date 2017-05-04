@@ -109,6 +109,12 @@ export default [
     queries: viewerQuery,
   },
   {
+    path: '/:userName/:projectName/diagrams/:diagramId',
+    name: 'DiagramEditor',
+    getComponent: loadModule('Project'),
+    queries: viewerQuery,
+  },
+  {
     path: '/:userName/:projectName/:branchHead',
     name: 'MainContainer',
     getComponent: loadModule('Project'),

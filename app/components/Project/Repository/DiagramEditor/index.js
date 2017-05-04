@@ -41,7 +41,9 @@ const ColFit = styled(Col)`
   margin-bottom: 15px;
 `
 
-const DiagramEditor = () =>
+const DiagramEditor = ({
+  diagramEditor: { diagrams: { edges } },
+}) =>
   <MainContainer>
     <ChildContainer>
       <Row>
@@ -57,13 +59,16 @@ const DiagramEditor = () =>
           </DescriptionDiv>
         </ColFit>
       </Row>
-      <GoJsCanvas />
+      {
+        edges && edges.map(({ node }) =>
+          <GoJsCanvas key={node.id} diagram={node} />
+        )
+      }
     </ChildContainer>
   </MainContainer>
 
 DiagramEditor.propTypes = {
   diagramEditor: PropTypes.object.isRequired,
-  relay: PropTypes.object.isRequired,
 }
 
 export default Relay.createContainer(DiagramEditor, {
@@ -71,11 +76,19 @@ export default Relay.createContainer(DiagramEditor, {
     branchHead: 'master',
     userName: null,
     projectName: null,
+    diagramId: null,
   },
   fragments: {
     diagramEditor: () => Relay.QL`
       fragment on Repository {
-        id
+        diagrams(diagramId: $diagramId, first: 1) {
+          edges {
+            node {
+              id
+              ${GoJsCanvas.getFragment('diagram')}
+            }
+          }
+        }
       }
     `,
   },

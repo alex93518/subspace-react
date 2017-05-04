@@ -10,7 +10,7 @@ const Stashes = ({
   <MainGrid>
     <div>
       {
-        edges.map(({ node, node: { id } }) =>
+        edges && edges.map(({ node, node: { id } }) =>
           <Stash key={id} stash={node} {...variables} />
         )
       }
