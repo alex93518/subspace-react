@@ -19,7 +19,7 @@ const AccessIcon = styled(Glyphicon)`
 
 const TitleLink = ({ userName, repoName, isPrivate }) => (
   <Container>
-    <Link to={`profile/${userName}`}>{userName}</Link>
+    <Link to={`/profile/${userName}`}>{userName}</Link>
     <Separator>/</Separator>
     <Link to={`/${userName}/${repoName}`}>{repoName}</Link>
     {

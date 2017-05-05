@@ -2,6 +2,7 @@ import React from 'react';
 import Relay from 'react-relay';
 import Helmet from 'react-helmet';
 import MainGrid from 'components/shared/MainGrid';
+import ProjectList from 'components/Projects/ProjectList'
 import Profile from './Profile';
 
 export const UserProfile = ({ viewer }) => !viewer ? null : (
@@ -13,7 +14,7 @@ export const UserProfile = ({ viewer }) => !viewer ? null : (
         content: `${viewer.user.fullName} profile`,
       }]}
     />
-    <Profile user={viewer.user} />
+    <Profile viewer={viewer} />
   </MainGrid>
 )
 
@@ -26,13 +27,14 @@ export default Relay.createContainer(UserProfile, {
     login: null,
   },
   fragments: {
-    viewer: () => Relay.QL`
+    viewer: ({ login: owner }) => Relay.QL`
       fragment on Viewer {
         user(login: $login) {
           userName
           fullName
           photoUrl
         }
+        ${ProjectList.getFragment('viewer', { owner })}
       }
     `,
   },
