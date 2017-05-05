@@ -1,7 +1,7 @@
 import go from 'gojs';
 
 const goObj = go.GraphObject.make;
-export const renderCanvas = (handleModelChanged, modelData) => {
+export const renderCanvas = (handleModelChanged, handleModelDeleted, modelData) => {
   const canvasEditor =
     goObj(go.Diagram, 'canvasEditor',  // must name or refer to the DIV HTML element
       {
@@ -43,11 +43,25 @@ export const renderCanvas = (handleModelChanged, modelData) => {
   })
 
   // Callback function on model changed
-  canvasEditor.addModelChangedListener(e => {
-    if (e.isTransactionFinished) {
-      console.log(JSON.parse(canvasEditor.model.toJson()))
-      handleModelChanged(JSON.parse(canvasEditor.model.toJson()))
-    }
+  canvasEditor.addModelChangedListener(evt => {
+    if (!evt.isTransactionFinished) return;
+
+    const txn = evt.object;  // a Transaction
+    if (txn === null) return;
+    // iterate over all of the actual ChangedEvents of the Transaction
+    txn.changes.each(e => {
+      // ignore any kind of change other than adding/removing a node
+      if (e.modelChange !== 'nodeDataArray') return;
+      // record node insertions and removals
+      if (e.change === go.ChangedEvent.Insert) {
+        handleModelChanged(e.newValue)
+      } else if (e.change === go.ChangedEvent.Remove) {
+        handleModelDeleted(e.oldValue.key)
+      }
+    })
+
+    console.log(evt)
+    console.log(JSON.parse(canvasEditor.model.toJson()))
   })
 
   // Auto resize shape when text edited
