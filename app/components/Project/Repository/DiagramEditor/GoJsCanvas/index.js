@@ -3,16 +3,18 @@ import Relay from 'react-relay';
 import { toGoJsModel } from 'utils/gojs/toGoJsModel';
 import { renderCanvas } from 'utils/gojs/renderCanvas';
 import CurrentRelay, {
-  UpdateDiagramNodeMutation,
-  DeleteDiagramNodeMutation,
+  UpdateDiagramObjectMutation,
+  DeleteDiagramObjectMutation,
+  UpdateDiagramLinkMutation,
+  DeleteDiagramLinkMutation,
 } from 'relay';
 
-const handleNodeChanged = ({ __gohashid, ...vars }, diagramId) => {
+const handleObjectChanged = ({
+  key, width, height, figure, loc, text,
+}, diagramId) => {
   CurrentRelay.Store.commitUpdate(
-    new UpdateDiagramNodeMutation({
-      ...vars,
-      key: vars.key.toString(),
-      diagramId,
+    new UpdateDiagramObjectMutation({
+      key, width, height, figure, loc, text, diagramId,
     }),
     {
       onSuccess: () => {},
@@ -21,11 +23,45 @@ const handleNodeChanged = ({ __gohashid, ...vars }, diagramId) => {
   )
 }
 
-const handleNodeDelete = (diagramId, objectId) => {
+const handleObjectDelete = (diagramId, objectId) => {
   CurrentRelay.Store.commitUpdate(
-    new DeleteDiagramNodeMutation({
+    new DeleteDiagramObjectMutation({
       diagramId,
       objectId,
+    }),
+    {
+      onSuccess: () => {},
+      onFailure: transaction => console.log(transaction.getError()),
+    }
+  )
+}
+
+const handleLinkChanged = ({
+  linkId, from, to, visible, text, description, points,
+}, diagramId) => {
+  CurrentRelay.Store.commitUpdate(
+    new UpdateDiagramLinkMutation({
+      linkId,
+      fromDiagramObjId: from,
+      toDiagramObjId: to,
+      visible,
+      text,
+      description,
+      diagramId,
+      points: JSON.stringify(points.n),
+    }),
+    {
+      onSuccess: () => {},
+      onFailure: transaction => console.log(transaction.getError()),
+    }
+  )
+}
+
+const handleLinkDelete = (diagramId, linkId) => {
+  CurrentRelay.Store.commitUpdate(
+    new DeleteDiagramLinkMutation({
+      diagramId,
+      linkId,
     }),
     {
       onSuccess: () => {},
@@ -39,8 +75,10 @@ class GoJsCanvas extends Component {
     const { diagramId } = this.props.relay.variables
     const model = toGoJsModel(this.props.diagram)
     renderCanvas(
-      data => handleNodeChanged(data, diagramId),
-      objectId => handleNodeDelete(diagramId, objectId),
+      data => handleObjectChanged(data, diagramId),
+      objectId => handleObjectDelete(diagramId, objectId),
+      data => handleLinkChanged(data, diagramId),
+      linkId => handleLinkDelete(diagramId, linkId),
       model
     );
   }
@@ -77,6 +115,19 @@ export default Relay.createContainer(GoJsCanvas, {
               loc
               width
               height
+            }
+          }
+        }
+        links(first: 999999) {
+          edges {
+            node {
+              linkId
+              fromDiagramObjId
+              toDiagramObjId,
+              visible,
+              text,
+              description,
+              points,              
             }
           }
         }

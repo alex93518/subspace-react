@@ -1,8 +1,8 @@
 import Relay from 'react-relay'
 
-export class DeleteDiagramNodeMutation extends Relay.Mutation {
+export class UpdateDiagramLinkMutation extends Relay.Mutation {
   getMutation() {
-    return Relay.QL`mutation { deleteDiagramObject }`
+    return Relay.QL`mutation { updateDiagramLink }`
   }
 
   getVariables() {
@@ -11,8 +11,8 @@ export class DeleteDiagramNodeMutation extends Relay.Mutation {
 
   getFatQuery() {
     return Relay.QL`
-      fragment on DeleteDiagramObjectPayload @relay(pattern: true) {
-        clientMutationId
+      fragment on UpdateDiagramLinkPayload @relay(pattern: true) {
+        diagramLinkMeta
       }
     `
   }

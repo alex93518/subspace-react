@@ -1,7 +1,14 @@
 import go from 'gojs';
+import uuid from 'uuid';
 
 const goObj = go.GraphObject.make;
-export const renderCanvas = (handleModelChanged, handleModelDeleted, modelData) => {
+export const renderCanvas = (
+  handleObjectChanged,
+  handleObjectDeleted,
+  handleLinkChanged,
+  handleLinkDeleted,
+  modelData
+) => {
   const canvasEditor =
     goObj(go.Diagram, 'canvasEditor',  // must name or refer to the DIV HTML element
       {
@@ -34,13 +41,18 @@ export const renderCanvas = (handleModelChanged, handleModelDeleted, modelData) 
   canvasEditor.addDiagramListener('ExternalObjectsDropped', () => {
     canvasEditor.selection.each(({ part, part: { data } }) => {
       // Change the object width and height
+      canvasEditor.model.setDataProperty(data, 'key', uuid.v4())
       canvasEditor.model.setDataProperty(data, 'width', data.width * 1.7)
       canvasEditor.model.setDataProperty(data, 'height', data.height * 1.7)
-
       // Change focus to textBox
       canvasEditor.commandHandler.editTextBlock(part.findObject('TEXTLABEL'))
     });
   })
+
+  canvasEditor.addDiagramListener('LinkDrawn', e => {
+    const link = e.subject;
+    canvasEditor.model.setDataProperty(link.data, 'linkId', uuid.v4());
+  });
 
   // Callback function on model changed
   canvasEditor.addModelChangedListener(evt => {
@@ -48,20 +60,50 @@ export const renderCanvas = (handleModelChanged, handleModelDeleted, modelData) 
 
     const txn = evt.object;  // a Transaction
     if (txn === null) return;
+
+    console.log(txn)
+
+    // Update node
+    if (
+      txn.name === 'TextEditing' ||
+      txn.name === 'Move' ||
+      txn.name === 'Resizing' ||
+      txn.name === 'LinkReshaping'
+    ) {
+      // find the last updated object
+      txn.changes.n.reverse()
+      const updatedObj = txn.changes.n.find(e => e.object.figure)
+      if (updatedObj) {
+        console.log(updatedObj)
+        handleObjectChanged(updatedObj.object)
+        return
+      }
+
+      const updatedLink = txn.changes.n.find(e => e.object.from)
+      console.log(updatedLink)
+      handleLinkChanged(updatedLink.object)
+    }
+
     // iterate over all of the actual ChangedEvents of the Transaction
     txn.changes.each(e => {
       // ignore any kind of change other than adding/removing a node
-      if (e.modelChange !== 'nodeDataArray') return;
+      if (e.modelChange !== 'nodeDataArray' && e.modelChange !== 'linkDataArray') return;
       // record node insertions and removals
-      if (e.change === go.ChangedEvent.Insert) {
-        handleModelChanged(e.newValue)
-      } else if (e.change === go.ChangedEvent.Remove) {
-        handleModelDeleted(e.oldValue.key)
+      if (e.modelChange === 'nodeDataArray') {
+        if (e.change === go.ChangedEvent.Remove) {
+          handleObjectDeleted(e.oldValue.key)
+        } else {
+          handleObjectChanged(e.newValue)
+        }
+        return
+      }
+
+      if (e.change === go.ChangedEvent.Remove) {
+        handleLinkDeleted(e.oldValue.linkId)
+      } else {
+        handleLinkChanged(e.newValue)
       }
     })
-
-    console.log(evt)
-    console.log(JSON.parse(canvasEditor.model.toJson()))
   })
 
   // Auto resize shape when text edited
@@ -168,7 +210,7 @@ export const renderCanvas = (handleModelChanged, handleModelDeleted, modelData) 
       {
         routing: go.Link.AvoidsNodes,
         curve: go.Link.JumpOver,
-        corner: 5,
+        corner: 10,
         toShortLength: 4,
         relinkableFrom: true,
         relinkableTo: true,
