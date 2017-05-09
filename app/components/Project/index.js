@@ -1,5 +1,5 @@
 import React, { PropTypes } from 'react';
-import Relay from 'react-relay';
+import Relay from 'react-relay/classic';
 import styled from 'styled-components'
 import { Grid } from 'react-bootstrap';
 import { GoCode, GoIssueOpened, GoQuestion } from 'react-icons/lib/go'

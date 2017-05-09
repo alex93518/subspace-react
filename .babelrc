@@ -1,5 +1,6 @@
 {
   "plugins": [
+    ["relay", {"compat": true, "schema": "./schema.json"}],
     'styled-components',
     "syntax-dynamic-import",
     // 'transform-es2015-spread',

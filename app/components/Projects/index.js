@@ -1,5 +1,5 @@
 import React, { PropTypes } from 'react'
-import Relay from 'react-relay'
+import Relay from 'react-relay/classic'
 import Helmet from 'react-helmet'
 import MainGrid from 'components/shared/MainGrid';
 import ProjectList from './ProjectList'

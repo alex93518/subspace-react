@@ -1,9 +1,11 @@
-import React from 'react';
-import Relay from 'react-relay';
-import Helmet from 'react-helmet';
-import MainGrid from 'components/shared/MainGrid';
+import React from 'react'
+import Relay from 'react-relay/classic'
+import Helmet from 'react-helmet'
+// import { QueryRenderer, graphql } from 'react-relay/compat'
+// import CurrentRelay, { withQueryRenderer } from 'relay'
+import MainGrid from 'components/shared/MainGrid'
 import ProjectList from 'components/Projects/ProjectList'
-import Profile from './Profile';
+import Profile from './Profile'
 
 export const UserProfile = ({ viewer }) => !viewer ? null : (
   <MainGrid>
@@ -38,4 +40,18 @@ export default Relay.createContainer(UserProfile, {
       }
     `,
   },
-});
+})
+
+// export default withQueryRenderer({
+//   query: graphql`
+//     query indexQuery($login: String) {
+//       viewer {
+//         user(login: $login) {
+//           userName
+//           fullName
+//           photoUrl
+//         }
+//       }
+//     }
+//   `,
+// })(UserProfile)

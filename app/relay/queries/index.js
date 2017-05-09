@@ -1,11 +1,13 @@
-import Relay from 'react-relay';
+import Relay from 'react-relay/classic';
 
 export const viewerQuery = {
-  viewer: (Component, vars) => (Relay.QL`query {
+  viewer: (Component, vars) => Relay.QL`
+    query {
       viewer {
         ${Component.getFragment('viewer', vars)}
       }
-    }`),
+    }
+  `,
 };
 
 export const userNameQuery = userId => Relay.createQuery(

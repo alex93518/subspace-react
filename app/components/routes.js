@@ -1,124 +1,183 @@
+import React from 'react'
+import { identity } from 'ramda'
+import Relay from 'react-relay/classic'
+import ReactLoadable from 'react-loadable'
 import store from 'store'
-import { getAsyncInjectors } from 'utils/asyncInjectors';
-import { viewerQuery } from 'relay/queries';
+import { viewerQuery } from 'relay/queries'
+import { RelayRenderer } from 'relay/RelayRenderer'
+import { getAsyncInjectors } from 'utils/asyncInjectors'
+
+const createRoute = (query, routeName) => class Route extends Relay.Route {
+  static queries = { ...query }
+  static routeName = routeName || 'route_name'
+}
 
 // Create reusable async injectors using getAsyncInjectors factory
 const { injectReducer, injectSagas } = getAsyncInjectors(store)
 
-const loadModule = (path, injectables = []) => async (nextState, cb) => {
+const loadModule = (path, { query, name, prepareVariables = identity } = {}, injectables = []) => async () => {
   try {
     const [component, reducer, sagas] = await Promise.all([
       import(`components/${path}/index`),
       ...injectables.map(module => import(`components/${path}/${module}`)),
     ]);
 
-    if (reducer) injectReducer('projects', reducer.default);
-    if (sagas) injectSagas(sagas.default);
+    if (reducer) injectReducer('projects', reducer.default)
+    if (sagas) injectSagas(sagas.default)
 
-    cb(null, component.default);
+    // If query is passed wrap loaded component in RelayRenderer
+    if (query) {
+      return class RouteCreator extends React.Component {
+        componentWillMount() {
+          const CustomRoute = createRoute(query, name)
+          const splat = Object.keys(this.props.match.params)
+            .map(Number)
+            .filter(Number.isInteger)
+            .reduce((acc, key) => acc += this.props.match.params[key], '')
+
+          this.route = new CustomRoute(
+            prepareVariables({
+              splat: splat || null,
+              ...this.props.match.params
+            }))
+        }
+
+        render() {
+          return (
+            <RelayRenderer
+              Container={component.default}
+              queryConfig={this.route}
+              {...this.props}
+            />
+          )
+        }
+      }
+    }
+
+    return component.default
   } catch (err) {
     // eslint-disable-next-line no-console
-    console.error(`Dynamic loading of "components/${path}" failed`, err);
+    console.error(`Dynamic loading of "components/${path}" failed`, err)
+    return null
   }
 }
+
+const Loadable = (path, injectables) => ReactLoadable({
+  LoadingComponent: () => null,
+  loader: injectables
+    ? loadModule(path, injectables)
+    : () => import(`components/${path}/index`),
+})
 
 export default [
   {
     path: '/',
+    exact: true,
     name: 'home',
-    getComponent: loadModule('HomePage'),
+    component: Loadable('HomePage'),
   },
   {
     path: '/about',
     name: 'about',
-    getComponent: loadModule('About'),
+    component: Loadable('About'),
   },
   {
     path: '/howitworks',
     name: 'howItWorks',
-    getComponent: loadModule('HowItWorks'),
+    component: Loadable('HowItWorks'),
   },
   {
     path: '/login',
     name: 'login',
-    getComponent: loadModule('Login'),
+    component: Loadable('Login'),
   },
   {
     path: '/profile/:login',
     name: 'userProfile',
-    getComponent: loadModule('UserProfile'),
-    queries: viewerQuery,
+    component: Loadable('UserProfile', { query: viewerQuery }),
   },
   {
     path: '/createproject',
     name: 'createProject',
-    getComponent: loadModule('CreateProject'),
+    component: Loadable('CreateProject'),
   },
   {
     path: '/projects',
     name: 'projects',
-    getComponent: loadModule('Projects', ['reducer']),
-    queries: viewerQuery,
+    component: Loadable('Projects', { query: viewerQuery }, ['reducer']),
   },
   {
     path: '/:userName/:projectName/:branchHead/tree/**',
-    name: 'Tree',
-    getComponent: loadModule('Project'),
-    queries: viewerQuery,
+    component: Loadable('Project', {
+      query: viewerQuery,
+      name: 'Tree',
+    }),
   },
   {
     path: '/:userName/:projectName/:branchHead/blob/**',
-    name: 'Blob',
-    getComponent: loadModule('Project'),
-    queries: viewerQuery,
+    component: Loadable('Project', {
+      query: viewerQuery,
+      name: 'Blob',
+    }),
   },
   {
     path: '/:userName/:projectName/:branchHead/commits',
-    name: 'Commits',
-    getComponent: loadModule('Project'),
-    queries: viewerQuery,
+    component: Loadable('Project', {
+      query: viewerQuery,
+      name: 'Commits',
+    }),
   },
   {
     path: '/:userName/:projectName/:branchHead/commits/**',
-    name: 'Commits',
-    getComponent: loadModule('Project'),
-    queries: viewerQuery,
+    component: Loadable('Project', {
+      query: viewerQuery,
+      name: 'Commits',
+    }),
   },
   {
     path: '/:userName/:projectName/:branchHead/commit/:commitId',
-    name: 'Commit',
-    getComponent: loadModule('Project'),
-    queries: viewerQuery,
+    component: Loadable('Project', {
+      query: viewerQuery,
+      name: 'Commit',
+    }),
   },
   {
     path: '/:userName/:projectName/:branchHead/stashes',
-    name: 'Stashes',
-    getComponent: loadModule('Project'),
-    queries: viewerQuery,
+    component: Loadable('Project', {
+      query: viewerQuery,
+      name: 'Stashes',
+    }),
   },
   {
     path: '/:userName/:projectName/branches',
-    name: 'Branches',
-    getComponent: loadModule('Project'),
-    queries: viewerQuery,
+    component: Loadable('Project', {
+      query: viewerQuery,
+      name: 'Branches',
+    }),
   },
   {
     path: '/:userName/:projectName/:branchHead',
-    name: 'MainContainer',
-    getComponent: loadModule('Project'),
-    queries: viewerQuery,
-    prepareParams: vars => ({ ...vars, splat: null }),
+    component: Loadable('Project', {
+      query: viewerQuery,
+      name: 'MainContainer',
+      prepareVariables: vars => ({ ...vars, splat: null }),
+    }),
   },
   {
     path: '/:userName/:projectName',
-    name: 'MainContainer',
-    getComponent: loadModule('Project'),
-    queries: viewerQuery,
-    prepareParams: vars => ({ ...vars, splat: null, branchHead: 'master' }),
+    component: Loadable('Project', {
+      query: viewerQuery,
+      name: 'MainContainer',
+      prepareVariables: vars => ({
+        ...vars,
+        splat: null,
+        branchHead: 'master',
+      }),
+    }),
   },
   {
     path: '*',
     name: 'notfound',
-    getComponent: loadModule('NotFoundPage'),
+    component: Loadable('NotFoundPage'),
   },
 ]

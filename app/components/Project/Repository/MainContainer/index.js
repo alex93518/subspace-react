@@ -1,5 +1,5 @@
 import React, { PropTypes } from 'react';
-import Relay from 'react-relay';
+import Relay from 'react-relay/classic';
 import { Row, Col } from 'react-bootstrap';
 import styled from 'styled-components';
 import moment from 'moment';

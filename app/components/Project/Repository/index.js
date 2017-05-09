@@ -1,5 +1,5 @@
 import React, { PropTypes } from 'react';
-import Relay from 'react-relay';
+import Relay from 'react-relay/classic';
 import { matchRoute, matchRouteChild } from 'utils/routeMatcher';
 import MainContainer from './MainContainer';
 import TreeContainer from './TreeContainer';

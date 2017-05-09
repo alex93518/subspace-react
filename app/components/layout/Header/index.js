@@ -1,9 +1,9 @@
-import React, { PropTypes } from 'react';
-import { Link } from 'react-router';
-import { LinkContainer } from 'react-router-bootstrap';
-import styled from 'styled-components';
-import { Navbar, Nav, NavItem, Button } from 'react-bootstrap';
-import { makeSelectAuth } from 'redux/selectors';
+import React, { PropTypes } from 'react'
+import { Link } from 'react-router-dom'
+import { LinkContainer } from 'react-router-bootstrap'
+import styled from 'styled-components'
+import { Navbar, Nav, NavItem, Button } from 'react-bootstrap'
+import { makeSelectAuth } from 'redux/selectors'
 import { injectSelectors } from 'redux/utils'
 import { authActions } from 'redux/auth/actions'
 

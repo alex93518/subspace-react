@@ -1,18 +1,13 @@
-import React, { PropTypes } from 'react';
-import useRelay from 'react-router-relay';
+import React, { PropTypes } from 'react'
+import { connect } from 'react-redux'
+import { Switch, Route } from 'react-router-dom'
 import { compose, withState, pure } from 'recompose'
-import { connect } from 'react-redux';
-import { useScroll } from 'react-router-scroll';
-import { applyRouterMiddleware, Router } from 'react-router';
-import CurrentRelay from 'relay';
-import routes from 'components/routes';
-import App from 'components/App';
-import { history } from './store';
-
-const rootRoute = {
-  component: App,
-  childRoutes: routes,
-}
+import { ConnectedRouter } from 'react-router-redux'
+import CurrentRelay from 'relay'
+import Header from 'components/layout/Header'
+import routes from 'components/routes'
+import Footer from 'components/layout/Footer'
+import { history } from './store'
 
 const AuthWrapper = ({ storeLoaded, updateStoreStatus }) => {
   if (!storeLoaded) {
@@ -21,14 +16,24 @@ const AuthWrapper = ({ storeLoaded, updateStoreStatus }) => {
   }
 
   return (
-    <Router
-      history={history}
-      environment={CurrentRelay.Store}
-      render={
-        applyRouterMiddleware(useRelay, useScroll())
-      }
-      routes={rootRoute}
-    />
+    <ConnectedRouter history={history}>
+      <div>
+        <Header />
+        <Switch>
+          {
+            routes.map(({ path, exact, component: RouteComponent, ...rest }, i) =>
+              <Route
+                key={i}
+                path={path}
+                exact={exact}
+                render={props => <RouteComponent {...props} {...rest} />}
+              />
+            )
+          }
+        </Switch>
+        <Footer />
+      </div>
+    </ConnectedRouter>
   )
 }
 

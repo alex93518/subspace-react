@@ -1,24 +1,21 @@
 import { path } from 'ramda'
-import { createStore, applyMiddleware, compose } from 'redux';
-import { fromJS } from 'immutable';
-import { browserHistory } from 'react-router';
-import { syncHistoryWithStore, routerMiddleware } from 'react-router-redux';
-import createSagaMiddleware from 'redux-saga';
+import { createStore, applyMiddleware, compose } from 'redux'
+import { fromJS } from 'immutable'
+import createHistory from 'history/createBrowserHistory'
+import { routerMiddleware } from 'react-router-redux'
+import createSagaMiddleware from 'redux-saga'
 import { dispatchRef } from 'redux/utils'
 import createReducer from 'redux/reducer'
 import rootSaga from 'redux/sagas'
-import { makeSelectLocationState } from 'redux/selectors'
 
+export const history = createHistory()
 const sagaMiddleware = createSagaMiddleware()
 const initialState = {}
 const context = {}
 
-// Create the store with two middlewares
-// 1. sagaMiddleware: Makes redux-sagas work
-// 2. routerMiddleware: Syncs the location/URL path to the state
 const middlewares = [
   sagaMiddleware,
-  routerMiddleware(browserHistory),
+  routerMiddleware(history),
   () => next => reduxAction => {
     // remove synthetic events from the payload
     if (path(['payload', 'nativeEvent'], reduxAction)) {
@@ -27,11 +24,7 @@ const middlewares = [
 
     next(reduxAction)
   },
-];
-
-const enhancers = [
-  applyMiddleware(...middlewares),
-];
+]
 
 // If Redux DevTools Extension is installed use it, otherwise use Redux compose
 /* eslint-disable no-underscore-dangle */
@@ -39,14 +32,16 @@ const composeEnhancers =
   process.env.NODE_ENV !== 'production' &&
   typeof window === 'object' &&
   window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ ?
-    window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ : compose;
+    window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ : compose
 /* eslint-enable */
 
 const store = createStore(
   createReducer(),
   fromJS(initialState),
-  composeEnhancers(...enhancers)
-);
+  composeEnhancers(
+    applyMiddleware(...middlewares),
+  )
+)
 
 // Extensions
 sagaMiddleware.run(rootSaga, context)
@@ -61,19 +56,12 @@ dispatchRef.dispatch = store.dispatch
 if (module.hot) {
   module.hot.accept('redux/reducer', () => {
     import('redux/reducer').then(reducerModule => {
-      const createReducers = reducerModule.default;
-      const nextReducers = createReducers(store.asyncReducers);
+      const createReducers = reducerModule.default
+      const nextReducers = createReducers(store.asyncReducers)
 
-      store.replaceReducer(nextReducers);
-    });
-  });
+      store.replaceReducer(nextReducers)
+    })
+  })
 }
-
-// Sync history and store, as the react-router-redux reducer
-// is under the non-default key ("routing"), selectLocationState
-// must be provided for resolving how to retrieve the "route" in the state
-export const history = syncHistoryWithStore(browserHistory, store, {
-  selectLocationState: makeSelectLocationState(),
-})
 
 export default store

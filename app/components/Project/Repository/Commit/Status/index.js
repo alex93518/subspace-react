@@ -1,5 +1,5 @@
 import React, { PropTypes } from 'react';
-import Relay from 'react-relay';
+import Relay from 'react-relay/classic';
 import styled from 'styled-components';
 import { Row, Col } from 'react-bootstrap';
 import { LinkUserName, LinkUserPhoto } from 'components/shared/Links';
