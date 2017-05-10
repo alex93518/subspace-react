@@ -1,8 +1,8 @@
 import Relay from 'react-relay'
 
-export class DeleteDiagramLinkMutation extends Relay.Mutation {
+export class UpsertDiagramLinkMutation extends Relay.Mutation {
   getMutation() {
-    return Relay.QL`mutation { deleteDiagramLink }`
+    return Relay.QL`mutation { upsertDiagramLink }`
   }
 
   getVariables() {
@@ -12,7 +12,7 @@ export class DeleteDiagramLinkMutation extends Relay.Mutation {
 
   getFatQuery() {
     return Relay.QL`
-      fragment on DeleteDiagramLinkPayload {
+      fragment on UpsertDiagramLinkPayload {
         diagram {
           links
         }

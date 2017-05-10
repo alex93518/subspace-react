@@ -6,13 +6,16 @@ export class DeleteDiagramObjectMutation extends Relay.Mutation {
   }
 
   getVariables() {
-    return this.props
+    const { id, ...vars } = this.props
+    return vars
   }
 
   getFatQuery() {
     return Relay.QL`
-      fragment on DeleteDiagramObjectPayload @relay(pattern: true) {
-        clientMutationId
+      fragment on DeleteDiagramObjectPayload {
+        diagram {
+          objects
+        }
       }
     `
   }
@@ -22,6 +25,7 @@ export class DeleteDiagramObjectMutation extends Relay.Mutation {
       {
         type: 'FIELDS_CHANGE',
         fieldIDs: {
+          diagram: this.props.id,
         },
       },
     ]

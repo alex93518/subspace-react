@@ -8,8 +8,8 @@ import Commits from './Commits';
 import Commit from './Commit';
 import Branches from './Branches';
 import Stashes from './Stashes';
-import Diagrams from './Diagrams';
-import DiagramEditor from './DiagramEditor';
+import Diagrams from './Diagram/Diagrams';
+import DiagramEditor from './Diagram/DiagramEditor';
 
 const Components = {
   MainContainer: (repository, props) =>
@@ -30,6 +30,14 @@ const Components = {
     <Diagrams {...props} diagrams={repository} />,
   DiagramEditor: (repository, props) =>
     <DiagramEditor {...props} diagramEditor={repository} />,
+  NewDiagramEditor: (repository, props) =>
+    <DiagramEditor
+      {...props}
+      repositoryId={repository.id}
+      repositoryRawId={repository.rawId}
+      diagramEditor={null}
+      isNew
+    />,
 }
 
 const Repository = ({
@@ -58,6 +66,8 @@ export default Relay.createContainer(Repository, {
   fragments: {
     repository: vars => Relay.QL`
       fragment on Repository {
+        id
+        rawId
         ${route => matchRoute(route, {
           MainContainer: () => MainContainer.getFragment('mainContainer', vars),
           Tree: () => TreeContainer.getFragment('treeContainer', vars),
