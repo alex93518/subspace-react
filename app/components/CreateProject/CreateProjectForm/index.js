@@ -1,15 +1,19 @@
 import React, { PropTypes } from 'react'
+import { path } from 'ramda'
 import { compose } from 'recompose'
 import { Button, FormGroup } from 'react-bootstrap'
-import { Field, reduxForm } from 'redux-form/immutable'
+import { SubmissionError, Field, reduxForm } from 'redux-form/immutable'
 import CurrentRelay, { CreateProjectMutation } from 'relay'
 import { makeSelectAuth } from 'redux/selectors'
 import { redirect, injectSelectors } from 'redux/utils'
 import { TextInput, TextArea } from 'components/shared/form'
 
-const CreateProjectForm = ({ handleSubmit }) => (
+const CreateProjectForm = ({ handleSubmit, error }) => (
   <form onSubmit={handleSubmit}>
     <h3>Create Project:</h3>
+    <div>
+      {error && <strong>{error}</strong>}
+    </div>
     <Field
       name="name"
       component={TextInput}
@@ -62,6 +66,7 @@ const CreateProjectForm = ({ handleSubmit }) => (
 
 CreateProjectForm.propTypes = {
   handleSubmit: PropTypes.func,
+  error: PropTypes.string,
 }
 
 export default compose(
@@ -70,26 +75,36 @@ export default compose(
   }),
   reduxForm({
     form: 'createProject',
-    onSubmit: (values, _, { auth }) => {
+    onSubmit: async (values, _, { auth }) => {
       const { repoAccess, repoPushVote, topics, ...repository } = values
 
-      CurrentRelay.Store.commitUpdate(
-        new CreateProjectMutation({
-          repository: {
-            ...repository,
-            isPushVote: repoPushVote !== 'standard',
-            isPrivate: repoAccess === 'private',
-            ownerId: auth.user.uid,
+      try {
+        await new Promise((resolve, reject) => CurrentRelay.Store.commitUpdate(
+          new CreateProjectMutation({
+            repository: {
+              ...repository,
+              isPushVote: repoPushVote !== 'standard',
+              isPrivate: repoAccess === 'private',
+              ownerId: auth.user.uid,
 
-            // TODO: add array input field to project form
-            topics: topics ? topics.split(' ') : undefined,
-          },
-        }),
-        {
-          onSuccess: () => redirect('/projects'),
-          onFailure: transaction => console.log(transaction.getError()),
-        }
-      )
+              // TODO: add array input field to project form
+              topics: topics ? topics.split(' ') : undefined,
+            },
+          }),
+          {
+            onSuccess: () => resolve(redirect('/projects')),
+            onFailure: transaction => {
+              const error = transaction.getError()
+              console.warn(error) // eslint-disable-line no-console
+              reject(error)
+            },
+          }
+        ))
+      } catch (err) {
+        throw new SubmissionError({
+          _error: path(['source', 'errors', '0', 'message'])(err),
+        })
+      }
     },
   }),
 )(CreateProjectForm);

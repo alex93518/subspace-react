@@ -12,6 +12,26 @@ const createRoute = (query, routeName) => class Route extends Relay.Route {
   static routeName = routeName || 'route_name'
 }
 
+const containerMap = {}
+const getContainerByName = (name, Loaded) => {
+  if (containerMap[name]) {
+    return containerMap[name]
+  }
+
+  function Test() {
+    return Loaded.apply(this, arguments)
+  }
+  Test.prototype = Loaded.prototype
+  for (const prop in Loaded) {
+    if (Loaded.hasOwnProperty(prop)) {
+      Test[prop] = Loaded[prop]
+    }
+  }
+
+  containerMap[name] = Test
+  return Test
+}
+
 // Create reusable async injectors using getAsyncInjectors factory
 const { injectReducer, injectSagas } = getAsyncInjectors(store)
 
@@ -35,6 +55,8 @@ const loadModule = (path, { query, name, prepareVariables = identity } = {}, inj
             .filter(Number.isInteger)
             .reduce((acc, key) => acc += this.props.match.params[key], '')
 
+
+          this.container = getContainerByName(name, component.default)
           this.route = new CustomRoute(
             prepareVariables({
               splat: splat || null,
@@ -45,9 +67,9 @@ const loadModule = (path, { query, name, prepareVariables = identity } = {}, inj
         render() {
           return (
             <RelayRenderer
-              Container={component.default}
-              queryConfig={this.route}
               {...this.props}
+              Container={this.container}
+              queryConfig={this.route}
             />
           )
         }
@@ -73,38 +95,37 @@ export default [
   {
     path: '/',
     exact: true,
-    name: 'home',
-    component: Loadable('HomePage'),
+    component: Loadable('HomePage', { name: 'home' }),
   },
   {
     path: '/about',
-    name: 'about',
-    component: Loadable('About'),
+    component: Loadable('About', { name: 'about' }),
   },
   {
     path: '/howitworks',
-    name: 'howItWorks',
-    component: Loadable('HowItWorks'),
+    component: Loadable('HowItWorks', { name: 'howItWorks' }),
   },
   {
     path: '/login',
-    name: 'login',
-    component: Loadable('Login'),
+    component: Loadable('Login', { name: 'login' }),
   },
   {
     path: '/profile/:login',
-    name: 'userProfile',
-    component: Loadable('UserProfile', { query: viewerQuery }),
+    component: Loadable('UserProfile', {
+      query: viewerQuery,
+      name: 'userProfile',
+    }),
   },
   {
     path: '/createproject',
-    name: 'createProject',
-    component: Loadable('CreateProject'),
+    component: Loadable('CreateProject', { name: 'createProject' }),
   },
   {
     path: '/projects',
-    name: 'projects',
-    component: Loadable('Projects', { query: viewerQuery }, ['reducer']),
+    component: Loadable('Projects', {
+      query: viewerQuery,
+      name: 'projects',
+    }, ['reducer']),
   },
   {
     path: '/:userName/:projectName/:branchHead/tree/**',
