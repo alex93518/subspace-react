@@ -1,4 +1,5 @@
 import React from 'react'
+import { object } from 'prop-types'
 import { identity } from 'ramda'
 import Relay from 'react-relay/classic'
 import ReactLoadable from 'react-loadable'
@@ -12,18 +13,20 @@ const createRoute = (query, routeName) => class Route extends Relay.Route {
   static routeName = routeName || 'route_name'
 }
 
+// TODO: move into separate module
 const containerMap = {}
 const getContainerByName = (name, Loaded) => {
   if (containerMap[name]) {
     return containerMap[name]
   }
 
-  function Test() {
-    return Loaded.apply(this, arguments)
+  function Test(...args) {
+    return Loaded.apply(this, args)
   }
+
   Test.prototype = Loaded.prototype
-  for (const prop in Loaded) {
-    if (Loaded.hasOwnProperty(prop)) {
+  for (const prop in Loaded) { // eslint-disable-line
+    if (Loaded.hasOwnProperty(prop)) { // eslint-disable-line
       Test[prop] = Loaded[prop]
     }
   }
@@ -35,8 +38,9 @@ const getContainerByName = (name, Loaded) => {
 // Create reusable async injectors using getAsyncInjectors factory
 const { injectReducer, injectSagas } = getAsyncInjectors(store)
 
-const loadModule = (path, { query, name, prepareVariables = identity } = {}, injectables = []) => async () => {
+const loadModule = (path, relayOptions = {}, injectables = []) => async () => {
   try {
+    const { query, name, prepareVariables = identity } = relayOptions
     const [component, reducer, sagas] = await Promise.all([
       import(`components/${path}/index`),
       ...injectables.map(module => import(`components/${path}/${module}`)),
@@ -47,12 +51,13 @@ const loadModule = (path, { query, name, prepareVariables = identity } = {}, inj
 
     // If query is passed wrap loaded component in RelayRenderer
     if (query) {
-      return class RouteCreator extends React.Component {
+      class RouteCreator extends React.Component {
         componentWillMount() {
           const CustomRoute = createRoute(query, name)
           const splat = Object.keys(this.props.match.params)
             .map(Number)
             .filter(Number.isInteger)
+            // eslint-disable-next-line no-param-reassign
             .reduce((acc, key) => acc += this.props.match.params[key], '')
 
 
@@ -60,8 +65,9 @@ const loadModule = (path, { query, name, prepareVariables = identity } = {}, inj
           this.route = new CustomRoute(
             prepareVariables({
               splat: splat || null,
-              ...this.props.match.params
-            }))
+              ...this.props.match.params,
+            })
+          )
         }
 
         render() {
@@ -74,6 +80,12 @@ const loadModule = (path, { query, name, prepareVariables = identity } = {}, inj
           )
         }
       }
+
+      RouteCreator.propTypes = {
+        match: object,
+      }
+
+      return RouteCreator
     }
 
     return component.default

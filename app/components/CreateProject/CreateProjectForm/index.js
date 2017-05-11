@@ -13,6 +13,7 @@ const CreateProjectForm = ({ handleSubmit, error }) => (
     <h3>Create Project:</h3>
     <div>
       {error && <strong>{error}</strong>}
+      <hr />
     </div>
     <Field
       name="name"

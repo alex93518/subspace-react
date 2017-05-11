@@ -1,10 +1,10 @@
 import React from 'react'
+import { object, func } from 'prop-types'
 import Relay from 'react-relay/classic'
 import CurrentRelay from './CurrentRelay'
 
 export const RelayRenderer = ({
   environment = CurrentRelay.Store,
-  defaultLoadingProps,
   renderLoading,
   renderFetched,
   renderFailure,
@@ -36,3 +36,12 @@ export const RelayRenderer = ({
     {...rest}
   />
 )
+
+RelayRenderer.propTypes = {
+  environment: object,
+  renderLoading: func,
+  renderFetched: func,
+  renderFailure: func,
+  queryConfig: object,
+  Container: func,
+}
