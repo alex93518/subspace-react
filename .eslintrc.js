@@ -24,6 +24,7 @@ module.exports = {
     'comma-dangle': [ 2, 'always-multiline' ],
     indent: [ 2, 2, { SwitchCase: 1 } ],
     'no-confusing-arrow': 0,
+    'no-return-assign': 0,
     'no-param-reassign': [ 'error', { props: false } ],
     'no-use-before-define': 0,
     'class-methods-use-this': 0,

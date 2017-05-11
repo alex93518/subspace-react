@@ -1,9 +1,9 @@
-import React, { PropTypes } from 'react';
-import { Link } from 'react-router';
-import { LinkContainer } from 'react-router-bootstrap';
-import styled from 'styled-components';
-import { Navbar, Nav, NavItem, Button } from 'react-bootstrap';
-import { makeSelectAuth } from 'redux/selectors';
+import React, { PropTypes } from 'react'
+import { Link } from 'react-router-dom'
+import { LinkContainer } from 'react-router-bootstrap'
+import styled from 'styled-components'
+import { Navbar, Nav, NavItem, Button } from 'react-bootstrap'
+import { makeSelectAuth } from 'redux/selectors'
 import { injectSelectors } from 'redux/utils'
 import { authActions } from 'redux/auth/actions'
 
@@ -15,17 +15,17 @@ const SignoutButton = styled(Button)`
   padding: 0 6px;
 `
 
-const ProtectedNav = ({ user: { displayName, userName } }) => (
+const ProtectedNav = ({ user: { displayName }, userName }) => (
   <Nav pullRight>
+    <LinkContainer to="/createproject">
+      <NavItem eventKey={4}>Create Project</NavItem>
+    </LinkContainer>
     {
       userName &&
       <LinkContainer to={`/profile/${userName}`}>
         <NavItem eventKey={3}>{displayName}<i> @{userName}</i></NavItem>
       </LinkContainer>
     }
-    <LinkContainer to="/createproject">
-      <NavItem eventKey={4}>Create Project</NavItem>
-    </LinkContainer>
     <NavItem>
       <SignoutButton onClick={authActions.signOut.init}>
         Sign out
@@ -36,9 +36,10 @@ const ProtectedNav = ({ user: { displayName, userName } }) => (
 
 ProtectedNav.propTypes = {
   user: PropTypes.object.isRequired,
+  userName: PropTypes.string.isRequired,
 }
 
-const Header = ({ auth: { authenticated, user } }) => (
+const Header = ({ auth: { authenticated, user, userName } }) => (
   <TopNavbar>
     <Navbar.Header>
       <Navbar.Brand>
@@ -55,7 +56,7 @@ const Header = ({ auth: { authenticated, user } }) => (
         <NavItem eventKey={2}>How It Works</NavItem>
       </LinkContainer>
     </Nav>
-    {authenticated && <ProtectedNav user={user} />}
+    {authenticated && <ProtectedNav user={user} userName={userName} />}
     {
       !authenticated &&
       <Nav pullRight>

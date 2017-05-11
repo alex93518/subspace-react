@@ -1,5 +1,5 @@
 import React, { PropTypes } from 'react';
-import Relay from 'react-relay';
+import Relay from 'react-relay/classic';
 import { createContainer } from 'recompose-relay'
 import { compose, mapProps, branch, renderComponent } from 'recompose';
 import { Table, Alert } from 'react-bootstrap';

@@ -1,5 +1,5 @@
 import React, { PropTypes } from 'react';
-import Relay from 'react-relay';
+import Relay from 'react-relay/classic';
 import styled from 'styled-components';
 import BranchSelect from 'components/shared/Project/Repository/BranchSelect';
 import MainGrid from 'components/shared/MainGrid';
@@ -47,7 +47,7 @@ export default Relay.createContainer(Commits, {
   fragments: {
     commits: vars => Relay.QL`
       fragment on Repository {
-        ${BranchSelect.getFragment('branchSelect', vars)}        
+        ${BranchSelect.getFragment('branchSelect', vars)}
         ref(refName: $branchHead) {
           target {
             ... on Commit {

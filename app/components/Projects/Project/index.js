@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react'
 import moment from 'moment'
-import Relay from 'react-relay'
+import Relay from 'react-relay/classic'
 import styled from 'styled-components'
 import { Panel, Row, Col } from 'react-bootstrap'
 import RepoLink from 'components/shared/repo/TitleLink'

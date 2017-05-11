@@ -1,5 +1,5 @@
 import React, { PropTypes } from 'react'
-import { Link } from 'react-router'
+import { Link } from 'react-router-dom'
 import styled from 'styled-components'
 import { Glyphicon } from 'react-bootstrap';
 
@@ -19,7 +19,7 @@ const AccessIcon = styled(Glyphicon)`
 
 const TitleLink = ({ userName, repoName, isPrivate }) => (
   <Container>
-    <Link to={`profile/${userName}`}>{userName}</Link>
+    <Link to={`/profile/${userName}`}>{userName}</Link>
     <Separator>/</Separator>
     <Link to={`/${userName}/${repoName}`}>{repoName}</Link>
     {

@@ -23,9 +23,9 @@ const getLineStyle = (addDel, bgColor, nullSeq) => lineNumber => ({
   display: 'block',
   width: '100%',
   height: styleHeight(nullSeq[lineNumber]),
-  ...addDel.includes(lineNumber) && {
+  ...(addDel.includes(lineNumber) && {
     backgroundColor: bgColor,
-  },
+  }),
 })
 
 const getLineNumberStyle = (nullSeq, start) => oriLineNumber => ({

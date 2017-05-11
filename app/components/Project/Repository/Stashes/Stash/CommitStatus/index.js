@@ -1,5 +1,5 @@
 import React, { PropTypes } from 'react';
-import Relay from 'react-relay';
+import Relay from 'react-relay/classic';
 import { Table } from 'react-bootstrap';
 import styled from 'styled-components';
 import { LinkProject } from 'components/shared/Links';
