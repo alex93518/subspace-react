@@ -1,8 +1,8 @@
 import Relay from 'react-relay'
 
-export class UpsertDiagramMutation extends Relay.Mutation {
+export class UpsertDiagramModelMutation extends Relay.Mutation {
   getMutation() {
-    return Relay.QL`mutation { upsertDiagram }`
+    return Relay.QL`mutation { upsertDiagramModel }`
   }
 
   getVariables() {
@@ -15,7 +15,7 @@ export class UpsertDiagramMutation extends Relay.Mutation {
 
   getFatQuery() {
     return Relay.QL`
-      fragment on UpsertDiagramPayload {
+      fragment on UpsertDiagramModelPayload {
         repository {
           diagrams
         }

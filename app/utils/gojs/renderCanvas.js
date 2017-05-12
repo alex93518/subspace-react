@@ -3,10 +3,8 @@ import uuid from 'uuid';
 
 const goObj = go.GraphObject.make;
 export const renderCanvas = (
-  handleObjectChanged,
-  handleObjectDeleted,
-  handleLinkChanged,
-  handleLinkDeleted,
+  handleModifiedChange,
+  handleModelChange,
   modelData
 ) => {
   const canvasEditor =
@@ -27,14 +25,11 @@ export const renderCanvas = (
       }
     );
 
-  // when the document is modified, add a "*" to the title and enable the "Save" button
+  // document modified
   canvasEditor.addDiagramListener('Modified', () => {
-    const button = document.getElementById('SaveButton');
-    if (button) button.disabled = !canvasEditor.isModified;
-    const idx = document.title.indexOf(' - Draft *');
     if (canvasEditor.isModified) {
-      if (idx < 0) document.title += ' - Draft *';
-    } else if (idx >= 0) document.title = document.title.substr(0, idx);
+      handleModifiedChange(true)
+    }
   });
 
   // Manipulate object after dropped from palette to canvas
@@ -61,48 +56,13 @@ export const renderCanvas = (
     const txn = evt.object;  // a Transaction
     if (txn === null) return;
 
-    console.log(txn)
-
-    // Update node
-    if (
-      txn.name === 'TextEditing' ||
-      txn.name === 'Move' ||
-      txn.name === 'Resizing' ||
-      txn.name === 'LinkReshaping'
-    ) {
-      // find the last updated object
-      txn.changes.n.reverse()
-      const updatedObj = txn.changes.n.find(e => e.object.figure)
-      if (updatedObj) {
-        console.log(updatedObj)
-        handleObjectChanged(updatedObj.object)
-        return
-      }
-
-      const updatedLink = txn.changes.n.find(e => e.object.from)
-      console.log(updatedLink)
-      handleLinkChanged(updatedLink.object)
-    }
-
-    // iterate over all of the actual ChangedEvents of the Transaction
-    txn.changes.each(e => {
-      // ignore any kind of change other than adding/removing a node
-      if (e.modelChange !== 'nodeDataArray' && e.modelChange !== 'linkDataArray') return;
-      // record node insertions and removals
-      if (e.modelChange === 'nodeDataArray') {
-        if (e.change === go.ChangedEvent.Remove) {
-          handleObjectDeleted(e.oldValue.key)
-        } else {
-          handleObjectChanged(e.newValue)
-        }
-        return
-      }
-
-      if (e.change === go.ChangedEvent.Remove) {
-        handleLinkDeleted(e.oldValue.linkId)
-      } else {
-        handleLinkChanged(e.newValue)
-      }
+    handleModelChange({
+      model: canvasEditor.model.toJson(),
+      svg: canvasEditor.makeSvg({
+        size: new go.Size(240, NaN),
+        padding: 10,
+        background: '#f1f8ff',
+      }).outerHTML,
     })
   })
 

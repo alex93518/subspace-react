@@ -46,7 +46,11 @@ const MainContainer = styled.div`
 
 const getConfigActiveKey = (owner, name, route) => {
   const config = getNavConfig(owner, name)
-  if (routeName(route) === 'Diagrams' || routeName(route) === 'DiagramEditor') {
+  if (
+    routeName(route) === 'Diagrams' ||
+    routeName(route) === 'DiagramEditor' ||
+    routeName(route) === 'NewDiagramEditor'
+  ) {
     return {
       config,
       activeKey: config[3].link,

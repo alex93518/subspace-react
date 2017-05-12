@@ -1,57 +1,19 @@
 import React, { Component, PropTypes } from 'react';
 import Relay from 'react-relay';
 import { createContainer } from 'recompose-relay'
-import { compose, mapProps, withHandlers } from 'recompose';
+import { compose, mapProps } from 'recompose';
 import uuid from 'uuid';
 import { renderCanvas } from 'utils/gojs/renderCanvas';
-import CurrentRelay, {
-  UpsertDiagramMutation,
-  UpsertDiagramObjectMutation,
-  DeleteDiagramObjectMutation,
-  UpsertDiagramLinkMutation,
-  DeleteDiagramLinkMutation,
-} from 'relay';
-
-const handleDiagramChanged = (
-  diagramId, name, description, repositoryId,
-  repositoryRawId, parentDiagramId, isDraft,
-) => {
-  CurrentRelay.Store.commitUpdate(
-    new UpsertDiagramMutation({
-      diagramId,
-      name,
-      description,
-      repositoryId,
-      repositoryRawId,
-      parentDiagramId,
-      isDraft,
-    }),
-    {
-      onSuccess: () => {},
-      onFailure: transaction => console.log(transaction.getError()),
-    }
-  )
-}
 
 class GoJsCanvas extends Component {
   componentDidMount() {
     const {
-      diagramId, model, isNew, repositoryId, repositoryRawId,
-      handleObjectChanged, handleLinkChanged,
-      handleObjectDelete, handleLinkDelete,
+      model, onModifiedChange, onModelChange,
     } = this.props
 
-    if (isNew) {
-      handleDiagramChanged(
-        diagramId, null, null, repositoryId, repositoryRawId, null, true
-      )
-    }
-
     renderCanvas(
-      handleObjectChanged,
-      handleObjectDelete,
-      handleLinkChanged,
-      handleLinkDelete,
+      onModifiedChange,
+      onModelChange,
       model
     );
   }
@@ -64,15 +26,9 @@ class GoJsCanvas extends Component {
 }
 
 GoJsCanvas.propTypes = {
-  diagramId: PropTypes.string.isRequired,
   model: PropTypes.object.isRequired,
-  isNew: PropTypes.bool,
-  repositoryId: PropTypes.string,
-  repositoryRawId: PropTypes.string,
-  handleObjectChanged: PropTypes.func.isRequired,
-  handleLinkChanged: PropTypes.func.isRequired,
-  handleObjectDelete: PropTypes.func.isRequired,
-  handleLinkDelete: PropTypes.func.isRequired,
+  onModifiedChange: PropTypes.func,
+  onModelChange: PropTypes.func,
 }
 
 GoJsCanvas.defaultProp = {
@@ -123,7 +79,7 @@ export default compose(
       `,
     },
   }),
-  mapProps(({ diagram, isNew, relay, repositoryId, repositoryRawId }) => ({
+  mapProps(({ diagram, isNew, relay, ...vars }) => ({
     diagramId: isNew ? uuid.v4() : relay.variables.diagramId,
     model: isNew ? {
       class: 'go.GraphLinksModel',
@@ -146,71 +102,7 @@ export default compose(
           points: node.points ? JSON.parse(node.points) : null,
         })) : [],
     },
-    isNew,
-    repositoryId,
-    repositoryRawId,
     id: diagram ? diagram.id : null,
+    ...vars,
   })),
-  withHandlers({
-    handleObjectChanged: ({ id, diagramId }) => ({
-      key, width, height, figure, loc, text,
-    }) => {
-      CurrentRelay.Store.commitUpdate(
-        new UpsertDiagramObjectMutation({
-          id, key, width, height, figure, loc, text, diagramId,
-        }),
-        {
-          onSuccess: () => {},
-          onFailure: transaction => console.log(transaction.getError()),
-        }
-      )
-    },
-    handleLinkChanged: ({ id, diagramId }) => ({
-      linkId, from, to, visible, text, description, points,
-    }) => {
-      CurrentRelay.Store.commitUpdate(
-        new UpsertDiagramLinkMutation({
-          id,
-          linkId,
-          fromDiagramObjId: from,
-          toDiagramObjId: to,
-          visible,
-          text,
-          description,
-          diagramId,
-          points: JSON.stringify(points.n),
-        }),
-        {
-          onSuccess: () => {},
-          onFailure: transaction => console.log(transaction.getError()),
-        }
-      )
-    },
-    handleObjectDelete: ({ id, diagramId }) => objectId => {
-      CurrentRelay.Store.commitUpdate(
-        new DeleteDiagramObjectMutation({
-          id,
-          diagramId,
-          objectId,
-        }),
-        {
-          onSuccess: () => {},
-          onFailure: transaction => console.log(transaction.getError()),
-        }
-      )
-    },
-    handleLinkDelete: ({ id, diagramId }) => linkId => {
-      CurrentRelay.Store.commitUpdate(
-        new DeleteDiagramLinkMutation({
-          id,
-          diagramId,
-          linkId,
-        }),
-        {
-          onSuccess: () => {},
-          onFailure: transaction => console.log(transaction.getError()),
-        }
-      )
-    },
-  })
 )(GoJsCanvas)

@@ -1,6 +1,7 @@
 import React, { PropTypes } from 'react';
 import Relay from 'react-relay';
 import { matchRoute, matchRouteChild } from 'utils/routeMatcher';
+import MainGrid from 'components/shared/MainGrid';
 import MainContainer from './MainContainer';
 import TreeContainer from './TreeContainer';
 import BlobContainer from './BlobContainer';
@@ -27,9 +28,16 @@ const Components = {
   Stashes: (repository, props) =>
     <Stashes {...props} stashes={repository} />,
   Diagrams: (repository, props) =>
-    <Diagrams {...props} diagrams={repository} />,
+    <MainGrid>
+      <Diagrams {...props} diagrams={repository} />
+    </MainGrid>,
   DiagramEditor: (repository, props) =>
-    <DiagramEditor {...props} diagramEditor={repository} />,
+    <DiagramEditor
+      {...props}
+      repositoryId={repository.id}
+      repositoryRawId={repository.rawId}
+      diagramEditor={repository}
+    />,
   NewDiagramEditor: (repository, props) =>
     <DiagramEditor
       {...props}
