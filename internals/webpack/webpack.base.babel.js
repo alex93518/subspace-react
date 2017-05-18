@@ -57,6 +57,12 @@ module.exports = options => ({
       '.jsx',
       '.react.js',
     ],
+    alias: {
+      'recompose-relay': path.resolve(
+        process.cwd(),
+        'app/relay/CreateContainer.js'
+      ),
+    },
     mainFields: [
       'browser',
       'jsnext:main',

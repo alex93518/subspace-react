@@ -1,5 +1,5 @@
 import React, { PropTypes } from 'react';
-import Relay from 'react-relay';
+import Relay from 'react-relay/classic';
 import R from 'ramda';
 import styled from 'styled-components';
 import { Table } from 'react-bootstrap';

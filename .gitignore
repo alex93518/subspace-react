@@ -4,9 +4,9 @@ build
 node_modules
 stats.json
 app/utils/firebase/config.js
+__generated__/
 
 # Cruft
 .DS_Store
 npm-debug.log
 .idea
-.gitignore

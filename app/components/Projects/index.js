@@ -1,11 +1,10 @@
 import React, { PropTypes } from 'react'
+import Relay from 'react-relay/classic'
 import Helmet from 'react-helmet'
-import Relay from 'react-relay'
-import R from 'ramda'
 import MainGrid from 'components/shared/MainGrid';
-import Project from './Project'
+import ProjectList from './ProjectList'
 
-export const Projects = ({ viewer: { repositories } }) => (
+export const Projects = ({ viewer }) => (
   <MainGrid>
     <Helmet
       title="Projects"
@@ -13,16 +12,7 @@ export const Projects = ({ viewer: { repositories } }) => (
         { name: 'description', content: 'Description of Projects' },
       ]}
     />
-    {
-      R.pipe(
-        R.path(['edges']),
-        R.map(R.prop('node')),
-        R.sortWith([
-          R.descend(R.prop('createdAt')),
-        ]),
-        R.map(node => <Project key={node.id} project={node} />),
-      )(repositories)
-    }
+    <ProjectList viewer={viewer} />
   </MainGrid>
 )
 
@@ -31,18 +21,13 @@ Projects.propTypes = {
 }
 
 export default Relay.createContainer(Projects, {
+  initialVariables: {
+    owner: null,
+  },
   fragments: {
     viewer: () => Relay.QL`
       fragment on Viewer {
-        repositories(first: 10) {
-          edges {
-            node {
-              id
-              createdAt
-              ${Project.getFragment('project')}
-            }
-          }
-        }
+        ${ProjectList.getFragment('viewer')}
       }
     `,
   },
