@@ -2,35 +2,79 @@ import go from 'gojs';
 import uuid from 'uuid';
 
 const goObj = go.GraphObject.make;
-export const renderCanvas = (
-  handleModifiedChange,
+let canvasEditor = null;
+let mainPalette = null;
+
+// Make link labels visible if coming out of a "conditional" node.
+// This listener is called by the "LinkDrawn" and "LinkRelinked" DiagramEvents.
+function showLinkLabel(e) {
+  const label = e.subject.findObject('LABEL');
+  if (label !== null) label.visible = true;
+}
+
+function showPorts(node, show) {
+  const diagram = node.diagram;
+  if (!diagram || diagram.isReadOnly || !diagram.allowLink) return;
+  node.ports.each(port => {
+    port.stroke = (show ? 'rgba(0, 0, 0, 0.9)' : null);
+  });
+}
+
+const loadModel = modelData => {
+  canvasEditor.model = go.Model.fromJson(JSON.stringify(modelData));  // load an initial diagram from some JSON text
+}
+
+const handleModelFunc = (evt, handleModelChange) => {
+  if (!evt.isTransactionFinished) return;
+
+  const txn = evt.object;  // a Transaction
+  if (txn === null) return;
+
+  handleModelChange({
+    model: canvasEditor.model.toJson(),
+    svg: canvasEditor.makeSvg({
+      size: new go.Size(240, NaN),
+      padding: 10,
+      background: '#f1f8ff',
+    }).outerHTML,
+    svgThumb: canvasEditor.makeSvg({
+      size: new go.Size(50, 50),
+      padding: 5,
+      background: '#f1f8ff',
+    }).outerHTML,
+  })
+}
+
+const modelChangedHandler = handleModelChange => {
+  // Callback function on model changed
+  canvasEditor.addModelChangedListener(e =>
+    handleModelFunc(e, handleModelChange),
+    { once: true }
+  )
+}
+
+const createCanvas = (
   handleModelChange,
   modelData
 ) => {
-  const canvasEditor =
-    goObj(go.Diagram, 'canvasEditor',  // must name or refer to the DIV HTML element
-      {
-        grid: goObj(go.Panel, 'Grid',
+  canvasEditor = goObj(go.Diagram, 'canvasEditor',  // must name or refer to the DIV HTML element
+    {
+      grid: goObj(go.Panel, 'Grid',
           goObj(go.Shape, 'LineH', { stroke: 'lightgray', strokeWidth: 0.3 }),
           goObj(go.Shape, 'LineH', { stroke: 'gray', strokeWidth: 0.3, interval: 10 }),
           goObj(go.Shape, 'LineV', { stroke: 'lightgray', strokeWidth: 0.3 }),
           goObj(go.Shape, 'LineV', { stroke: 'gray', strokeWidth: 0.3, interval: 10 })
         ),
-        initialContentAlignment: go.Spot.Center,
-        allowDrop: true,  // must be true to accept drops from the Palette
-        LinkDrawn: showLinkLabel,  // this DiagramEvent listener is defined below
-        LinkRelinked: showLinkLabel,
-        'animationManager.duration': 600, // slightly longer than default (600ms) animation
-        'undoManager.isEnabled': true,  // enable undo & redo
-      }
-    );
-
-  // document modified
-  canvasEditor.addDiagramListener('Modified', () => {
-    if (canvasEditor.isModified) {
-      handleModifiedChange(true)
+      initialContentAlignment: go.Spot.Center,
+      allowDrop: true,  // must be true to accept drops from the Palette
+      LinkDrawn: showLinkLabel,  // this DiagramEvent listener is defined below
+      LinkRelinked: showLinkLabel,
+      'animationManager.duration': 600, // slightly longer than default (600ms) animation
+      'undoManager.isEnabled': true,  // enable undo & redo
     }
-  });
+  );
+
+  modelChangedHandler(handleModelChange)
 
   // Manipulate object after dropped from palette to canvas
   canvasEditor.addDiagramListener('ExternalObjectsDropped', () => {
@@ -48,23 +92,6 @@ export const renderCanvas = (
     const link = e.subject;
     canvasEditor.model.setDataProperty(link.data, 'linkId', uuid.v4());
   });
-
-  // Callback function on model changed
-  canvasEditor.addModelChangedListener(evt => {
-    if (!evt.isTransactionFinished) return;
-
-    const txn = evt.object;  // a Transaction
-    if (txn === null) return;
-
-    handleModelChange({
-      model: canvasEditor.model.toJson(),
-      svg: canvasEditor.makeSvg({
-        size: new go.Size(240, NaN),
-        padding: 10,
-        background: '#f1f8ff',
-      }).outerHTML,
-    })
-  })
 
   // Auto resize shape when text edited
   canvasEditor.addDiagramListener('TextEdited', e => {
@@ -202,22 +229,16 @@ export const renderCanvas = (
       )
     );
 
-  // Make link labels visible if coming out of a "conditional" node.
-  // This listener is called by the "LinkDrawn" and "LinkRelinked" DiagramEvents.
-  function showLinkLabel(e) {
-    const label = e.subject.findObject('LABEL');
-    if (label !== null) label.visible = true;
-  }
-
   // temporary links used by LinkingTool and RelinkingTool are also orthogonal:
   canvasEditor.toolManager.linkingTool.temporaryLink.routing = go.Link.Orthogonal;
   canvasEditor.toolManager.relinkingTool.temporaryLink.routing = go.Link.Orthogonal;
-  canvasEditor.model = go.Model.fromJson(JSON.stringify(modelData));  // load an initial diagram from some JSON text
+
+  loadModel(modelData)
 
   // initialize the Palette that is on the left side of the page
   const size1 = { width: 36, height: 36 }
   const size2 = { width: 48, height: 36 }
-  const mainPalette =
+  mainPalette = mainPalette ||
     goObj(go.Palette, 'mainPalette',  // must name or refer to the DIV HTML element
       {
         layout: goObj(go.GridLayout, { spacing: new go.Size(0, 0) }),
@@ -250,14 +271,29 @@ export const renderCanvas = (
 
   canvasEditor.doFocus = customFocus;
   mainPalette.doFocus = customFocus;
-
-  return { canvasEditor, mainPalette }
 }
 
-function showPorts(node, show) {
-  const diagram = node.diagram;
-  if (!diagram || diagram.isReadOnly || !diagram.allowLink) return;
-  node.ports.each(port => {
-    port.stroke = (show ? 'rgba(0, 0, 0, 0.9)' : null);
-  });
+export const renderCanvas = (
+  handleModelChange,
+  modelData
+) => {
+  if (canvasEditor === null) {
+    createCanvas(handleModelChange, modelData)
+  } else {
+    const canvasCopy = {
+      canvasEditor, mainPalette,
+    }
+    try {
+      canvasEditor = null;
+      mainPalette = null;
+      createCanvas(handleModelChange, modelData)
+    } catch (err) {
+      canvasEditor = canvasCopy.canvasEditor
+      mainPalette = canvasCopy.mainPalette
+      loadModel(modelData)
+      canvasEditor.rebuildParts()
+    }
+  }
+
+  return { canvasEditor, mainPalette }
 }

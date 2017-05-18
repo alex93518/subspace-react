@@ -7,10 +7,13 @@ import {
 import R from 'ramda';
 import styled from 'styled-components';
 import uuid from 'uuid';
-import { Row, Col, Button } from 'react-bootstrap';
+import { Row, Col, Tabs, Tab, Badge } from 'react-bootstrap';
 import CurrentRelay, { UpsertDiagramModelMutation } from 'relay';
+import { redirect } from 'redux/utils'
+import { getDiagramPath } from 'utils/path'
 import GoJsCanvas from '../GoJsCanvas';
-import ChildDiagram from './ChildDiagram';
+import DiagramInfo from './DiagramInfo';
+import ChildsDiagram from './ChildsDiagram';
 
 const MainContainer = styled.div`
   padding: 20px;
@@ -36,21 +39,37 @@ const CanvasDiv = styled.div`
   }
 `
 
-const DescriptionDiv = styled.div`
-  border: solid 1px rgba(0,0,0,0.3);
-  border-left: none;
-  padding: 20px;
-  height: 620px;
-`
-
 const ColFit = styled(Col)`
   padding: 0;
   margin-top: 15px;
   margin-bottom: 15px;
 `
 
+const DescriptionTabs = styled(Tabs)`
+  margin-left: 10px;
+  height: 620px;
+`
+
+const DefaultTab = styled(Tab)`
+  border: solid 1px #dddddd;
+  border-top: 0;
+  height: 580px;
+  padding: 20px;
+  background: #fcfcfc;
+`
+
+const childTitle = titleCount => (
+  <span>
+    Child Diagrams
+    {' '}
+    <Badge>{titleCount}</Badge>
+  </span>
+)
+
 const DiagramContainer = ({
-  isModified, handleSave, childs, variables, children,
+  isModified, handleSave, diagram, variables, children, totalChilds,
+  diagramName, diagramDescription, onNameChange, onDescriptionChange,
+  activeTabKey, updateActiveTabKey,
 }) =>
   <MainContainer>
     <ChildContainer>
@@ -62,34 +81,31 @@ const DiagramContainer = ({
           <CanvasDiv id="canvasEditor" />
         </ColFit>
         <ColFit md={3}>
-          <DescriptionDiv>
-            <div>
-              {isModified ? 'modified' : 'not modified'}
-            </div>
-            <div>
-              <Button
-                onClick={handleSave}
-                disabled={!isModified}
-              >
-                Save
-              </Button>
-            </div>
-            <div>
-              Description
-            </div>
-            {childs &&
-            <div>
-              <h3>Childs / Revisions</h3>
-              {childs.map(({ node }) =>
-                <ChildDiagram
-                  key={node.id}
-                  childDiagram={node}
-                  {...variables}
-                />
-              )}
-            </div>
-            }
-          </DescriptionDiv>
+          <DescriptionTabs
+            activeKey={activeTabKey}
+            id={'diagramEditorTabs'}
+            onSelect={key => updateActiveTabKey(key)}
+          >
+            <DefaultTab eventKey={1} title={'Diagram Info'}>
+              <DiagramInfo
+                diagramInfo={diagram}
+                isModified={isModified}
+                handleSave={handleSave}
+                onNameChange={onNameChange}
+                onDescriptionChange={onDescriptionChange}
+                diagramName={diagramName}
+                diagramDescription={diagramDescription}
+                updateActiveTabKey={updateActiveTabKey}
+                {...variables}
+              />
+            </DefaultTab>
+            <DefaultTab eventKey={2} title={childTitle(totalChilds)}>
+              <ChildsDiagram
+                childsDiagram={diagram}
+                {...variables}
+              />
+            </DefaultTab>
+          </DescriptionTabs>
         </ColFit>
       </Row>
       { children }
@@ -99,8 +115,15 @@ const DiagramContainer = ({
 DiagramContainer.propTypes = {
   children: PropTypes.node.isRequired,
   isModified: PropTypes.bool.isRequired,
-  childs: PropTypes.array.isRequired,
   handleSave: PropTypes.func.isRequired,
+  onNameChange: PropTypes.func.isRequired,
+  onDescriptionChange: PropTypes.func.isRequired,
+  diagram: PropTypes.object,
+  totalChilds: PropTypes.number.isRequired,
+  diagramName: PropTypes.string.isRequired,
+  diagramDescription: PropTypes.string.isRequired,
+  activeTabKey: PropTypes.number.isRequired,
+  updateActiveTabKey: PropTypes.func.isRequired,
   variables: PropTypes.object,
 }
 
@@ -110,34 +133,42 @@ const DiagramEditor = ({
   repositoryId,
   repositoryRawId,
   isModified,
-  onModifiedChange,
+  onNameChange,
+  onDescriptionChange,
   onModelChange,
+  diagramName,
+  diagramDescription,
+  activeTabKey,
+  updateActiveTabKey,
   handleSave,
-}) => {
-  const childs = edges ? edges[0].node.childs.edges : []
-  return (
-    <DiagramContainer
-      isModified={isModified}
-      handleSave={handleSave}
-      childs={childs}
-      variables={variables}
-    >
-      {
-        edges && edges.map(({ node }) =>
-          <GoJsCanvas
-            key={node.id}
-            diagram={node}
-            repositoryId={repositoryId}
-            repositoryRawId={repositoryRawId}
-            onModifiedChange={onModifiedChange}
-            onModelChange={onModelChange}
-            {...variables}
-          />
-        )
-      }
-    </DiagramContainer>
-  )
-}
+}) => (
+  <DiagramContainer
+    isModified={isModified}
+    handleSave={handleSave}
+    diagram={edges ? edges[0].node : {}}
+    onNameChange={onNameChange}
+    onDescriptionChange={onDescriptionChange}
+    totalChilds={edges ? edges[0].node.childs.totalCount : 0}
+    diagramName={diagramName}
+    diagramDescription={diagramDescription}
+    activeTabKey={activeTabKey}
+    updateActiveTabKey={updateActiveTabKey}
+    variables={variables}
+  >
+    {
+      edges && edges.map(({ node }) =>
+        <GoJsCanvas
+          key={node.id}
+          diagram={node}
+          repositoryId={repositoryId}
+          repositoryRawId={repositoryRawId}
+          onModelChange={onModelChange}
+          {...variables}
+        />
+      )
+    }
+  </DiagramContainer>
+)
 
 DiagramEditor.propTypes = {
   diagramEditor: PropTypes.object,
@@ -145,8 +176,13 @@ DiagramEditor.propTypes = {
   repositoryId: PropTypes.string.isRequired,
   repositoryRawId: PropTypes.string.isRequired,
   isModified: PropTypes.bool.isRequired,
-  onModifiedChange: PropTypes.func.isRequired,
   onModelChange: PropTypes.func.isRequired,
+  onNameChange: PropTypes.func.isRequired,
+  onDescriptionChange: PropTypes.func.isRequired,
+  diagramName: PropTypes.string.isRequired,
+  diagramDescription: PropTypes.string.isRequired,
+  activeTabKey: PropTypes.number.isRequired,
+  updateActiveTabKey: PropTypes.func.isRequired,
   handleSave: PropTypes.func.isRequired,
 }
 
@@ -170,15 +206,12 @@ export default compose(
             edges {
               node {
                 id
-                childs(first: 99) {
-                  edges {
-                    node {
-                      id
-                      ${ChildDiagram.getFragment('childDiagram', vars)}
-                    }
-                  }
+                childs {
+                  totalCount
                 }
-                ${GoJsCanvas.getFragment('diagram', vars)}                
+                ${DiagramInfo.getFragment('diagramInfo', vars)}
+                ${ChildsDiagram.getFragment('childsDiagram', vars)}
+                ${GoJsCanvas.getFragment('diagram', vars)}
               }
             }
           }
@@ -187,19 +220,22 @@ export default compose(
     },
   }),
   withState('isModified', 'updateIsModified', false),
-  withState('model', 'updateModel', ''),
-  withState('svg', 'updateSvg', ''),
+  withState('diagramData', 'updateDiagramData', {
+    model: '', svg: '', svgThumb: '',
+  }),
+  withState('diagramName', 'onNameChange', ''),
+  withState('diagramDescription', 'onDescriptionChange', ''),
+  withState('activeTabKey', 'updateActiveTabKey', 1),
   withHandlers({
-    onModifiedChange: props => isModified => {
-      props.updateIsModified(isModified)
-    },
-    onModelChange: props => ({ model, svg }) => {
-      props.updateModel(model)
-      props.updateSvg(svg)
+    onModelChange: props => diagramData => {
+      props.updateDiagramData(diagramData)
+      props.updateIsModified(true)
     },
     handleSave: ({
-      repositoryId, repositoryRawId, model, svg, updateIsModified,
-      relay: { variables: { diagramId } },
+      repositoryId, repositoryRawId, updateIsModified,
+      diagramName, diagramDescription,
+      diagramData: { model, svg, svgThumb },
+      relay: { variables: { userName, projectName, diagramId } },
     }) => () => {
       // Change width & heigth {class {NaN}} to 0
       const modelTransform = ({ nodeDataArray, ...vars }) => ({
@@ -214,18 +250,28 @@ export default compose(
         ...vars,
       })
       const relayModel = JSON.stringify(modelTransform(JSON.parse(model)))
+      const childId = uuid.v4()
       CurrentRelay.Store.commitUpdate(
         new UpsertDiagramModelMutation({
-          diagramId: uuid.v4(),
+          diagramId: childId,
           repositoryRawId,
           repositoryId,
           model: relayModel,
-          svg,
           parentDiagramId: diagramId,
+          name: diagramName,
+          description: diagramDescription,
+          svg,
+          svgThumb,
         }),
         {
           onSuccess: () => {
             updateIsModified(false)
+            const diagramPath = getDiagramPath({
+              userName,
+              projectName,
+              diagramId: childId,
+            })
+            redirect(diagramPath)
           },
           onFailure: transaction => console.log(transaction.getError()),
         }
@@ -236,23 +282,34 @@ export default compose(
     props => props.isNew,
     renderComponent(({
       isModified,
-      onModifiedChange,
       handleSave,
       onModelChange,
+      onNameChange,
+      onDescriptionChange,
       repositoryId,
+      diagramName,
+      diagramDescription,
+      activeTabKey,
+      updateActiveTabKey,
       repositoryRawId,
     }) =>
       <DiagramContainer
         isModified={isModified}
         handleSave={handleSave}
-        childs={[]}
+        onNameChange={onNameChange}
+        onDescriptionChange={onDescriptionChange}
+        diagram={null}
+        diagramName={diagramName}
+        diagramDescription={diagramDescription}
+        activeTabKey={activeTabKey}
+        updateActiveTabKey={updateActiveTabKey}
+        totalChilds={0}
       >
         <GoJsCanvas
           isNew
           diagram={null}
           repositoryId={repositoryId}
           repositoryRawId={repositoryRawId}
-          onModifiedChange={onModifiedChange}
           onModelChange={onModelChange}
         />
       </DiagramContainer>

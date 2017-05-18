@@ -3,6 +3,9 @@ import moment from 'moment';
 export const shortBranchName = branchName =>
   branchName.replace('refs/heads/', '')
 
+export const shortUuid = uuid =>
+  uuid.slice(0, 8)
+
 export const timeFromNow = unixTime =>
   moment.unix(unixTime).fromNow()
 

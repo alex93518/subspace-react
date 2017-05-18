@@ -25,7 +25,10 @@ const SvgContainer = styled.div`
 `
 
 const DiagramInfo = ({
-  diagramInfo: { rawId, name, description, svg, owner, createdAt },
+  diagramInfo: {
+    rawId, name, description, svg, owner, createdAt,
+    childs: { totalCount },
+  },
   relay: { variables },
 }) => (
   <DiagramInfoWell>
@@ -55,10 +58,7 @@ const DiagramInfo = ({
     }
     <hr />
     <div>
-      Pending revisions: n
-    </div>
-    <div>
-      Child diagrams: n
+      Child diagrams: {totalCount}
     </div>
   </DiagramInfoWell>
 )
@@ -84,6 +84,9 @@ export default Relay.createContainer(DiagramInfo, {
         owner {
           ${LinkUserName.getFragment('user')}
           ${LinkUserPhoto.getFragment('user')}
+        }
+        childs {
+          totalCount
         }
         createdAt
       }

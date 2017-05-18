@@ -30,3 +30,6 @@ export const getCommitPath = ({ commitId, ...props }) =>
 
 export const getCommitsFilePath = ({ pathName, ...props }) =>
   path.join(getBranchPath(props), '/commits/', pathName)
+
+export const getDiagramPath = ({ userName, projectName, diagramId }) =>
+  path.join(getProjectPath({ userName, projectName }), '/diagrams/', diagramId)
