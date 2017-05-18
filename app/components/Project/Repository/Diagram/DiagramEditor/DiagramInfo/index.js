@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { Button, ControlLabel, FormControl } from 'react-bootstrap';
 import styled from 'styled-components';
-import Relay from 'react-relay';
+import Relay from 'react-relay/classic';
 import DiagramWidget from '../DiagramWidget';
 
 const DivId = styled.div`
@@ -19,24 +19,8 @@ const DivSave = styled.div`
 
 class DiagramInfo extends Component {
   componentDidMount() {
-    if (this.props.diagramInfo) {
-      this.props.onNameChange(this.props.diagramInfo.name)
-      this.props.onDescriptionChange(this.props.diagramInfo.description)
-    }
-  }
-
-  componentDidUpdate(prevProps) {
-    if (this.props.diagramInfo && prevProps.diagramInfo) {
-      if (this.props.diagramInfo.rawId !== prevProps.diagramInfo.rawId) {
-        this.props.updateActiveTabKey(1)
-      }
-      if (this.props.diagramInfo.name !== prevProps.diagramInfo.name) {
-        this.props.onNameChange(this.props.diagramInfo.name)
-      }
-      if (this.props.diagramInfo.description !== prevProps.diagramInfo.description) {
-        this.props.onDescriptionChange(this.props.diagramInfo.description)
-      }
-    }
+    this.props.onNameChange(this.props.diagramInfo.name)
+    this.props.onDescriptionChange(this.props.diagramInfo.description)
   }
 
   handleDiagramNameChange = event => {
@@ -111,7 +95,6 @@ DiagramInfo.propTypes = {
   diagramName: PropTypes.string.isRequired,
   diagramDescription: PropTypes.string.isRequired,
   onDescriptionChange: PropTypes.func.isRequired,
-  updateActiveTabKey: PropTypes.func.isRequired,
   relay: PropTypes.object.isRequired,
 }
 

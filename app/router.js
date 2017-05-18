@@ -26,7 +26,16 @@ const AuthWrapper = ({ storeLoaded, updateStoreStatus }) => {
                 key={i}
                 path={path}
                 exact={exact}
-                render={props => <RouteComponent {...props} {...rest} />}
+                render={
+                  props => (
+                    <RouteComponent
+                      // rerender link to the same component with different params
+                      key={props.location.pathname}
+                      {...props}
+                      {...rest}
+                    />
+                  )
+                }
               />
             )
           }

@@ -1,5 +1,5 @@
-import React, { PureComponent, PropTypes } from 'react';
-import Relay from 'react-relay';
+import React, { Component, PropTypes } from 'react';
+import Relay from 'react-relay/classic';
 import { compose } from 'recompose';
 import { createContainer } from 'recompose-relay'
 import {
@@ -12,7 +12,7 @@ import Dimensions from 'react-dimensions'
 import CreateNewDiagram from './CreateNewDiagram';
 import DiagramInfo from './DiagramInfo';
 
-class Diagrams extends PureComponent {
+class Diagrams extends Component {
   constructor(props) {
     super(props)
 

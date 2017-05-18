@@ -1,27 +1,20 @@
 import React, { Component, PropTypes } from 'react';
-import Relay from 'react-relay';
+import Relay from 'react-relay/classic';
 import { createContainer } from 'recompose-relay'
-import { compose, mapProps, withState, withHandlers } from 'recompose';
+import { compose, mapProps } from 'recompose';
 import uuid from 'uuid';
 import { renderCanvas } from 'utils/gojs/renderCanvas';
 
 class GoJsCanvas extends Component {
   componentDidMount() {
     const {
-      model, onModelChange, onCanvasEditorChanged,
+      model, onModelChange,
     } = this.props
 
-    const { canvasEditor } = renderCanvas(
+    renderCanvas(
       onModelChange,
       model
     );
-
-    onCanvasEditorChanged(canvasEditor)
-  }
-
-  componentWillUnmount() {
-    const { onCanvasEditorChanged } = this.props
-    onCanvasEditorChanged(null);
   }
 
   render() {
@@ -34,7 +27,6 @@ class GoJsCanvas extends Component {
 GoJsCanvas.propTypes = {
   model: PropTypes.object.isRequired,
   onModelChange: PropTypes.func,
-  onCanvasEditorChanged: PropTypes.func.isRequired,
 }
 
 GoJsCanvas.defaultProp = {
@@ -110,14 +102,5 @@ export default compose(
     },
     id: diagram ? diagram.id : null,
     ...vars,
-  })),
-  withState('canvasEditor', 'updateCanvasEditor', null),
-  withHandlers({
-    onSaved: props => () => {
-      props.canvasEditor.isModified = false;
-    },
-    onCanvasEditorChanged: props => canvasEditor => {
-      props.updateCanvasEditor(canvasEditor)
-    },
-  }),
+  }))
 )(GoJsCanvas)

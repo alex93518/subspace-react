@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
-import Relay from 'react-relay';
-import { Link } from 'react-router';
+import Relay from 'react-relay/classic';
+import { Link } from 'react-router-dom';
 import styled from 'styled-components'
 import { Well } from 'react-bootstrap';
 import moment from 'moment';

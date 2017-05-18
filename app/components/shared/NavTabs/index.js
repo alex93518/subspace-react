@@ -1,16 +1,19 @@
 import React, { PropTypes } from 'react'
-import { redirect } from 'redux/utils'
 import styled from 'styled-components'
 import { Nav, NavItem } from 'react-bootstrap';
+import { withRouter } from 'react-router-dom'
 
 const MainNavTabs = styled(Nav)`
   border: none;
 `
 
-const NavTabs = ({ configActive: { config, activeKey } }) => (
+const NavTabs = ({
+  configActive: { config, activeKey },
+  history: { push },
+}) => (
   <MainNavTabs
     bsStyle="tabs"
-    onSelect={redirect}
+    onSelect={url => push(url)}
     activeKey={activeKey || config[0].link}
   >
     {config.map(({ link, label }) => (
@@ -23,6 +26,9 @@ const NavTabs = ({ configActive: { config, activeKey } }) => (
 
 NavTabs.propTypes = {
   configActive: PropTypes.object.isRequired,
+  history: PropTypes.shape({
+    push: PropTypes.func.isRequired,
+  }).isRequired,
 }
 
-export default NavTabs
+export default withRouter(NavTabs)

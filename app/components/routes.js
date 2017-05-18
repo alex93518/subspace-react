@@ -189,22 +189,25 @@ export default [
     }),
   },
   {
-    path: '/:userName/:projectName/diagrams',
-    name: 'Diagrams',
-    getComponent: loadModule('Project'),
-    queries: viewerQuery,
-  },
-  {
     path: '/:userName/:projectName/diagrams/new',
-    name: 'NewDiagramEditor',
-    getComponent: loadModule('Project'),
-    queries: viewerQuery,
+    component: Loadable('Project', {
+      name: 'NewDiagramEditor',
+      query: viewerQuery,
+    }),
   },
   {
     path: '/:userName/:projectName/diagrams/:diagramId',
-    name: 'DiagramEditor',
-    getComponent: loadModule('Project'),
-    queries: viewerQuery,
+    component: Loadable('Project', {
+      name: 'DiagramEditor',
+      query: viewerQuery,
+    }),
+  },
+  {
+    path: '/:userName/:projectName/diagrams',
+    component: Loadable('Project', {
+      name: 'Diagrams',
+      query: viewerQuery,
+    }),
   },
   {
     path: '/:userName/:projectName/:branchHead',

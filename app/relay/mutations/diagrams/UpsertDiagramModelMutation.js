@@ -1,4 +1,4 @@
-import Relay from 'react-relay'
+import Relay from 'react-relay/classic'
 
 export class UpsertDiagramModelMutation extends Relay.Mutation {
   getMutation() {
