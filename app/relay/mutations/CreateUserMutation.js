@@ -7,21 +7,25 @@ export class CreateUserMutation extends Relay.Mutation {
 
   getVariables() {
     const {
-      firebaseId,
+      userId,
       userName,
       fullName,
       photoUrl,
       emailAddress,
       password,
+      provider,
+      accessToken,
     } = this.props
 
     return {
-      firebaseId,
+      userId,
       userName,
       fullName: fullName || null,
       photoUrl: photoUrl || null,
       emailAddress: emailAddress || null,
       password,
+      provider,
+      accessToken,
     };
   }
 

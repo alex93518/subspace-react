@@ -38,6 +38,12 @@ const LoginWidget = ({
       <div>
         <Button onClick={signInWithGithub}>Sign in with GitHub</Button>
       </div>
+      <div style={{ height: 5 }}></div>
+      <div>
+        <Button onClick={authActions.signInWithStackexchange.init}>
+          Sign in with Stackoverflow
+        </Button>
+      </div>
       <div style={{ height: 30 }}></div>
       <div>
         <EmailLoginForm onSubmit={authActions.signInWithEmailPassword.init} />

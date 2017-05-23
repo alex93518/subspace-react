@@ -9,7 +9,7 @@ import {
 
 window.graph_url = process.env.GRAPHQL_ENDPOINT
 
-const getCustomNetworkLayer = token => new RelayNetworkLayer(
+const getCustomNetworkLayer = (token, provider = 'firebase') => new RelayNetworkLayer(
   [
     urlMiddleware({
       url: () => (
@@ -21,7 +21,7 @@ const getCustomNetworkLayer = token => new RelayNetworkLayer(
     authMiddleware({
       token,
       prefix: '',
-      header: 'f_base',
+      header: provider === 'firebase' ? 'f_base' : 's_exch',
       tokenRefreshPromise: getToken,
     }),
   ],
@@ -33,11 +33,10 @@ const getCustomNetworkLayer = token => new RelayNetworkLayer(
 )
 
 class CurrentRelay {
-  reset = async cb => {
+  reset = async (cb, accessToken = '', provider = 'firebase') => {
     const env = new Relay.Environment()
-    const token = await getToken()
-
-    env.injectNetworkLayer(getCustomNetworkLayer(token))
+    const token = accessToken || await getToken()
+    env.injectNetworkLayer(getCustomNetworkLayer(token, provider))
     // TODO: remove window binding before pushing to production
     window.Store = this.Store = env
     if (cb) cb()

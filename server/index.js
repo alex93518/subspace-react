@@ -17,7 +17,7 @@ const customHost = argv.host || process.env.HOST
 const host = customHost || null
 const prettyHost = customHost || 'localhost'
 
-const port = argv.port || process.env.PORT || 3000
+const port = argv.port || process.env.PORT || 80
 
 app.listen(port, host, err => {
   if (err) return logger.error(err.message)
