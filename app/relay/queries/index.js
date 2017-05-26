@@ -10,6 +10,8 @@ export const userNameQuery = userId => Relay.createQuery(
       user(id: $userId) {
         id
         userName
+        fullName
+        photoUrl
       }
     }
   }`,

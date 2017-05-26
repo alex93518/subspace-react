@@ -24,9 +24,12 @@ const logoutCurrentUser = state => state
 export default createReducer({
   [authActions.signIn.success]: loginUser,
   [authActions.signInWithEmailPassword.success]: loginUser,
+  [authActions.signInWithStackexchange.success]: loginUser,
   [authActions.createUserWithEmailPassword.success]: loginUser,
 
   [authActions.signIn.failure]: logoutCurrentUser,
+  [authActions.signInWithEmailPassword.failure]: logoutCurrentUser,
+  [authActions.signInWithStackexchange.failure]: logoutCurrentUser,
   [authActions.signOut.success]: logoutCurrentUser,
 
   [authActions.userNameNotAvail]: (state, payload) => state

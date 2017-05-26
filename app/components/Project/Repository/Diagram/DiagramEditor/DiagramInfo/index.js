@@ -19,8 +19,16 @@ const DivSave = styled.div`
 
 class DiagramInfo extends Component {
   componentDidMount() {
-    this.props.onNameChange(this.props.diagramInfo.name)
-    this.props.onDescriptionChange(this.props.diagramInfo.description)
+    this.props.onNameChange(
+      this.props.diagramInfo ?
+        this.props.diagramInfo.name :
+        this.props.diagramName
+    )
+    this.props.onDescriptionChange(
+      this.props.diagramInfo ?
+        this.props.diagramInfo.description :
+        this.props.diagramDescription
+    )
   }
 
   handleDiagramNameChange = event => {

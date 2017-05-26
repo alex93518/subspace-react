@@ -1,12 +1,10 @@
 import React, { PropTypes } from 'react';
-import { Col, Button } from 'react-bootstrap';
-import {
-  authActions,
-  signInWithGithub,
-  signInWithGoogle,
-} from 'redux/auth/actions'
+import { Col } from 'react-bootstrap';
+import { authActions } from 'redux/auth/actions';
 import { makeSelectAuth } from 'redux/selectors';
-import { injectSelectors } from 'redux/utils'
+import { injectSelectors } from 'redux/utils';
+import SocialLogin from 'components/shared/SocialLogin';
+import Separator from 'components/shared/Separator';
 import EmailLoginForm from '../EmailLoginForm';
 import LoginStep from '../LoginStep';
 
@@ -31,21 +29,10 @@ const LoginWidget = ({
 
   return (
     <Col md={4} mdOffset={4} className="text-center">
+      <SocialLogin pretext={'Sign in with '} />
+      <Separator />
       <div>
-        <Button onClick={signInWithGoogle}>Sign in with Google</Button>
-      </div>
-      <div style={{ height: 5 }}></div>
-      <div>
-        <Button onClick={signInWithGithub}>Sign in with GitHub</Button>
-      </div>
-      <div style={{ height: 5 }}></div>
-      <div>
-        <Button onClick={authActions.signInWithStackexchange.init}>
-          Sign in with Stackoverflow
-        </Button>
-      </div>
-      <div style={{ height: 30 }}></div>
-      <div>
+        <h5>Or sign in with email address</h5>
         <EmailLoginForm onSubmit={authActions.signInWithEmailPassword.init} />
       </div>
     </Col>

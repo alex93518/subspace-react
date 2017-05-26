@@ -9,7 +9,7 @@ import {
 
 window.graph_url = process.env.GRAPHQL_ENDPOINT
 
-const getCustomNetworkLayer = (token, provider = 'firebase') => new RelayNetworkLayer(
+const getCustomNetworkLayer = (token, provider) => new RelayNetworkLayer(
   [
     urlMiddleware({
       url: () => (
@@ -33,7 +33,7 @@ const getCustomNetworkLayer = (token, provider = 'firebase') => new RelayNetwork
 )
 
 class CurrentRelay {
-  reset = async (cb, accessToken = '', provider = 'firebase') => {
+  reset = async (cb, provider = 'firebase', accessToken = '') => {
     const env = new Relay.Environment()
     const token = accessToken || await getToken()
     env.injectNetworkLayer(getCustomNetworkLayer(token, provider))

@@ -1,10 +1,11 @@
 import React, { PropTypes } from 'react';
-import { Row, Col, Button } from 'react-bootstrap';
+import { Row, Col } from 'react-bootstrap';
 import { makeSelectAuth } from 'redux/selectors';
 import { injectSelectors } from 'redux/utils'
-import { signInWithGoogle, signInWithGithub } from 'redux/auth/actions'
+import SocialLogin from 'components/shared/SocialLogin';
 import EmailSignupForm from 'components/Login/EmailSignupForm';
 import MainGrid from 'components/shared/MainGrid';
+import Separator from 'components/shared/Separator';
 
 const HomePage = ({
   auth: {
@@ -20,15 +21,10 @@ const HomePage = ({
       </Col>
       {
         !(authenticated || showLoginStep) &&
-        <Col md={4}>
-          <div className="text-center">
-            <Button onClick={signInWithGoogle}>Sign up with Google</Button>
-          </div>
-          <div style={{ height: 5 }}></div>
-          <div className="text-center">
-            <Button onClick={signInWithGithub}>Sign up with GitHub</Button>
-          </div>
-          <div style={{ height: 30 }}></div>
+        <Col md={4} className="text-center">
+          <SocialLogin pretext={'Sign up with '} />
+          <Separator />
+          <h5>Or sign up with email address</h5>
           <div className="text-right">
             <EmailSignupForm />
           </div>

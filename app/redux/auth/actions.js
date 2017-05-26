@@ -4,6 +4,7 @@ import { call, take } from 'redux-saga/effects';
 import { firebaseAuth } from 'utils/firebase';
 import { actionsGenerator, redirect } from 'redux/utils'
 import CurrentRelay, { CreateUserMutation, userNameQuery } from 'relay';
+import moment from 'moment';
 import { stackexchange, stackexchangeConfig } from 'utils/stackexchange';
 
 const getUserName = userId => CurrentRelay.fetch({
@@ -43,8 +44,9 @@ function* signIn({ payload: { authProvider } }) {
   )
 
   if (user) {
-    yield call(CurrentRelay.reset, null, user._lat) // eslint-disable-line
-    const userInfo = yield call(getUserName, user.uid)
+    yield call(CurrentRelay.reset, null, 'firebase', user._lat) // eslint-disable-line
+    const userId = user.uid
+    const userInfo = yield call(getUserName, userId)
     let userName = path(['user', 'userName'], userInfo)
 
     if (!userName) {
@@ -103,68 +105,85 @@ function* signInWithEmailPassword({ payload: { email, password } }) {
 }
 
 function* signInWithStackexchange() {
-  const init = () => (
-    new Promise(resolve => {
-      stackexchange.init({
-        ...stackexchangeConfig,
-        channelUrl: 'http://localhost/blank.html',
-        complete: resolve,
+  let userId = ''
+  let accessToken = ''
+  let displayName = ''
+  let photoURL = ''
+  let expirationDate = ''
+
+  const seUser = localStorage.getItem('seUser')
+  const seExpire = localStorage.getItem('seExpire')
+  if (seUser && seExpire && (
+    moment().isBefore(moment.unix(seExpire))
+  )) {
+    userId = seUser
+    accessToken = localStorage.getItem('seAccessToken')
+  } else {
+    const init = () => (
+      new Promise(resolve => {
+        stackexchange.init({
+          ...stackexchangeConfig,
+          channelUrl: 'http://localhost/blank.html',
+          complete: resolve,
+        })
       })
-    })
-  )
-
-  const auth = () => (
-    new Promise(resolve => {
-      stackexchange.authenticate({
-        networkUsers: true,
-        success: resolve,
-      })
-    })
-  )
-
-  const fetchUser = authData => (
-    new Promise(resolve => {
-      const accessToken = authData.accessToken
-      const userUrl = `https://api.stackexchange.com/2.2/me?site=stackoverflow&access_token=${accessToken}&key=${stackexchangeConfig.key}`
-      fetch(userUrl).then(resolve)
-    })
-  )
-
-  const getUser = seFetchUser => (
-    new Promise(resolve => {
-      seFetchUser.json().then(resolve)
-    })
-  )
-
-  yield call(init)
-  const seAuth = yield call(auth)
-  const seFetchUser = yield call(fetchUser, seAuth)
-  const seUser = yield call(getUser, seFetchUser)
-
-  if (seUser && seUser.items.length > 0) {
-    const userData = seUser.items[0]
-    const { user_id, display_name, profile_image } = userData
-    const userId = `stackexchange${user_id}` // eslint-disable-line
-    yield call(
-      CurrentRelay.reset, null,
-      JSON.stringify({ token: seAuth.accessToken, userId }),
-      'stackexchange'
     )
-    const userInfo = yield call(getUserName, userId)
-    let userName = path(['user', 'userName'], userInfo)
 
+    const auth = () => (
+      new Promise(resolve => {
+        stackexchange.authenticate({
+          networkUsers: true,
+          success: resolve,
+        })
+      })
+    )
+
+    yield call(init)
+    const seAuth = yield call(auth)
+    if (seAuth && seAuth.networkUsers.length > 0) {
+      const userData = seAuth.networkUsers[0]
+      const { user_id, display_name, profile_image } = userData
+      userId = `stackexchange${user_id}` // eslint-disable-line
+      accessToken = seAuth.accessToken
+      displayName = display_name // eslint-disable-line
+      photoURL = profile_image // eslint-disable-line
+      expirationDate = seAuth.expirationDate
+    }
+  }
+
+  yield call(
+    CurrentRelay.reset, null, 'stackexchange',
+    JSON.stringify({ token: accessToken, userId }),
+  )
+  const userInfo = yield call(getUserName, userId)
+  let userName = path(['user', 'userName'], userInfo)
+
+  if (!userName && expirationDate) {
     const user = {
       uid: userId,
-      displayName: display_name,
-      photoURL: profile_image,
+      displayName,
+      photoURL,
       email: null,
-      accessToken: seAuth.accessToken,
+      accessToken,
+      provider: 'stackexchange',
     }
 
-    if (!userName) {
-      userName = yield call(getNameAndCreateUser, user, 'stackexchange')
-    }
+    userName = yield call(getNameAndCreateUser, user, 'stackexchange')
+    const expire = moment(expirationDate).unix()
+    localStorage.setItem('seUser', userId)
+    localStorage.setItem('seAccessToken', accessToken)
+    localStorage.setItem('seExpire', expire)
 
+    return { user, userName }
+  } else if (!expirationDate) {
+    const user = {
+      uid: userId,
+      displayName: path(['user', 'fullName'], userInfo),
+      photoURL: path(['user', 'photoUrl'], userInfo),
+      email: null,
+      accessToken,
+      provider: 'stackexchange',
+    }
     return { user, userName }
   }
 
