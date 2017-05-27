@@ -16,7 +16,10 @@ export const UserProfile = ({ viewer }) => !viewer ? null : (
         content: `${viewer.user.fullName} profile`,
       }]}
     />
-    <Profile viewer={viewer} />
+    <Profile user={viewer.user} accessToken={viewer.actor.accessToken}>
+      <h3>Projects</h3>
+      <ProjectList viewer={viewer} owner={viewer.user.userName} />
+    </Profile>
   </MainGrid>
 )
 
@@ -26,17 +29,20 @@ UserProfile.propTypes = {
 
 export default Relay.createContainer(UserProfile, {
   initialVariables: {
-    login: null,
+    userName: null,
   },
   fragments: {
-    viewer: ({ login: owner }) => Relay.QL`
+    viewer: ({ userName }) => Relay.QL`
       fragment on Viewer {
-        user(login: $login) {
+        user(login: $userName) {
           userName
           fullName
-          photoUrl
+          ${Profile.getFragment('user')}
         }
-        ${ProjectList.getFragment('viewer', { owner })}
+        ${ProjectList.getFragment('viewer', { owner: userName })}
+        actor {
+          accessToken
+        }
       }
     `,
   },

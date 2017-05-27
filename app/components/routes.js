@@ -122,7 +122,7 @@ export default [
     component: Loadable('Login', { name: 'login' }),
   },
   {
-    path: '/profile/:login',
+    path: '/profile/:userName',
     component: Loadable('UserProfile', {
       query: viewerQuery,
       name: 'userProfile',

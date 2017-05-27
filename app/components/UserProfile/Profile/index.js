@@ -1,12 +1,62 @@
-import React, { PropTypes } from 'react'
-import { Panel, Row, Col } from 'react-bootstrap'
-import ProjectList from 'components/Projects/ProjectList'
+import React, { PropTypes } from 'react';
+import { Panel, Row, Col } from 'react-bootstrap';
+import Relay from 'react-relay/classic';
+import { createContainer } from 'recompose-relay';
+import styled from 'styled-components';
+import { compose, withState, lifecycle, mapProps } from 'recompose';
+import { getUserInfo } from 'utils/stackexchange';
+import StackexRepBadge from './StackexRepBadge';
+import StackexInfo from './StackexInfo';
 
-const Profile = ({ viewer, viewer: { user } }) => (
+const UserBadge = (isStackexchange, stackexchangeData) => {
+  if (isStackexchange) {
+    return stackexchangeData && stackexchangeData.items[0] ?
+      (<StackexRepBadge
+        stackexUser={stackexchangeData.items[0]}
+      />) : null
+  }
+
+  return (
+    <div>
+      <div>99 Karma</div>
+      <div>99 Skill</div>
+      <div>99 Reputation</div>
+      <div>Badges</div>
+    </div>
+  )
+}
+
+const UserInfo = (isStackexchange, stackexchangeData) => {
+  if (isStackexchange) {
+    return stackexchangeData && stackexchangeData.items[0] ?
+      (<StackexInfo
+        stackexUser={stackexchangeData.items[0]}
+      />) : null
+  }
+
+  return null
+}
+
+const UserPanel = styled(Panel)`
+  box-shadow: inset 0 90px 0 #e7e8ea;
+  text-align: center;
+`
+
+const RowInfoPanel = styled(Row)`
+  margin-top: 10px;
+`
+
+const HeadUserName = styled.h2`
+  margin-top: 0px;
+`
+
+const Profile = ({
+  user, children, stackexchangeData, isStackexchange,
+}) => (
   <div>
     <Row>
       <Col md={3}>
-        <Panel className={'text-center'}>
+        <UserPanel>
           <img
             alt={user.fullName}
             src={user.photoUrl}
@@ -14,28 +64,33 @@ const Profile = ({ viewer, viewer: { user } }) => (
             height={120}
             style={{ marginBottom: 10 }}
           />
-          <div>99 Karma</div>
-          <div>99 Skill</div>
-          <div>99 Reputation</div>
-          <div>Badges</div>
-        </Panel>
+          {UserBadge(isStackexchange, stackexchangeData)}
+        </UserPanel>
       </Col>
       <Col md={9}>
-        <h2>{user.fullName}</h2>
-        <h4>Hello World</h4>
-        <div>Email: {user.email}</div>
-        <div>Stackoverflow:</div>
-        <div>Git: </div>
-        <div>Linkedin: </div>
-        <div>Twitter: </div>
+        <RowInfoPanel>
+          <Col md={7}>
+            <HeadUserName>{user.fullName}</HeadUserName>
+            <h4>Hello World</h4>
+            <div>Email: {user.email}</div>
+            <div>Stackoverflow:</div>
+            <div>Git: </div>
+            <div>Linkedin: </div>
+            <div>Twitter: </div>
+          </Col>
+          <Col md={5}>
+            {UserInfo(isStackexchange, stackexchangeData)}
+          </Col>
+        </RowInfoPanel>
       </Col>
     </Row>
-    <Row>
-      <Col md={12}>
-        <h3>Projects</h3>
-        <ProjectList viewer={viewer} owner={viewer.user.userName} />
-      </Col>
-    </Row>
+    {children && (
+      <Row>
+        <Col md={12}>
+          {children}
+        </Col>
+      </Row>
+    )}
     <Row>
       <Col md={12}>
         <h3>Contributions: TODO</h3>
@@ -47,10 +102,48 @@ const Profile = ({ viewer, viewer: { user } }) => (
       </Col>
     </Row>
   </div>
-);
+  );
 
 Profile.propTypes = {
-  viewer: PropTypes.object.isRequired,
+  user: PropTypes.object.isRequired,
+  children: PropTypes.node,
+  stackexchangeData: PropTypes.object,
+  isStackexchange: PropTypes.bool.isRequired,
 }
 
-export default Profile;
+export default compose(
+  createContainer({
+    fragments: {
+      user: () => Relay.QL`
+        fragment on User {
+          rawId
+          userName
+          fullName
+          provider
+          photoUrl
+        }
+      `,
+    },
+  }),
+  withState('stackexchangeData', 'updateStackexchange', null),
+  mapProps(props => ({
+    ...props,
+    isStackexchange: props.user.provider === 'stackexchange',
+  })),
+  lifecycle({
+    componentDidMount() {
+      if (this.props.user.provider === 'stackexchange') {
+        getUserInfo(
+          this.props.user.rawId,
+          this.props.accessToken
+        ).then(
+          res => res.json().then(
+            data => {
+              this.props.updateStackexchange(data)
+            }
+          )
+        )
+      }
+    },
+  })
+)(Profile)

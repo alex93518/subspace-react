@@ -175,7 +175,9 @@ function* signInWithStackexchange() {
     localStorage.setItem('seExpire', expire)
 
     return { user, userName }
-  } else if (!expirationDate) {
+  }
+
+  if (userInfo && userName) {
     const user = {
       uid: userId,
       displayName: path(['user', 'fullName'], userInfo),
