@@ -1,4 +1,5 @@
 export * from './CreateProjectMutation'
 export * from './CreateUserMutation'
+export * from './AddUserProviderMutation'
 export * from './MergeStashMutation'
 export * from './diagrams/UpsertDiagramModelMutation'

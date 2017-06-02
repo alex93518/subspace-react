@@ -86,7 +86,7 @@ export default compose(
               ...repository,
               isPushVote: repoPushVote !== 'standard',
               isPrivate: repoAccess === 'private',
-              ownerId: auth.user.uid,
+              ownerUserName: auth.userName,
 
               // TODO: add array input field to project form
               topics: topics ? topics.split(' ') : undefined,

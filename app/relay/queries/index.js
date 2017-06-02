@@ -17,3 +17,24 @@ export const userNameQuery = userId => Relay.createQuery(
   }`,
   { userId },
 )
+
+export const userProviderQuery = (
+  providerId, provider, firebaseId
+) => Relay.createQuery(
+  Relay.QL `
+    query UserProvider(
+      $providerId: String, $provider: String!, $firebaseId: String
+    ) {
+      viewer {
+        userProvider(
+          providerId: $providerId,
+          provider: $provider,
+          firebaseId: $firebaseId
+        ) {
+          userId
+        }
+      }
+    }
+  `,
+  { providerId, provider, firebaseId }
+)

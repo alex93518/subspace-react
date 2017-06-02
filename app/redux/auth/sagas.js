@@ -17,7 +17,7 @@ function* onRehydrate({ payload }) {
         CurrentRelay.reset, null, 'stackexchange',
         JSON.stringify({
           token: auth[1].user.accessToken,
-          userId: auth[1].user.uid,
+          providerId: auth[1].user.providerId,
         })
       )
     } else {

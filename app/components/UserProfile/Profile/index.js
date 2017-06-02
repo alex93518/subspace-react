@@ -1,89 +1,119 @@
 import React, { PropTypes } from 'react';
-import { Panel, Row, Col } from 'react-bootstrap';
+import { Row, Col, Tabs, Tab } from 'react-bootstrap';
 import Relay from 'react-relay/classic';
 import { createContainer } from 'recompose-relay';
 import styled from 'styled-components';
-import { compose, withState, lifecycle, mapProps } from 'recompose';
-import { getUserInfo } from 'utils/stackexchange';
-import StackexRepBadge from './StackexRepBadge';
-import StackexInfo from './StackexInfo';
+import { compose, withState, mapProps, withHandlers } from 'recompose';
+import R from 'ramda';
+import {
+  FaPlusCircle, FaStackOverflow, FaGithub, FaGoogle, FaAt,
+} from 'react-icons/lib/fa';
+import {
+  addGithubProvider, addStackexchangeProvider, addGoogleProvider,
+} from 'redux/auth/actions';
+import { getStackexchangeUserInfo } from 'utils/stackexchange';
+import { getGithubUserInfo } from 'utils/github';
+import StackexchangeProfile from './StackexchangeProfile'
+import GithubProfile from './GithubProfile';
+import MainAccount from './MainAccount';
+import GoogleProfile from './GoogleProfile';
 
-const UserBadge = (isStackexchange, stackexchangeData) => {
-  if (isStackexchange) {
-    return stackexchangeData && stackexchangeData.items[0] ?
-      (<StackexRepBadge
-        stackexUser={stackexchangeData.items[0]}
-      />) : null
+const DivTabContent = styled.div`
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-top: 0px;
+  background: #fcfcfc;
+`
+
+const SpanIcon = styled.span`
+  vertical-align: text-bottom;
+  margin-right: 4px;
+`
+
+const SpanAddIcon = styled.span`
+  vertical-align: text-bottom;
+  margin-left: 6px;
+  color: #dc0303;
+  font-size: 12px;
+`
+
+const getTabTitle = (provider, providerData, isOwner) => {
+  let providerAdd = null
+  if (isOwner && !providerData) {
+    providerAdd = <SpanAddIcon><FaPlusCircle /></SpanAddIcon>
   }
 
-  return (
-    <div>
-      <div>99 Karma</div>
-      <div>99 Skill</div>
-      <div>99 Reputation</div>
-      <div>Badges</div>
-    </div>
-  )
-}
-
-const UserInfo = (isStackexchange, stackexchangeData) => {
-  if (isStackexchange) {
-    return stackexchangeData && stackexchangeData.items[0] ?
-      (<StackexInfo
-        stackexUser={stackexchangeData.items[0]}
-      />) : null
+  let providerLogo = <SpanIcon />
+  if (provider === 'Stackoverflow') {
+    providerLogo = <SpanIcon><FaStackOverflow /></SpanIcon>
+  } else if (provider === 'Github') {
+    providerLogo = <SpanIcon><FaGithub /></SpanIcon>
+  } else if (provider === 'Google') {
+    providerLogo = <SpanIcon><FaGoogle /></SpanIcon>
+  } else if (provider === 'Terrella') {
+    providerLogo = <SpanIcon><FaAt /></SpanIcon>
   }
 
-  return null
+  return <span>{providerLogo}{provider}{providerAdd}</span>
 }
-
-const UserPanel = styled(Panel)`
-  box-shadow: inset 0 90px 0 #e7e8ea;
-  text-align: center;
-`
-
-const RowInfoPanel = styled(Row)`
-  margin-top: 10px;
-`
-
-const HeadUserName = styled.h2`
-  margin-top: 0px;
-`
 
 const Profile = ({
-  user, children, stackexchangeData, isStackexchange,
+  isOwner, user, children,
+  stackexchangeProvider, googleProvider, githubProvider,
+  stackexchangeData, googleData, githubData,
+  tabKey, onTabSelect,
 }) => (
   <div>
-    <Row>
-      <Col md={3}>
-        <UserPanel>
-          <img
-            alt={user.fullName}
-            src={user.photoUrl}
-            width={120}
-            height={120}
-            style={{ marginBottom: 10 }}
+    <Tabs activeKey={tabKey} onSelect={onTabSelect} id="providerAccounts">
+      <Tab
+        eventKey={1}
+        title={getTabTitle('Terrella', null, false)}
+      >
+        <DivTabContent>
+          <MainAccount
+            user={user}
+            isOwner={isOwner}
+            stackexchange={stackexchangeProvider}
+            github={githubProvider}
+            google={googleProvider}
+            onProviderClick={onTabSelect}
           />
-          {UserBadge(isStackexchange, stackexchangeData)}
-        </UserPanel>
-      </Col>
-      <Col md={9}>
-        <RowInfoPanel>
-          <Col md={7}>
-            <HeadUserName>{user.fullName}</HeadUserName>
-            <h4>Hello World</h4>
-            <div>Email: {user.email}</div>
-            <div>Stackoverflow:</div>
-            <div>Git: </div>
-            <div>Linkedin: </div>
-            <div>Twitter: </div>
-          </Col>
-          <Col md={5}>
-            {UserInfo(isStackexchange, stackexchangeData)}
-          </Col>
-        </RowInfoPanel>
-      </Col>
-    </Row>
+        </DivTabContent>
+      </Tab>
+      {
+        (isOwner || stackexchangeProvider) &&
+        <Tab
+          eventKey={2}
+          title={getTabTitle('Stackoverflow', stackexchangeProvider, isOwner)}
+        >
+          <DivTabContent>
+            <StackexchangeProfile stackexchangeData={stackexchangeData} />
+          </DivTabContent>
+        </Tab>
+      }
+      {
+        (isOwner || githubProvider) &&
+        <Tab
+          eventKey={3}
+          title={getTabTitle('Github', githubProvider, isOwner)}
+        >
+          <DivTabContent>
+            <GithubProfile githubData={githubData} />
+          </DivTabContent>
+        </Tab>
+      }
+      {
+        (isOwner || googleProvider) &&
+        <Tab
+          eventKey={4}
+          title={getTabTitle('Google', googleProvider, isOwner)}
+        >
+          <DivTabContent>
+            <GoogleProfile googleData={googleData} />
+          </DivTabContent>
+        </Tab>
+      }
+    </Tabs>
     {children && (
       <Row>
         <Col md={12}>
@@ -91,24 +121,21 @@ const Profile = ({
         </Col>
       </Row>
     )}
-    <Row>
-      <Col md={12}>
-        <h3>Contributions: TODO</h3>
-      </Col>
-    </Row>
-    <Row>
-      <Col md={12}>
-        <h3>Client Feedbacks: TODO</h3>
-      </Col>
-    </Row>
   </div>
   );
 
 Profile.propTypes = {
   user: PropTypes.object.isRequired,
   children: PropTypes.node,
+  stackexchangeProvider: PropTypes.object,
+  googleProvider: PropTypes.object,
+  githubProvider: PropTypes.object,
   stackexchangeData: PropTypes.object,
-  isStackexchange: PropTypes.bool.isRequired,
+  googleData: PropTypes.object,
+  githubData: PropTypes.object,
+  isOwner: PropTypes.bool.isRequired,
+  tabKey: PropTypes.number.isRequired,
+  onTabSelect: PropTypes.func.isRequired,
 }
 
 export default compose(
@@ -116,33 +143,106 @@ export default compose(
     fragments: {
       user: () => Relay.QL`
         fragment on User {
+          id
           rawId
           userName
           fullName
-          provider
           photoUrl
+          providerAccounts(first: 10) {
+            edges {
+              node {
+                userName
+                provider
+                providerId
+              }
+            }
+          }
         }
       `,
     },
   }),
-  withState('stackexchangeData', 'updateStackexchange', null),
-  mapProps(props => ({
-    ...props,
-    isStackexchange: props.user.provider === 'stackexchange',
-  })),
-  lifecycle({
-    componentDidMount() {
-      if (this.props.user.provider === 'stackexchange') {
-        getUserInfo(
-          this.props.user.rawId,
-          this.props.accessToken
-        ).then(
-          res => res.json().then(
-            data => {
-              this.props.updateStackexchange(data)
+  withState('tabKey', 'updateTabKey', 1),
+  withState('stackexchangeData', 'updateStackexchangeData', null),
+  withState('googleData', 'updateGoogleData', null),
+  withState('githubData', 'updateGithubData', null),
+  withHandlers({
+    filterProvider: () => (provider, edges) => R.filter(R.where({
+      node: R.propEq('provider', provider),
+    }))(edges),
+  }),
+  mapProps(props => {
+    const { user: { providerAccounts: { edges } } } = props
+    const stackexchangeProvider = props.filterProvider('stackexchange', edges)
+    const googleProvider = props.filterProvider('firebase-google.com', edges)
+    const githubProvider = props.filterProvider('firebase-github.com', edges)
+    const retProps = {
+      ...props,
+      stackexchangeProvider: stackexchangeProvider[0] ?
+        stackexchangeProvider[0].node : null,
+      googleProvider: googleProvider[0] ? googleProvider[0].node : null,
+      githubProvider: githubProvider[0] ? githubProvider[0].node : null,
+    }
+
+    return retProps
+  }),
+  withHandlers({
+    fetchGithubUserInfo: props => providerId => {
+      getGithubUserInfo(providerId).then(
+        res => res.json().then(
+          data => {
+            if (data.id) {
+              props.updateGithubData(data)
             }
-          )
+          }
         )
+      )
+    },
+    fetchStackexchangeUserInfo: props => providerId => {
+      getStackexchangeUserInfo(
+        providerId,
+        props.accessToken
+      ).then(
+        res => res.json().then(
+          data => {
+            if (data.items[0]) {
+              props.updateStackexchangeData(data.items[0])
+            }
+          }
+        )
+      )
+    },
+  }),
+  withHandlers({
+    onTabSelect: props => key => {
+      props.updateTabKey(key);
+
+      if (key === 4 && !props.googleProvider && props.isOwner) {
+        addGoogleProvider(props.user.id, props.user.rawId)
+      }
+
+      if (key === 3 && !props.githubProvider && props.isOwner) {
+        addGithubProvider(
+          props.user.id, props.user.rawId, props.fetchGithubUserInfo
+        )
+      }
+
+      if (key === 2 && !props.stackexchangeProvider && props.isOwner) {
+        addStackexchangeProvider(
+          props.user.id, props.user.rawId, props.fetchStackexchangeUserInfo
+        )
+      }
+
+      // Get stackoverflow data
+      if (key === 2 &&
+        props.stackexchangeProvider &&
+        !props.stackexchangeData
+      ) {
+        props.fetchStackexchangeUserInfo(props.stackexchangeProvider.providerId)
+      }
+
+      // Get github data
+      if (key === 3 && props.githubProvider && !props.githubData) {
+        props.fetchGithubUserInfo(props.githubProvider.providerId)
       }
     },
   })

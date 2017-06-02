@@ -77,32 +77,40 @@ const SOIcon = styled(FaStackOverflow)`
   color: #999;
 `
 
-const StackexRepBadge = ({ stackexUser }) => (
+const StackexchangeRepBadge = ({ stackexchangeUser }) => (
   <div>
     <div>
       <h4><SOIcon /> Stackoverflow</h4>
     </div>
     <Reputation>
-      {`${stackexUser.reputation} `}
+      {`${stackexchangeUser.reputation} `}
       <LabelUppercase>reputation</LabelUppercase>
     </Reputation>
-    <BadgeGold title={`${stackexUser.badge_counts.gold} gold badge`}>
+    <BadgeGold title={`${stackexchangeUser.badge_counts.gold} gold badge`}>
       <DotGold />
-      <BadgeCount>{stackexUser.badge_counts.gold}</BadgeCount>
+      <BadgeCount>{stackexchangeUser.badge_counts.gold}</BadgeCount>
     </BadgeGold>
-    <BadgeSilver title={`${stackexUser.badge_counts.silver} silver badge`}>
+    <BadgeSilver
+      title={
+        `${stackexchangeUser.badge_counts.silver} silver badge`
+      }
+    >
       <DotSilver />
-      <BadgeCount>{stackexUser.badge_counts.silver}</BadgeCount>
+      <BadgeCount>{stackexchangeUser.badge_counts.silver}</BadgeCount>
     </BadgeSilver>
-    <BadgeBronze title={`${stackexUser.badge_counts.bronze} bronze badge`}>
+    <BadgeBronze
+      title={
+        `${stackexchangeUser.badge_counts.bronze} bronze badge`
+      }
+    >
       <DotBronze />
-      <BadgeCount>{stackexUser.badge_counts.bronze}</BadgeCount>
+      <BadgeCount>{stackexchangeUser.badge_counts.bronze}</BadgeCount>
     </BadgeBronze>
   </div>
 )
 
-StackexRepBadge.propTypes = {
-  stackexUser: PropTypes.object.isRequired,
+StackexchangeRepBadge.propTypes = {
+  stackexchangeUser: PropTypes.object.isRequired,
 }
 
-export default StackexRepBadge
+export default StackexchangeRepBadge

@@ -1,30 +1,24 @@
 import Relay from 'react-relay/classic';
 
-export class CreateUserMutation extends Relay.Mutation {
+export class AddUserProviderMutation extends Relay.Mutation {
   getMutation() {
-    return Relay.QL`mutation { createUser }`;
+    return Relay.QL`mutation { addUserProvider }`;
   }
 
   getVariables() {
     const {
-      userName,
-      fullName,
-      photoUrl,
-      emailAddress,
-      password,
+      userId,
       provider,
+      userName,
       providerId,
       firebaseId,
       accessToken,
     } = this.props
 
     return {
-      userName,
-      fullName: fullName || null,
-      photoUrl: photoUrl || null,
-      emailAddress: emailAddress || null,
-      password,
+      userId,
       provider,
+      userName,
       providerId: providerId || null,
       firebaseId: firebaseId || null,
       accessToken: accessToken || null,
@@ -36,7 +30,7 @@ export class CreateUserMutation extends Relay.Mutation {
       {
         type: 'FIELDS_CHANGE',
         fieldIDs: {
-          user: this.props.user,
+          user: this.props.id,
         },
       },
     ];
@@ -44,7 +38,7 @@ export class CreateUserMutation extends Relay.Mutation {
 
   getFatQuery() {
     return Relay.QL`
-      fragment on CreateUserPayload @relay(pattern: true) {
+      fragment on AddUserProviderPayload {
         user
       }
     `;

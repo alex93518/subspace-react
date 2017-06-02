@@ -7,7 +7,7 @@ import MainGrid from 'components/shared/MainGrid'
 import ProjectList from 'components/Projects/ProjectList'
 import Profile from './Profile'
 
-export const UserProfile = ({ viewer }) => !viewer ? null : (
+export const UserProfile = ({ viewer }) => viewer.user && (
   <MainGrid>
     <Helmet
       title={viewer.user.fullName}
@@ -16,8 +16,11 @@ export const UserProfile = ({ viewer }) => !viewer ? null : (
         content: `${viewer.user.fullName} profile`,
       }]}
     />
-    <Profile user={viewer.user} accessToken={viewer.actor.accessToken}>
-      <h3>Projects</h3>
+    <Profile
+      user={viewer.user}
+      accessToken={viewer.accessToken}
+      isOwner={viewer.me ? viewer.me.userName === viewer.user.userName : false}
+    >
       <ProjectList viewer={viewer} owner={viewer.user.userName} />
     </Profile>
   </MainGrid>
@@ -34,15 +37,16 @@ export default Relay.createContainer(UserProfile, {
   fragments: {
     viewer: ({ userName }) => Relay.QL`
       fragment on Viewer {
-        user(login: $userName) {
-          userName
+        user (login: $userName) {
           fullName
+          userName
           ${Profile.getFragment('user')}
         }
         ${ProjectList.getFragment('viewer', { owner: userName })}
-        actor {
-          accessToken
+        me: user {
+          userName
         }
+        accessToken
       }
     `,
   },

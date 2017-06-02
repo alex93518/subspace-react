@@ -17,11 +17,10 @@ export const getToken = async (token) => {
   return token
 }
 
-export const getUserInfo = (userId, token) => {
-  const uid = userId.includes('stackexchange') ? userId.slice(13) : null
-  if (uid) {
+export const getStackexchangeUserInfo = (providerId, token) => {
+  if (providerId) {
     const tokenAccess = token ? `&token=${token}&key=${stackexchangeConfig.key}` : ''
-    const apiUrl = `http://api.stackexchange.com/2.2/users/${uid}?site=stackoverflow${tokenAccess}`
+    const apiUrl = `http://api.stackexchange.com/2.2/users/${providerId}?site=stackoverflow&filter=!-*f(6q9XCwod${tokenAccess}`
     return fetch(apiUrl)
   }
 
