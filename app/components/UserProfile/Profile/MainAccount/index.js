@@ -1,6 +1,8 @@
 import React, { PropTypes } from 'react';
 import { Row, Col, Panel } from 'react-bootstrap';
 import styled from 'styled-components';
+import Separator from 'components/shared/Separator';
+import { FaUser } from 'react-icons/lib/fa';
 import ProviderLink from './ProviderLink';
 
 const UserPanel = styled(Panel)`
@@ -15,8 +17,18 @@ const HeadUserName = styled.h2`
   margin-top: 0px;
 `
 
-const SubHeadUserName = styled.h4`
+const SubHead = styled.h4`
   margin-top: 0px;
+  margin-bottom: 15px;
+`
+
+const NameSeparator = styled(Separator)`
+  margin-top: 0px;
+`
+
+const UserIcon = styled(FaUser)`
+  font-size: 140px;
+  color: rgba(3, 102, 214, 0.54);
 `
 
 const MainAccount = ({
@@ -26,21 +38,30 @@ const MainAccount = ({
   <Row>
     <Col md={3}>
       <UserPanel>
-        <img
-          alt={user.fullName}
-          src={user.photoUrl}
-          width={140}
-          height={140}
-          style={{ marginBottom: 10 }}
-        />
+        {
+          user.photoUrl ?
+            <img
+              alt={user.fullName}
+              src={user.photoUrl}
+              width={140}
+              height={140}
+              style={{ marginBottom: 10 }}
+            /> :
+            <UserIcon />
+        }
       </UserPanel>
     </Col>
     <Col md={9}>
       <RowInfoPanel>
-        <Col md={7}>
+        <Col md={12}>
           <HeadUserName>{user.userName}</HeadUserName>
-          <SubHeadUserName>{user.fullName}</SubHeadUserName>
+          <SubHead>{user.fullName}</SubHead>
           {user.email && <div>Email: {user.email}</div>}
+          <NameSeparator />
+          {
+            (stackexchange || github || google || isOwner) &&
+            <SubHead>Linked Accounts</SubHead>
+          }
           <ProviderLink
             isOwner={isOwner}
             providerName={'Stackoverflow'}
@@ -62,8 +83,6 @@ const MainAccount = ({
             handleClick={onProviderClick}
             tabKey={4}
           />
-        </Col>
-        <Col md={5}>
         </Col>
       </RowInfoPanel>
     </Col>

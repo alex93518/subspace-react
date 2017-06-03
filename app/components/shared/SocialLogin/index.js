@@ -1,8 +1,8 @@
 import React, { PropTypes } from 'react';
 import {
-  authActions,
   signInWithGithub,
   signInWithGoogle,
+  signInWithStackexchange,
 } from 'redux/auth/actions';
 import styled from 'styled-components';
 import { FaGoogle, FaGithub, FaStackOverflow } from 'react-icons/lib/fa';
@@ -37,7 +37,7 @@ const SocialLogin = ({ pretext }) => (
     <ButtonSignIn onClick={signInWithGithub}>
       <IconGithub />{pretext || ''} GitHub
     </ButtonSignIn>
-    <ButtonSignIn onClick={authActions.signInWithStackexchange.init}>
+    <ButtonSignIn onClick={signInWithStackexchange}>
       <IconSO />{pretext || ''} Stackoverflow
     </ButtonSignIn>
   </div>

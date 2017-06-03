@@ -37,11 +37,11 @@ const GithubProfile = ({ githubData }) => (
     </Col>
     <Col md={9}>
       <RowInfoPanel>
-        <Col md={7}>
+        <Col md={6}>
           <HeadUserName>{githubData.login}</HeadUserName>
           {githubData.bio && <BioDiv>{githubData.bio}</BioDiv>}
         </Col>
-        <Col md={5}>
+        <Col md={6}>
           <GithubStats githubUser={githubData} />
         </Col>
       </RowInfoPanel>

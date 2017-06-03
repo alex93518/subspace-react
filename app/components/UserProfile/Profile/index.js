@@ -16,7 +16,6 @@ import { getGithubUserInfo } from 'utils/github';
 import StackexchangeProfile from './StackexchangeProfile'
 import GithubProfile from './GithubProfile';
 import MainAccount from './MainAccount';
-import GoogleProfile from './GoogleProfile';
 
 const DivTabContent = styled.div`
   padding: 20px;
@@ -33,7 +32,7 @@ const SpanIcon = styled.span`
 const SpanAddIcon = styled.span`
   vertical-align: text-bottom;
   margin-left: 6px;
-  color: #dc0303;
+  color: #898989;
   font-size: 12px;
 `
 
@@ -60,7 +59,7 @@ const getTabTitle = (provider, providerData, isOwner) => {
 const Profile = ({
   isOwner, user, children,
   stackexchangeProvider, googleProvider, githubProvider,
-  stackexchangeData, googleData, githubData,
+  stackexchangeData, githubData,
   tabKey, onTabSelect,
 }) => (
   <div>
@@ -102,17 +101,6 @@ const Profile = ({
           </DivTabContent>
         </Tab>
       }
-      {
-        (isOwner || googleProvider) &&
-        <Tab
-          eventKey={4}
-          title={getTabTitle('Google', googleProvider, isOwner)}
-        >
-          <DivTabContent>
-            <GoogleProfile googleData={googleData} />
-          </DivTabContent>
-        </Tab>
-      }
     </Tabs>
     {children && (
       <Row>
@@ -131,7 +119,6 @@ Profile.propTypes = {
   googleProvider: PropTypes.object,
   githubProvider: PropTypes.object,
   stackexchangeData: PropTypes.object,
-  googleData: PropTypes.object,
   githubData: PropTypes.object,
   isOwner: PropTypes.bool.isRequired,
   tabKey: PropTypes.number.isRequired,
@@ -213,8 +200,10 @@ export default compose(
     },
   }),
   withHandlers({
-    onTabSelect: props => key => {
-      props.updateTabKey(key);
+    onTabSelect: props => (key, isChangeTab = true) => {
+      if (isChangeTab && key !== 4) {
+        props.updateTabKey(key);
+      }
 
       if (key === 4 && !props.googleProvider && props.isOwner) {
         addGoogleProvider(props.user.id, props.user.rawId)

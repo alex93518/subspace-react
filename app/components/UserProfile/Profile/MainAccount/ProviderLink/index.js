@@ -1,33 +1,25 @@
 import React, { PropTypes } from 'react';
-import { Button } from 'react-bootstrap';
 import styled from 'styled-components';
+import { compose, branch, renderNothing } from 'recompose';
+import ProviderInfo from './ProviderInfo';
 
-const MainDiv = styled.div`
-  margin-bottom: 10px;
+const MainSpan = styled.span`
+  margin-right: 20px;
 `
 
 const ProviderLink = ({
   isOwner, providerName, providerData, handleClick, tabKey,
-}) => {
-  if (isOwner || providerData) {
-    const linkOwner = (isOwner && !providerData) ?
-      (<Button
-        onClick={() => handleClick(tabKey)}
-        bsSize="xsmall"
-        bsStyle="info"
-      >
-        Add {providerName} Account
-      </Button>) : null
-    const link = providerData ?
-      (<Button onClick={() => handleClick(tabKey)} bsSize="xsmall">
-        {providerData.userName}
-      </Button>) : linkOwner
-
-    return <MainDiv>{providerName}: {link}</MainDiv>
-  }
-
-  return null
-}
+}) => (
+  <MainSpan>
+    <ProviderInfo
+      isOwner={isOwner}
+      providerName={providerName}
+      providerData={providerData}
+      handleClick={handleClick}
+      tabKey={tabKey}
+    />
+  </MainSpan>
+)
 
 ProviderLink.propTypes = {
   isOwner: PropTypes.bool.isRequired,
@@ -37,4 +29,9 @@ ProviderLink.propTypes = {
   tabKey: PropTypes.number.isRequired,
 }
 
-export default ProviderLink
+export default compose(
+  branch(
+    props => !props.isOwner && !props.providerData,
+    renderNothing
+  )
+)(ProviderLink)
