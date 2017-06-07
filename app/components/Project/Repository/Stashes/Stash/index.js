@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import { Table } from 'react-bootstrap';
 import StashHead from './Head';
 import StashCommitStatus from './CommitStatus';
+import StashComment from './StashComment';
 
 const TableStashes = styled(Table)`
   margin-top: 20px;
@@ -18,6 +19,7 @@ const Stash = ({ stash, relay: { variables } }) => (
     <tbody>
       <StashHead stashHead={stash} {...variables} />
       <StashCommitStatus stashCommitStatus={stash.target} {...variables} />
+      <StashComment stashComment={stash} {...variables} />
     </tbody>
   </TableStashes>
 )
@@ -37,6 +39,7 @@ export default Relay.createContainer(Stash, {
     stash: vars => Relay.QL`
       fragment on Ref {
         ${StashHead.getFragment('stashHead', vars)}
+        ${StashComment.getFragment('stashComment', vars)}
         target {
           ... on Commit {
             ${StashCommitStatus.getFragment('stashCommitStatus', vars)}
