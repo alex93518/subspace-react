@@ -8,16 +8,12 @@ import { createContainer } from 'recompose-relay'
 import styled from 'styled-components';
 import { getProjectPath } from 'utils/path';
 import { LinkUserName, LinkProject } from 'components/shared/Links';
-import { shortBranchName, timeFromNow } from 'utils/string';
+import { shortBranchName } from 'utils/string';
 
-const TdMain = styled.td`
-  padding: 10px 18px !important;
-  vertical-align: middle !important;
+const MainDiv = styled.div`
+  margin-bottom: 20px;
 `
-const TdAcceptStash = styled.td`
-  text-align: right;
-  padding-right: 24px !important;
-`
+
 const StashLabel = styled.span`
   font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
   font-weight: 600;
@@ -27,6 +23,14 @@ const StashLabel = styled.span`
   font-size: 13px;
   padding: 4px 8px;
   margin-right: 10px;
+`
+
+const H2Head = styled.h2`
+  margin-top: 0px;
+`
+
+const SpanStashNum = styled.span`
+  margin-right: 20px;
 `
 
 const handleSubmit = ({ ...props }, relayVars) => {
@@ -41,42 +45,43 @@ const handleSubmit = ({ ...props }, relayVars) => {
   )
 }
 
-const StashHead = ({ name, commitTime, repositoryId, user, variables }) => (
-  <tr>
-    <TdMain>
-      <LinkProject to={shortBranchName(name)} vars={variables}>
-        <StashLabel>
-          {shortBranchName(name)}
-        </StashLabel>
-      </LinkProject>
-      <span>
-        Updated {timeFromNow(commitTime)} by
+const StashHead = ({
+  name, repositoryId, user, variables, stashNum, totalCommit,
+}) => (
+  <MainDiv>
+    <div>
+      <H2Head>
+        <SpanStashNum>Stash #{stashNum}</SpanStashNum>
+        <Button
+          className="btn btn-info btn-sm"
+          onClick={() =>
+            handleSubmit({
+              repositoryId,
+              stashName: shortBranchName(name),
+            }, variables)
+          }
+        >
+          Accept
+        </Button>
+      </H2Head>
+      <div>
+        <LinkUserName user={user} /> wants to push {totalCommit} commits into
         {' '}
-        <LinkUserName user={user} />
-      </span>
-    </TdMain>
-    <TdAcceptStash>
-      <Button
-        className="btn btn-info btn-sm"
-        onClick={() =>
-          handleSubmit({
-            repositoryId,
-            stashName: shortBranchName(name),
-          }, variables)
-        }
-      >
-        Accept
-      </Button>
-    </TdAcceptStash>
-  </tr>
+        <LinkProject to={'master'} vars={variables}>
+          <StashLabel>master</StashLabel>
+        </LinkProject>
+      </div>
+    </div>
+  </MainDiv>
 )
 
 StashHead.propTypes = {
   name: PropTypes.string.isRequired,
-  commitTime: PropTypes.number.isRequired,
   repositoryId: PropTypes.string.isRequired,
   user: PropTypes.object.isRequired,
   variables: PropTypes.object.isRequired,
+  stashNum: PropTypes.number.isRequired,
+  totalCommit: PropTypes.number.isRequired,
 }
 
 export default compose(
@@ -93,9 +98,14 @@ export default compose(
           repository {
             rawId
           }
+          stash {
+            stashNum
+          }
           target {
             ... on Commit {
-              commitTime
+              history(first: 99, isStash: true) {
+                totalCount
+              }
               author {
                 user {
                   ${LinkUserName.getFragment('user')}
@@ -113,8 +123,11 @@ export default compose(
       repository: {
         rawId,
       },
+      stash: {
+        stashNum,
+      },
       target: {
-        commitTime,
+        history: { totalCount },
         author: { user },
       },
     },
@@ -123,7 +136,8 @@ export default compose(
     ...stashHead,
     repositoryId: rawId,
     user,
-    commitTime,
+    totalCommit: totalCount,
     variables,
+    stashNum,
   })),
 )(StashHead)

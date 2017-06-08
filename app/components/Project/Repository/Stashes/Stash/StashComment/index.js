@@ -3,21 +3,31 @@ import Relay from 'react-relay/classic';
 import { createContainer } from 'recompose-relay';
 import CurrentRelay, { AddStashCommentMutation } from 'relay';
 import { compose, withHandlers } from 'recompose';
+import styled from 'styled-components';
+import Separator from 'components/shared/Separator';
 import CommentForm from './CommentForm';
 import CommentList from './CommentList';
+
+const MainDiv = styled.div`
+  margin-top: 10px;
+`
+
+const HeadSeparator = styled(Separator)`
+  background: #ddd;
+  margin-top: 0px;
+`
 
 const StashComment = ({
   stashComment: { stash, stash: { comments: { totalCount } } },
   submitComment,
   relay: { variables },
 }) => (
-  <tr>
-    <td colSpan={2}>
-      <div>{totalCount} comments</div>
-      <CommentList commentList={stash} {...variables} />
-      <CommentForm handleSubmit={submitComment} />
-    </td>
-  </tr>
+  <MainDiv>
+    <h4>Comments ({totalCount})</h4>
+    <HeadSeparator />
+    <CommentList commentList={stash} {...variables} />
+    <CommentForm handleSubmit={submitComment} />
+  </MainDiv>
 )
 
 StashComment.propTypes = {
