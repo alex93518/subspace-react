@@ -1,17 +1,16 @@
 import React, { PropTypes } from 'react';
 import Relay from 'react-relay/classic';
-import { Button } from 'react-bootstrap';
-import { redirect } from 'redux/utils'
-import CurrentRelay, { MergeStashMutation } from 'relay';
-import { compose, mapProps } from 'recompose';
+import { Row, Col } from 'react-bootstrap';
+import CurrentRelay, { VoteStashMutation } from 'relay';
+import { compose, withState, mapProps, withHandlers } from 'recompose';
 import { createContainer } from 'recompose-relay'
 import styled from 'styled-components';
-import { getProjectPath } from 'utils/path';
+import { FaCaretUp, FaCaretDown } from 'react-icons/lib/fa';
 import { LinkUserName, LinkProject } from 'components/shared/Links';
-import { shortBranchName } from 'utils/string';
 
-const MainDiv = styled.div`
+const MainRow = styled(Row)`
   margin-bottom: 20px;
+  border: 0px;
 `
 
 const StashLabel = styled.span`
@@ -33,36 +32,45 @@ const SpanStashNum = styled.span`
   margin-right: 20px;
 `
 
-const handleSubmit = ({ ...props }, relayVars) => {
-  CurrentRelay.Store.commitUpdate(
-    new MergeStashMutation({
-      ...props,
-    }),
-    {
-      onSuccess: () => redirect(`${getProjectPath(relayVars)}/master`),
-      onFailure: transaction => console.log(transaction.getError()),
-    }
-  )
-}
+const IconUp = styled(FaCaretUp)`
+  font-size: 38px;
+  cursor: pointer;
+  color: ${props => props['data-isVotedUp'] ? '#3c9f3c' : '#aaa'};
+`
+
+const IconDown = styled(FaCaretDown)`
+  font-size: 38px;
+  cursor: pointer;
+  color: ${props => props['data-isVotedDown'] ? '#3c9f3c' : '#aaa'};
+`
+
+const NumberDiv = styled.div`
+  font-size: 22px;
+  font-weight: 700;
+  color: #444;
+`
+
+const IconCol = styled(Col)`
+  padding-left: 0px;
+  padding-right: 0px;
+  text-align: center;
+`
 
 const StashHead = ({
-  name, repositoryId, user, variables, stashNum, totalCommit,
+  user, variables, stashNum, totalCommit, onVote,
+  totalVotePoints, isVotedUp, isVotedDown,
 }) => (
-  <MainDiv>
-    <div>
+  <MainRow>
+    <IconCol md={1}>
+      <IconUp onClick={() => onVote(true)} data-isVotedUp={isVotedUp} />
+      <NumberDiv>
+        { totalVotePoints || '0' }
+      </NumberDiv>
+      <IconDown onClick={() => onVote(false)} data-isVotedDown={isVotedDown} />
+    </IconCol>
+    <Col md={11}>
       <H2Head>
         <SpanStashNum>Stash #{stashNum}</SpanStashNum>
-        <Button
-          className="btn btn-info btn-sm"
-          onClick={() =>
-            handleSubmit({
-              repositoryId,
-              stashName: shortBranchName(name),
-            }, variables)
-          }
-        >
-          Accept
-        </Button>
       </H2Head>
       <div>
         <LinkUserName user={user} /> wants to push {totalCommit} commits into
@@ -71,17 +79,25 @@ const StashHead = ({
           <StashLabel>master</StashLabel>
         </LinkProject>
       </div>
-    </div>
-  </MainDiv>
+      <h5>
+        Accepts (0)
+      </h5>
+      <h5>
+        Rejects (0)
+      </h5>
+    </Col>
+  </MainRow>
 )
 
 StashHead.propTypes = {
-  name: PropTypes.string.isRequired,
-  repositoryId: PropTypes.string.isRequired,
   user: PropTypes.object.isRequired,
   variables: PropTypes.object.isRequired,
   stashNum: PropTypes.number.isRequired,
   totalCommit: PropTypes.number.isRequired,
+  onVote: PropTypes.func.isRequired,
+  totalVotePoints: PropTypes.number.isRequired,
+  isVotedUp: PropTypes.bool.isRequired,
+  isVotedDown: PropTypes.bool.isRequired,
 }
 
 export default compose(
@@ -94,12 +110,14 @@ export default compose(
     fragments: {
       stashHead: () => Relay.QL`
         fragment on Ref {
-          name
-          repository {
-            rawId
-          }
+          id
+          rawId
           stash {
+            rawId
             stashNum
+            votes {
+              totalVotePoints
+            }
           }
           target {
             ... on Commit {
@@ -117,14 +135,14 @@ export default compose(
       `,
     },
   }),
+  withState('isVotedUp', 'updateIsVotedUp', false),
+  withState('isVotedDown', 'updateIsVotedDown', false),
   mapProps(({
     stashHead,
     stashHead: {
-      repository: {
-        rawId,
-      },
+      stash,
       stash: {
-        stashNum,
+        votes: { totalVotePoints },
       },
       target: {
         history: { totalCount },
@@ -132,12 +150,44 @@ export default compose(
       },
     },
     relay: { variables },
+    ...rest
   }) => ({
-    ...stashHead,
-    repositoryId: rawId,
-    user,
+    totalVotePoints,
     totalCommit: totalCount,
+    stashNum: stash.stashNum,
+    user,
     variables,
-    stashNum,
+    ...rest,
   })),
+  withHandlers({
+    toggleVote: props => isVoteUp => {
+      if (isVoteUp === null) {
+        props.updateIsVotedUp(false)
+        props.updateIsVotedDown(false)
+      } else if (isVoteUp) {
+        props.updateIsVotedUp(true)
+        props.updateIsVotedDown(false)
+      } else {
+        props.updateIsVotedUp(false)
+        props.updateIsVotedDown(true)
+      }
+    },
+  }),
+  withHandlers({
+    onVote: props => isVoteUp => {
+      const voteVar = typeof (isVoteUp) === 'boolean' ? isVoteUp : null
+      props.toggleVote(voteVar)
+      CurrentRelay.Store.commitUpdate(
+        new VoteStashMutation({
+          isVoteUp,
+          stashId: props.stash.rawId || null,
+          stashRefId: props.rawId,
+        }),
+        {
+          onSuccess: () => console.log('vote success'),
+          onFailure: transaction => console.log(transaction.getError()),
+        }
+      )
+    },
+  })
 )(StashHead)

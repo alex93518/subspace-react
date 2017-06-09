@@ -1,5 +1,6 @@
 const path = require('path');
 const webpack = require('webpack');
+const HappyPack = require('happypack');
 
 module.exports = options => ({
   entry: options.entry,
@@ -10,7 +11,7 @@ module.exports = options => ({
   module: {
     loaders: [{
       test: /\.js$/, // Transform all .js files required somewhere with Babel
-      loader: 'babel-loader',
+      loader: 'happypack/loader',
       exclude: /node_modules/,
       query: options.babelQuery,
     }, {
@@ -49,6 +50,10 @@ module.exports = options => ({
     }),
     new webpack.NamedModulesPlugin(),
     // new webpack.IgnorePlugin(/\.\/locale$/),
+    new HappyPack({
+      threads: 4,
+      loaders: ['babel-loader'],
+    }),
   ]),
   resolve: {
     modules: ['app', 'node_modules'],
