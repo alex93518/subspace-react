@@ -14,45 +14,38 @@ export function* signInWithStackexchangeFn({
   let photoUrl = ''
   let expirationDate = ''
 
-  const seProviderId = localStorage.getItem('seProviderId')
-  const seExpire = localStorage.getItem('seExpire')
+  // const seProviderId = localStorage.getItem('seProviderId')
+  // const seExpire = localStorage.getItem('seExpire')
 
-  if (seProviderId && seExpire && (
-    moment().isBefore(moment.unix(seExpire))
-  )) {
-    providerId = seProviderId
-    accessToken = localStorage.getItem('seAccessToken')
-  } else {
-    const init = () => (
-      new Promise(resolve => {
-        stackexchange.init({
-          ...stackexchangeConfig,
-          channelUrl: 'http://localhost/blank.html',
-          complete: resolve,
-        })
+  const init = () => (
+    new Promise(resolve => {
+      stackexchange.init({
+        ...stackexchangeConfig,
+        channelUrl: 'http://localhost/blank.html',
+        complete: resolve,
       })
-    )
+    })
+  )
 
-    const auth = () => (
-      new Promise(resolve => {
-        stackexchange.authenticate({
-          networkUsers: true,
-          success: resolve,
-        })
+  const auth = () => (
+    new Promise(resolve => {
+      stackexchange.authenticate({
+        networkUsers: true,
+        success: resolve,
       })
-    )
+    })
+  )
 
-    yield call(init)
-    const seAuth = yield call(auth)
-    if (seAuth && seAuth.networkUsers.length > 0) {
-      const userData = seAuth.networkUsers[0]
-      const { user_id, display_name, profile_image } = userData
-      providerId = String(user_id) // eslint-disable-line
-      accessToken = seAuth.accessToken
-      displayName = display_name // eslint-disable-line
-      photoUrl = profile_image // eslint-disable-line
-      expirationDate = seAuth.expirationDate
-    }
+  yield call(init)
+  const seAuth = yield call(auth)
+  if (seAuth && seAuth.networkUsers.length > 0) {
+    const userData = seAuth.networkUsers[0]
+    const { user_id, display_name, profile_image } = userData
+    providerId = String(user_id) // eslint-disable-line
+    accessToken = seAuth.accessToken
+    displayName = display_name // eslint-disable-line
+    photoUrl = profile_image // eslint-disable-line
+    expirationDate = seAuth.expirationDate
   }
 
   yield call(

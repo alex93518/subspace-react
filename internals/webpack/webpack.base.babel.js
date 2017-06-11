@@ -51,7 +51,7 @@ module.exports = options => ({
     new webpack.NamedModulesPlugin(),
     // new webpack.IgnorePlugin(/\.\/locale$/),
     new HappyPack({
-      threads: 4,
+      threads: 8,
       loaders: ['babel-loader'],
     }),
   ]),

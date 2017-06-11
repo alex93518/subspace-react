@@ -1,12 +1,14 @@
 import React, { PropTypes } from 'react';
 import Relay from 'react-relay/classic';
-import { Row, Col } from 'react-bootstrap';
-import CurrentRelay, { VoteStashMutation } from 'relay';
+import { Row, Col, Modal } from 'react-bootstrap';
+import CurrentRelay, { VoteStashMutation, MergeStashMutation } from 'relay';
 import { compose, withState, mapProps, withHandlers } from 'recompose';
+import { redirect } from 'redux/utils'
 import { createContainer } from 'recompose-relay'
 import styled from 'styled-components';
 import { FaCaretUp, FaCaretDown } from 'react-icons/lib/fa';
 import { LinkUserName, LinkProject } from 'components/shared/Links';
+import { getProjectPath } from 'utils/path';
 
 const MainRow = styled(Row)`
   margin-bottom: 20px;
@@ -33,21 +35,21 @@ const SpanStashNum = styled.span`
 `
 
 const IconUp = styled(FaCaretUp)`
-  font-size: 38px;
+  font-size: 48px;
   cursor: pointer;
-  color: ${props => props['data-isVotedUp'] ? '#3c9f3c' : '#aaa'};
+  margin-top: -10px;
+  color: ${props => props['data-isVotedUp'] ? '#2cbe4e' : '#aaa'};
 `
 
 const IconDown = styled(FaCaretDown)`
-  font-size: 38px;
+  font-size: 48px;
   cursor: pointer;
-  color: ${props => props['data-isVotedDown'] ? '#3c9f3c' : '#aaa'};
+  color: ${props => props['data-isVotedDown'] ? '#cb2431' : '#aaa'};
 `
 
 const NumberDiv = styled.div`
-  font-size: 22px;
+  font-size: 16px;
   font-weight: 700;
-  color: #444;
 `
 
 const IconCol = styled(Col)`
@@ -56,15 +58,36 @@ const IconCol = styled(Col)`
   text-align: center;
 `
 
+const DivVoteStats = styled.div`
+  margin-top: 10px;
+`
+
+const SpanAcceptPoint = styled.span`
+  font-weight: 700;
+  color: #2cbe4e;
+`
+
+const SpanRejectPoint = styled.span`
+  font-weight: 700;
+  color: #cb2431;
+`
+
 const StashHead = ({
   user, variables, stashNum, totalCommit, onVote,
-  totalVotePoints, isVotedUp, isVotedDown,
+  totalVotePoints, isVotedUp, isVotedDown, voteTreshold,
+  acceptVotes, rejectVotes, isMerging, updateIsMerging,
 }) => (
   <MainRow>
+    <Modal show={isMerging} onHide={() => updateIsMerging(false)}>
+      <Modal.Body>
+        <h3>Accepted</h3>
+        Merging...
+      </Modal.Body>
+    </Modal>
     <IconCol md={1}>
       <IconUp onClick={() => onVote(true)} data-isVotedUp={isVotedUp} />
       <NumberDiv>
-        { totalVotePoints || '0' }
+        { totalVotePoints || '0' } of { voteTreshold }
       </NumberDiv>
       <IconDown onClick={() => onVote(false)} data-isVotedDown={isVotedDown} />
     </IconCol>
@@ -79,12 +102,20 @@ const StashHead = ({
           <StashLabel>master</StashLabel>
         </LinkProject>
       </div>
-      <h5>
-        Accepts (0)
-      </h5>
-      <h5>
-        Rejects (0)
-      </h5>
+      <DivVoteStats>
+        <div>
+          <SpanAcceptPoint>
+            {acceptVotes.totalVotePoints}
+          </SpanAcceptPoint> acceptance points from
+          {` ${acceptVotes.totalCount}`} users.
+        </div>
+        <div>
+          <SpanRejectPoint>
+            {rejectVotes.totalVotePoints}
+          </SpanRejectPoint> rejection points from
+          {` ${rejectVotes.totalCount}`} users.
+        </div>
+      </DivVoteStats>
     </Col>
   </MainRow>
 )
@@ -96,8 +127,13 @@ StashHead.propTypes = {
   totalCommit: PropTypes.number.isRequired,
   onVote: PropTypes.func.isRequired,
   totalVotePoints: PropTypes.number.isRequired,
+  voteTreshold: PropTypes.number.isRequired,
   isVotedUp: PropTypes.bool.isRequired,
   isVotedDown: PropTypes.bool.isRequired,
+  acceptVotes: PropTypes.object.isRequired,
+  rejectVotes: PropTypes.object.isRequired,
+  isMerging: PropTypes.bool.isRequired,
+  updateIsMerging: PropTypes.func.isRequired,
 }
 
 export default compose(
@@ -112,10 +148,25 @@ export default compose(
         fragment on Ref {
           id
           rawId
+          name
+          repository {
+            id
+            rawId
+          }
           stash {
             rawId
             stashNum
-            votes {
+            voteTreshold
+            votes (first: 9999) {
+              totalVotePoints
+            }
+            isUserVoted
+            acceptVotes {
+              totalCount
+              totalVotePoints
+            }
+            rejectVotes {
+              totalCount
               totalVotePoints
             }
           }
@@ -135,33 +186,60 @@ export default compose(
       `,
     },
   }),
-  withState('isVotedUp', 'updateIsVotedUp', false),
-  withState('isVotedDown', 'updateIsVotedDown', false),
   mapProps(({
-    stashHead,
+    id,
+    repository,
     stashHead: {
       stash,
       stash: {
-        votes: { totalVotePoints },
+        votes: {
+          totalVotePoints,
+        },
+        acceptVotes,
+        rejectVotes,
+        voteTreshold,
+        stashNum,
       },
       target: {
         history: { totalCount },
         author: { user },
       },
+      ...rest
     },
     relay: { variables },
-    ...rest
   }) => ({
+    id,
     totalVotePoints,
     totalCommit: totalCount,
-    stashNum: stash.stashNum,
+    stashNum,
     user,
     variables,
+    voteTreshold,
+    stash,
+    acceptVotes,
+    rejectVotes,
+    repository,
     ...rest,
   })),
+  withState(
+    'isVotedUp', 'updateIsVotedUp',
+    props => !!props.stash.isUserVoted
+  ),
+  withState(
+    'isVotedDown', 'updateIsVotedDown',
+    props => (
+      props.stash.isUserVoted == null ?
+        false : !props.stash.isUserVoted
+    )
+  ),
+  withState('isMerging', 'updateIsMerging', false),
   withHandlers({
     toggleVote: props => isVoteUp => {
-      if (isVoteUp === null) {
+      if (
+        isVoteUp === null ||
+        (isVoteUp && isVoteUp === props.isVotedUp) ||
+        (!isVoteUp && !isVoteUp === props.isVotedDown)
+      ) {
         props.updateIsVotedUp(false)
         props.updateIsVotedDown(false)
       } else if (isVoteUp) {
@@ -179,12 +257,35 @@ export default compose(
       props.toggleVote(voteVar)
       CurrentRelay.Store.commitUpdate(
         new VoteStashMutation({
+          id: props.id,
           isVoteUp,
           stashId: props.stash.rawId || null,
           stashRefId: props.rawId,
         }),
         {
-          onSuccess: () => console.log('vote success'),
+          onSuccess: resp => {
+            const { voteStash: { ref: { stash } } } = resp
+            const acceptVotePoints = stash.acceptVotes.totalVotePoints
+            const rejectVotePoints = stash.rejectVotes.totalVotePoints
+            const totalPoints = acceptVotePoints + rejectVotePoints
+            if (totalPoints >= stash.voteTreshold) {
+              props.updateIsMerging(true);
+              CurrentRelay.Store.commitUpdate(
+                new MergeStashMutation({
+                  id: props.repository.id,
+                  stashName: props.name,
+                  repositoryId: props.repository.rawId,
+                }),
+                {
+                  onSuccess: () => {
+                    props.updateIsMerging(false)
+                    redirect(`${getProjectPath(props.variables)}/master`)
+                  },
+                  onFailure: transaction => console.log(transaction.getError()),
+                }
+              )
+            }
+          },
           onFailure: transaction => console.log(transaction.getError()),
         }
       )

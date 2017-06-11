@@ -1,15 +1,29 @@
 import React, { PropTypes } from 'react';
 import Relay from 'react-relay/classic';
+import { Row, Col } from 'react-bootstrap';
 import StashHead from './Head';
 import StashCommitStatus from './CommitStatus';
 import StashComment from './StashComment';
+import UserVoteList from './UserVoteList';
 
 const Stash = ({ stash, relay: { variables } }) => (
-  <div>
-    <StashHead stashHead={stash} {...variables} />
-    <StashCommitStatus stashCommitStatus={stash.target} {...variables} />
-    <StashComment stashComment={stash} {...variables} />
-  </div>
+  <Row>
+    <Col md={10}>
+      <StashHead stashHead={stash} {...variables} />
+      <StashCommitStatus stashCommitStatus={stash.target} {...variables} />
+      <StashComment stashComment={stash} {...variables} />
+    </Col>
+    <Col md={2}>
+      <UserVoteList
+        userVoteList={stash.stash.acceptVotes}
+        title={'Accepted by'}
+      />
+      <UserVoteList
+        userVoteList={stash.stash.rejectVotes}
+        title={'Rejected by'}
+      />
+    </Col>
+  </Row>
 )
 
 Stash.propTypes = {
@@ -28,6 +42,14 @@ export default Relay.createContainer(Stash, {
       fragment on Ref {
         ${StashHead.getFragment('stashHead', vars)}
         ${StashComment.getFragment('stashComment', vars)}
+        stash {
+          acceptVotes (first: 9999) {
+            ${UserVoteList.getFragment('userVoteList')}
+          }
+          rejectVotes (first: 9999) {
+            ${UserVoteList.getFragment('userVoteList')}
+          }
+        }
         target {
           ... on Commit {
             ${StashCommitStatus.getFragment('stashCommitStatus', vars)}

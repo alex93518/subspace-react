@@ -6,13 +6,21 @@ export class MergeStashMutation extends Relay.Mutation {
   }
 
   getVariables() {
-    return this.props
+    const {
+      repositoryId,
+      stashName,
+    } = this.props
+
+    return {
+      repositoryId,
+      stashName,
+    };
   }
 
   getFatQuery() {
     return Relay.QL`
-      fragment on MergeStashPayload @relay(pattern: true) {
-        stashes
+      fragment on MergeStashPayload {
+        repository
       }
     `
   }
@@ -22,6 +30,7 @@ export class MergeStashMutation extends Relay.Mutation {
       {
         type: 'FIELDS_CHANGE',
         fieldIDs: {
+          repository: this.props.id,
         },
       },
     ]
