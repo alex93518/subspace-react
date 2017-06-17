@@ -5,9 +5,11 @@ import { createContainer } from 'recompose-relay';
 import styled from 'styled-components';
 import { compose, withState, mapProps, withHandlers } from 'recompose';
 import R from 'ramda';
-import {
-  FaPlusCircle, FaStackOverflow, FaGithub, FaGoogle, FaAt,
-} from 'react-icons/lib/fa';
+import FaPlusCircle from 'react-icons/lib/fa/plus-circle'
+import FaStackOverflow from 'react-icons/lib/fa/stack-overflow'
+import FaGithub from 'react-icons/lib/fa/github'
+import FaGoogle from 'react-icons/lib/fa/google'
+import FaAt from 'react-icons/lib/fa/at'
 import {
   addGithubProvider, addStackexchangeProvider, addGoogleProvider,
 } from 'redux/auth/actions';

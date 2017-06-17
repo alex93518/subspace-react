@@ -6,7 +6,8 @@ import { compose, withState, mapProps, withHandlers } from 'recompose';
 import { redirect } from 'redux/utils'
 import { createContainer } from 'recompose-relay'
 import styled from 'styled-components';
-import { FaCaretUp, FaCaretDown } from 'react-icons/lib/fa';
+import FaCaretUp from 'react-icons/lib/fa/caret-up';
+import FaCaretDown from 'react-icons/lib/fa/caret-down';
 import { LinkUserName, LinkProject } from 'components/shared/Links';
 import { getProjectPath } from 'utils/path';
 

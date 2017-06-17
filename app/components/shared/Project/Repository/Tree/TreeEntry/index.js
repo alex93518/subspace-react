@@ -3,7 +3,8 @@ import Relay from 'react-relay/classic';
 import moment from 'moment';
 import styled from 'styled-components';
 import { LinkTreeEntry, LinkCommit } from 'components/shared/Links';
-import { GoFileDirectory, GoFileText } from 'react-icons/lib/go';
+import GoFileDirectory from 'react-icons/lib/go/file-directory';
+import GoFileText from 'react-icons/lib/go/file-text';
 import { bytesToSize } from 'utils/string';
 
 const IconBlue = styled.span`

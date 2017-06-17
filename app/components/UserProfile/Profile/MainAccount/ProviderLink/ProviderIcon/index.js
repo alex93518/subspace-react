@@ -1,5 +1,7 @@
 import React, { PropTypes } from 'react';
-import { FaStackOverflow, FaGithub, FaGoogle } from 'react-icons/lib/fa';
+import FaGoogle from 'react-icons/lib/fa/google';
+import FaGithub from 'react-icons/lib/fa/github';
+import FaStackOverflow from 'react-icons/lib/fa/stack-overflow';
 
 const ProviderIcon = ({ providerName }) => {
   if (providerName === 'Stackoverflow') {

@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
 import styled from 'styled-components';
-import { FaStackOverflow } from 'react-icons/lib/fa';
+import FaStackOverflow from 'react-icons/lib/fa/stack-overflow';
 
 const Reputation = styled.div`
   padding: 5px 0;

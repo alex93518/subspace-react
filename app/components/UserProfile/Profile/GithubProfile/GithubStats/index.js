@@ -1,9 +1,10 @@
 import React, { PropTypes } from 'react';
 import styled from 'styled-components';
-import {
-  MdLocationOn, MdInsertLink, MdHistory, MdAccessTime,
-} from 'react-icons/lib/md';
-import { FaGithub } from 'react-icons/lib/fa';
+import MdLocationOn from 'react-icons/lib/md/location-on'
+import MdInsertLink from 'react-icons/lib/md/insert-link'
+import MdHistory from 'react-icons/lib/md/history'
+import MdAccessTime from 'react-icons/lib/md/access-time'
+import FaGithub from 'react-icons/lib/fa/github';
 import { Row, Col } from 'react-bootstrap';
 import moment from 'moment';
 

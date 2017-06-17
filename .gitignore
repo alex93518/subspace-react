@@ -4,6 +4,7 @@ build
 node_modules
 stats.json
 app/utils/firebase/config.js
+webpack_cache
 __generated__/
 
 # Cruft

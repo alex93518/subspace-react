@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import { compose, withState, withHandlers } from 'recompose'
 import { Button, Tooltip, OverlayTrigger } from 'react-bootstrap';
 import CopyToClipboard from 'react-copy-to-clipboard';
-import { GoClippy } from 'react-icons/lib/go'
+import GoClippy from 'react-icons/lib/go/clippy'
 
 const ButtonCopy = styled(Button)`
   background-color: #eff3f6;

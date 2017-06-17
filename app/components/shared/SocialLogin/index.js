@@ -5,7 +5,9 @@ import {
   signInWithStackexchange,
 } from 'redux/auth/actions';
 import styled from 'styled-components';
-import { FaGoogle, FaGithub, FaStackOverflow } from 'react-icons/lib/fa';
+import FaGoogle from 'react-icons/lib/fa/google';
+import FaGithub from 'react-icons/lib/fa/github';
+import FaStackOverflow from 'react-icons/lib/fa/stack-overflow';
 import { ButtonGit } from 'components/shared/ButtonGit';
 
 const ButtonSignIn = styled(ButtonGit)`

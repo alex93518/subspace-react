@@ -4,7 +4,7 @@ import { createContainer } from 'recompose-relay'
 import { compose, mapProps, branch, renderComponent } from 'recompose';
 import { Table, Alert } from 'react-bootstrap';
 import styled from 'styled-components';
-import { GoBook } from 'react-icons/lib/go'
+import GoBook from 'react-icons/lib/go/book'
 import Blob from 'components/shared/Project/Repository/Blob';
 
 const NoReadme = () => (

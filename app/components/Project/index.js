@@ -2,8 +2,10 @@ import React, { PropTypes } from 'react';
 import Relay from 'react-relay/classic';
 import styled from 'styled-components'
 import { Grid } from 'react-bootstrap';
-import { GoCode, GoIssueOpened, GoQuestion } from 'react-icons/lib/go'
-import { MdInsertChart } from 'react-icons/lib/md'
+import GoCode from 'react-icons/lib/go/code'
+import GoIssueOpened from 'react-icons/lib/go/issue-opened'
+import GoQuestion from 'react-icons/lib/go/question'
+import MdInsertChart from 'react-icons/lib/md/insert-chart'
 import NavTabs from 'components/shared/NavTabs';
 import RepoLink from 'components/shared/repo/TitleLink'
 import { routeName } from 'utils/routeMatcher'

@@ -2,7 +2,7 @@ import React, { PropTypes } from 'react';
 import Relay from 'react-relay/classic';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { FaUser } from 'react-icons/lib/fa';
+import FaUser from 'react-icons/lib/fa/user';
 import { getUserProfilePath } from 'utils/path';
 
 const UserIcon = styled(FaUser)`

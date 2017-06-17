@@ -2,7 +2,7 @@ import React, { PropTypes } from 'react';
 import { Row, Col, Panel } from 'react-bootstrap';
 import styled from 'styled-components';
 import Separator from 'components/shared/Separator';
-import { FaUser } from 'react-icons/lib/fa';
+import FaUser from 'react-icons/lib/fa/user';
 import ProviderLink from './ProviderLink';
 
 const UserPanel = styled(Panel)`

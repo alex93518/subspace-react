@@ -3,12 +3,10 @@ import Relay from 'react-relay/classic';
 import { Row, Col } from 'react-bootstrap';
 import styled from 'styled-components';
 import { LinkBranch, LinkProject } from 'components/shared/Links';
-import {
-  GoHistory,
-  GoRepoPush,
-  GoGitBranch,
-  GoOrganization,
-} from 'react-icons/lib/go'
+import GoHistory from 'react-icons/lib/go/history'
+import GoRepoPush from 'react-icons/lib/go/repo-push'
+import GoGitBranch from 'react-icons/lib/go/git-branch'
+import GoOrganization from 'react-icons/lib/go/organization'
 
 const RowSty = styled(Row)`
   background-color: white;
