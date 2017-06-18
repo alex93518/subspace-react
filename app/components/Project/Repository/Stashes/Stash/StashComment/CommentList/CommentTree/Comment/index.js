@@ -18,32 +18,51 @@ const DivLinkPhoto = styled.div`
   border-radius: 3px;
 `
 
+const PanelComment = styled(Panel)`
+  & .panel-heading {
+    background: ${props => {
+      let color = '#fcfcfc';
+      if (props['data-isOwnerVoteUp'] !== null) {
+        if (props['data-isOwnerVoteUp']) {
+          color = 'rgba(45, 132, 48, 0.11)'
+        } else {
+          color = 'rgba(203, 36, 36, 0.08)'
+        }
+      }
+      return color
+    }};
+  }
+`
+
 const Comment = ({
-  comment, isShowFooter, stashData, parentId,
-  comment: { content, owner },
+  comment, isShowReply, stashData, parentId,
+  comment: { content, owner, isOwnerVoteUp },
 }) => (
   <MainDiv>
     <DivLinkPhoto>
       <LinkUserPhoto user={owner} width={44} height={44} />
     </DivLinkPhoto>
-    <Panel
+    <PanelComment
+      data-isOwnerVoteUp={isOwnerVoteUp}
       header={
         <CommentHeader commentHeader={comment} />
       }
-      footer={isShowFooter ?
+      footer={
         <CommentFooter
           stashData={stashData}
           parentId={parentId}
-        /> : null}
+          isShowReply={isShowReply}
+        />
+      }
     >
       <div dangerouslySetInnerHTML={{ __html: content }} />
-    </Panel>
+    </PanelComment>
   </MainDiv>
 )
 
 Comment.propTypes = {
   comment: PropTypes.object.isRequired,
-  isShowFooter: PropTypes.bool,
+  isShowReply: PropTypes.bool.isRequired,
   stashData: PropTypes.object.isRequired,
   parentId: PropTypes.string,
 }
@@ -62,6 +81,7 @@ export default Relay.createContainer(Comment, {
         owner {
           ${LinkUserPhoto.getFragment('user')}
         }
+        isOwnerVoteUp
         content
         createdAt
       }

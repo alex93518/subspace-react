@@ -1,13 +1,60 @@
 import React, { PropTypes } from 'react';
 import Relay from 'react-relay/classic';
 import moment from 'moment';
+import styled from 'styled-components';
 import { LinkUserName } from 'components/shared/Links';
+import FaCaretUp from 'react-icons/lib/fa/caret-up';
+import FaCaretDown from 'react-icons/lib/fa/caret-down';
 
-const CommentHeader = ({ commentHeader }) => (
-  <span>
-    <LinkUserName user={commentHeader.owner} /> commented
-    {` ${moment(commentHeader.createdAt).fromNow()}`}
-  </span>
+const SpanVoterStat = styled.span`
+  display: inline-block;
+  float: right;
+`
+
+const SpanTextStat = styled.span`
+  font-size: 12px;
+  color: #777;
+`
+
+const IconUp = styled(FaCaretUp)`
+  font-size: 16px;
+  margin-right: 3px;
+  vertical-align: sub !important;
+  color: #2cbe4e;
+`
+
+const IconDown = styled(FaCaretDown)`
+  font-size: 16px;
+  margin-right: 3px;
+  vertical-align: sub !important;
+  color: #cb2431;
+`
+
+const CommentHeader = ({
+  commentHeader: { owner, isOwnerVoteUp, createdAt },
+}) => (
+  <div>
+    <span>
+      <LinkUserName user={owner} /> commented
+      {` ${moment(createdAt).fromNow()}`}
+    </span>
+    {
+      isOwnerVoteUp !== null &&
+      <SpanVoterStat>
+        {
+          isOwnerVoteUp ?
+            <div>
+              <IconUp />
+              <SpanTextStat>Upvoter</SpanTextStat>
+            </div> :
+            <div>
+              <IconDown />
+              <SpanTextStat>Downvoter</SpanTextStat>
+            </div>
+        }
+      </SpanVoterStat>
+    }
+  </div>
 )
 
 CommentHeader.propTypes = {
@@ -26,7 +73,8 @@ export default Relay.createContainer(CommentHeader, {
         owner {
           ${LinkUserName.getFragment('user')}
         }
-        createdAt
+        isOwnerVoteUp
+        createdAt        
       }
     `,
   },

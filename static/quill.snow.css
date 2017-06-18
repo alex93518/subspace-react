@@ -6,8 +6,8 @@
  */
 .ql-container {
   box-sizing: border-box;
-  font-size: 15px;
   color: #24292e;
+  background: #fff;
   line-height: 1.5;
   height: 100%;
   margin: 0px;
@@ -810,8 +810,9 @@
 }
 .ql-toolbar.ql-snow {
   border: 1px solid #ccc;
+  background: #f7f7f7;
   box-sizing: border-box;
-  font-family: 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
+  font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   padding: 8px;
 }
 .ql-toolbar.ql-snow .ql-formats {

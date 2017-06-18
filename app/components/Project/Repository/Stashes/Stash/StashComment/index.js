@@ -6,6 +6,7 @@ import { compose, withState, withHandlers, mapProps } from 'recompose';
 import { Button } from 'react-bootstrap';
 import styled from 'styled-components';
 import ReactQuill from 'react-quill';
+import ScrollableAnchor, { goToAnchor } from 'react-scrollable-anchor'
 import Separator from 'components/shared/Separator';
 import CommentList from './CommentList';
 
@@ -18,34 +19,35 @@ const HeadSeparator = styled(Separator)`
   margin-top: 0px;
 `
 
-const MiddleSeparator = styled(Separator)`
-  background: #ddd;
-  margin-top: 10px;
-`
-
 const DivAddComment = styled.div`
   text-align: right;
   margin-top: 10px;
 `
 
 const StashComment = ({
-  stashComment: { stash, stash: { comments: { totalCount } } },
+  stashComment: { stash, stash: { comments: { totalAllCount } } },
   stashData, submitComment, content, handleContentChange,
   relay: { variables },
 }) => (
   <MainDiv>
-    <h4>Comments ({totalCount})</h4>
+    <ScrollableAnchor id={'commentTop'}>
+      <h4>Comments ({totalAllCount})</h4>
+    </ScrollableAnchor>
     <HeadSeparator />
-    <ReactQuill value={content} onChange={handleContentChange} />
-    <DivAddComment>
-      <Button onClick={submitComment}>Add Comment</Button>
-    </DivAddComment>
-    <MiddleSeparator />
     <CommentList
       commentList={stash}
       stashData={stashData}
       {...variables}
     />
+    <HeadSeparator />
+    <h5>Leave a comment</h5>
+    <ReactQuill
+      value={content}
+      onChange={handleContentChange}
+    />
+    <DivAddComment>
+      <Button onClick={submitComment}>Comment</Button>
+    </DivAddComment>
   </MainDiv>
 )
 
@@ -74,7 +76,7 @@ export default compose(
             ${CommentList.getFragment('commentList', vars)}
             stashId: rawId
             comments {
-              totalCount
+              totalAllCount
             }
           }
         }
@@ -102,6 +104,7 @@ export default compose(
           {
             onSuccess: () => {
               updateContent('')
+              goToAnchor('commentTop')
             },
             onFailure: transaction => console.log(transaction.getError()),
           }

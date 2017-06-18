@@ -13,6 +13,7 @@ const ButtonReply = styled(Button)`
   border: 0px !important;
   color: #aaa !important;
   padding: 0px !important;
+  margin-right: 15px;
 `
 
 const PanelReply = styled(Panel)`
@@ -23,7 +24,7 @@ const PanelReply = styled(Panel)`
   -webkit-box-shadow: none;
   & div > .panel-body {
     padding: 0px;
-    margin-top: 10px;
+    margin-top: 20px;
     margin-bottom: 5px;
   }
 `
@@ -37,15 +38,15 @@ const ReplyIcon = styled(FaPencil)`
 
 const VoteUpIcon = styled(FaThumbsOUp)`
   cursor: pointer;
-  margin-left: 15px;
   vertical-align: bottom !important;
+  margin-right: 15px;
   font-size: 15px;
   color: #999;  
 `
 
 const VoteDownIcon = styled(FaThumbsODown)`
   cursor: pointer;
-  margin-left: 15px;
+  margin-right: 15px;
   vertical-align: bottom !important;
   font-size: 15px;
   color: #999;  
@@ -57,25 +58,32 @@ const DivSubmitReply = styled.div`
 `
 
 const CommentFooter = ({
-  isReply, handleReplyClick,
+  isShowReply, isReply, handleReplyClick,
   content, handleTextChange, submitReply,
 }) => (
   <span>
-    <ButtonReply bsSize="xsmall" onClick={handleReplyClick}>
-      <ReplyIcon /> Reply
-    </ButtonReply>
+    {
+      isShowReply &&
+      <ButtonReply bsSize="xsmall" onClick={handleReplyClick}>
+        <ReplyIcon /> Reply
+      </ButtonReply>
+    }
     <VoteUpIcon />
     <VoteDownIcon />
-    <PanelReply collapsible expanded={isReply}>
-      <ReactQuill value={content} onChange={handleTextChange} />
-      <DivSubmitReply>
-        <Button bsSize="small" onClick={submitReply}>Reply</Button>
-      </DivSubmitReply>
-    </PanelReply>
+    {
+      isShowReply &&
+      <PanelReply collapsible expanded={isReply}>
+        <ReactQuill value={content} onChange={handleTextChange} />
+        <DivSubmitReply>
+          <Button bsSize="small" onClick={submitReply}>Reply</Button>
+        </DivSubmitReply>
+      </PanelReply>
+    }
   </span>
 )
 
 CommentFooter.propTypes = {
+  isShowReply: PropTypes.bool.isRequired,
   isReply: PropTypes.bool.isRequired,
   handleReplyClick: PropTypes.func.isRequired,
   content: PropTypes.string.isRequired,

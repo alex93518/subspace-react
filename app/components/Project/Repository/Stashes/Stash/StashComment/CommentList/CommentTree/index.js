@@ -26,7 +26,7 @@ const TreeContent = ({ node, lvlDeep, children, stashData, parentId }) => (
         nodeLabel={(
           <Comment
             comment={node}
-            isShowFooter={lvlDeep < 4}
+            isShowReply={lvlDeep < 4}
             stashData={stashData}
             parentId={parentId}
           />
@@ -40,7 +40,7 @@ const TreeContent = ({ node, lvlDeep, children, stashData, parentId }) => (
           comment={node}
           stashData={stashData}
           parentId={parentId}
-          isShowFooter={lvlDeep < 4}
+          isShowReply={lvlDeep < 4}
         />
       </CommentBox>
   }
