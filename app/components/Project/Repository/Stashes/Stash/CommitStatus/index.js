@@ -5,8 +5,9 @@ import styled from 'styled-components';
 import Commit from 'components/Project/Repository/Commits/CommitList/Commit'
 
 const TableCommit = styled(Table)`
-  background-color: white !important;
+  margin-bottom: 0px !important;
 `
+
 const StashCommitStatus = ({
   stashCommitStatus: { history },
   relay: { variables },

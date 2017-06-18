@@ -1,16 +1,24 @@
 import React, { PropTypes } from 'react';
 import Relay from 'react-relay/classic';
-import { Row, Col } from 'react-bootstrap';
+import { Row, Col, Panel } from 'react-bootstrap';
+import styled from 'styled-components';
 import StashHead from './Head';
 import StashCommitStatus from './CommitStatus';
 import StashComment from './StashComment';
 import UserVoteList from './UserVoteList';
 
+const PanelHead = styled(Panel)`
+  padding: 20px;
+  background: #fbfbfb;
+`
+
 const Stash = ({ stash, relay: { variables } }) => (
   <Row>
     <Col md={10}>
-      <StashHead stashHead={stash} {...variables} />
-      <StashCommitStatus stashCommitStatus={stash.target} {...variables} />
+      <PanelHead>
+        <StashHead stashHead={stash} {...variables} />
+        <StashCommitStatus stashCommitStatus={stash.target} {...variables} />
+      </PanelHead>
       <StashComment stashComment={stash} {...variables} />
     </Col>
     <Col md={2}>

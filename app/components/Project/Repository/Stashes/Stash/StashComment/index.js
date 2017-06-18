@@ -2,14 +2,15 @@ import React, { PropTypes } from 'react';
 import Relay from 'react-relay/classic';
 import { createContainer } from 'recompose-relay';
 import CurrentRelay, { AddStashCommentMutation } from 'relay';
-import { compose, withHandlers } from 'recompose';
+import { compose, withState, withHandlers, mapProps } from 'recompose';
+import { Button } from 'react-bootstrap';
 import styled from 'styled-components';
+import ReactQuill from 'react-quill';
 import Separator from 'components/shared/Separator';
-import CommentForm from './CommentForm';
 import CommentList from './CommentList';
 
 const MainDiv = styled.div`
-  margin-top: 10px;
+  margin-top: 35px;
 `
 
 const HeadSeparator = styled(Separator)`
@@ -17,22 +18,43 @@ const HeadSeparator = styled(Separator)`
   margin-top: 0px;
 `
 
+const MiddleSeparator = styled(Separator)`
+  background: #ddd;
+  margin-top: 10px;
+`
+
+const DivAddComment = styled.div`
+  text-align: right;
+  margin-top: 10px;
+`
+
 const StashComment = ({
   stashComment: { stash, stash: { comments: { totalCount } } },
-  submitComment,
+  stashData, submitComment, content, handleContentChange,
   relay: { variables },
 }) => (
   <MainDiv>
     <h4>Comments ({totalCount})</h4>
     <HeadSeparator />
-    <CommentList commentList={stash} {...variables} />
-    <CommentForm handleSubmit={submitComment} />
+    <ReactQuill value={content} onChange={handleContentChange} />
+    <DivAddComment>
+      <Button onClick={submitComment}>Add Comment</Button>
+    </DivAddComment>
+    <MiddleSeparator />
+    <CommentList
+      commentList={stash}
+      stashData={stashData}
+      {...variables}
+    />
   </MainDiv>
 )
 
 StashComment.propTypes = {
   stashComment: PropTypes.object.isRequired,
+  content: PropTypes.string.isRequired,
+  handleContentChange: PropTypes.func.isRequired,
   submitComment: PropTypes.func.isRequired,
+  stashData: PropTypes.object.isRequired,
   relay: PropTypes.object.isRequired,
 }
 
@@ -50,7 +72,7 @@ export default compose(
           rawId
           stash {
             ${CommentList.getFragment('commentList', vars)}
-            rawId
+            stashId: rawId
             comments {
               totalCount
             }
@@ -59,21 +81,40 @@ export default compose(
       `,
     },
   }),
+  withState('content', 'updateContent', ''),
   withHandlers({
+    handleContentChange: props => value => {
+      props.updateContent(value);
+    },
     submitComment: ({
-      stashComment: { id, rawId, stash },
-    }) => e => {
-      e.preventDefault()
-      const content = e.target.addComment.value
+      stashComment: { id, rawId, stash: { stashId } },
+      content, updateContent,
+    }) => () => {
       if (content) {
-        CurrentRelay.Store.commitUpdate(new AddStashCommentMutation({
-          id,
-          content,
-          stashId: stash.rawId || null,
-          stashRefId: rawId,
-          parentId: null,
-        }))
+        CurrentRelay.Store.commitUpdate(
+          new AddStashCommentMutation({
+            id,
+            content,
+            stashId: stashId || null,
+            stashRefId: rawId,
+            parentId: null,
+          }),
+          {
+            onSuccess: () => {
+              updateContent('')
+            },
+            onFailure: transaction => console.log(transaction.getError()),
+          }
+        )
       }
     },
   }),
+  mapProps(props => ({
+    stashData: {
+      id: props.stashComment.id,
+      stashId: props.stashComment.stash.stashId || null,
+      stashRefId: props.stashComment.rawId,
+    },
+    ...props,
+  }))
 )(StashComment)

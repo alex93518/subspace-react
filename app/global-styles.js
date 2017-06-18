@@ -31,7 +31,48 @@ injectGlobal`
 
   p,
   label {
-    font-family: Georgia, Times, 'Times New Roman', serif;
+    font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
     line-height: 1.5em;
+  }
+
+  strong {
+    font-weight: bold;
+  }
+
+  /* the tree node's style */
+  .tree-view {
+    overflow-y: hidden;
+  }
+
+  .tree-view_item {
+    display: -webkit-flex;
+    display: flex;
+  }
+
+  /* style for the children nodes container */
+  .tree-view_children {
+    margin-left: 40px;
+  }
+
+  .tree-view_children-collapsed {
+    height: 0px;
+  }
+
+  .tree-view_arrow {
+    cursor: pointer;
+    margin-right: 10px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    width: 25px;
+  }
+
+  .tree-view_arrow:after {
+    content: '[ - ]';
+  }
+
+  .tree-view_arrow-collapsed:after {
+    content: '[ + ]' !important;
   }
 `;
