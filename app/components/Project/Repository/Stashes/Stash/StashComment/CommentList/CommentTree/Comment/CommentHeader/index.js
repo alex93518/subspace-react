@@ -11,11 +11,6 @@ const SpanVoterStat = styled.span`
   float: right;
 `
 
-const SpanTextStat = styled.span`
-  font-size: 12px;
-  color: #777;
-`
-
 const IconUp = styled(FaCaretUp)`
   font-size: 16px;
   margin-right: 3px;
@@ -45,11 +40,11 @@ const CommentHeader = ({
           isOwnerVoteUp ?
             <div>
               <IconUp />
-              <SpanTextStat>Upvoter</SpanTextStat>
+              <span>Upvoter</span>
             </div> :
             <div>
               <IconDown />
-              <SpanTextStat>Downvoter</SpanTextStat>
+              <span>Downvoter</span>
             </div>
         }
       </SpanVoterStat>

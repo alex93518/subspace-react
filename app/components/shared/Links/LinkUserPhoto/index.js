@@ -1,5 +1,6 @@
 import React, { PropTypes } from 'react';
 import Relay from 'react-relay/classic';
+import { Image } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import FaUser from 'react-icons/lib/fa/user';
@@ -18,10 +19,11 @@ const LinkUserPhotoBase = ({
   <Link to={getUserProfilePath(userName)}>
     {
       photoUrl ?
-        <img
+        <Image
           alt={`@${userName}`}
           src={photoUrl}
           {...props}
+          circle
         /> :
         <UserIcon {...props} />
     }

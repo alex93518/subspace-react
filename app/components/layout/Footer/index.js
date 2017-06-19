@@ -8,7 +8,6 @@ const MainContainer = styled.div`
 const FooterContainer = styled(Grid)`
   padding-top: 20px;
   padding-bottom: 20px;
-  font-size: 12px;
   line-height: 1.5;
   color: #586069;
 `

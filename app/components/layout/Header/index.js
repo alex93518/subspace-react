@@ -9,22 +9,39 @@ import { authActions } from 'redux/auth/actions'
 
 const TopNavbar = styled(Navbar)`
   margin-bottom: 0px;
+  background: #333b43;
+  min-height: 50px;
+  padding-top: 3px;
+  border-radius: 0px;
+  color: rgba(255,255,255,0.75);
 `
 const SignoutButton = styled(Button)`
   display: inline;
   padding: 0 6px;
 `
 
+const LinkWhite = styled(LinkContainer)`
+  & a {
+    color: rgba(255,255,255,0.75) !important;
+  }
+`
+
+const LinkBrand = styled(Link)`
+  color: rgba(255,255,255,1) !important;
+  font-size: 22px;
+  font-weight: 900;
+`
+
 const ProtectedNav = ({ user: { displayName }, userName }) => (
   <Nav pullRight>
-    <LinkContainer to="/createproject">
+    <LinkWhite to="/createproject">
       <NavItem eventKey={4}>Create Project</NavItem>
-    </LinkContainer>
+    </LinkWhite>
     {
       userName &&
-      <LinkContainer to={`/profile/${userName}`}>
+      <LinkWhite to={`/profile/${userName}`}>
         <NavItem eventKey={3}>{displayName}<i> @{userName}</i></NavItem>
-      </LinkContainer>
+      </LinkWhite>
     }
     <NavItem>
       <SignoutButton onClick={authActions.signOut.init}>
@@ -43,32 +60,32 @@ const Header = ({ auth: { authenticated, user, userName } }) => (
   <TopNavbar>
     <Navbar.Header>
       <Navbar.Brand>
-        <Link to="/">Terrella</Link>
+        <LinkBrand to="/">Terrella</LinkBrand>
       </Navbar.Brand>
     </Navbar.Header>
     <Nav>
-      <LinkContainer to="/about">
+      <LinkWhite to="/about">
         <NavItem eventKey={1}>About Us</NavItem>
-      </LinkContainer>
+      </LinkWhite>
     </Nav>
     <Nav>
-      <LinkContainer to="/howitworks">
+      <LinkWhite to="/howitworks">
         <NavItem eventKey={2}>How It Works</NavItem>
-      </LinkContainer>
+      </LinkWhite>
     </Nav>
     {authenticated && <ProtectedNav user={user} userName={userName} />}
     {
       !authenticated &&
       <Nav pullRight>
-        <LinkContainer to="/login">
+        <LinkWhite to="/login">
           <NavItem eventKey={5}>Sign In</NavItem>
-        </LinkContainer>
+        </LinkWhite>
       </Nav>
     }
     <Nav pullRight>
-      <LinkContainer to="/projects">
+      <LinkWhite to="/projects">
         <NavItem eventKey={6}>Projects</NavItem>
-      </LinkContainer>
+      </LinkWhite>
     </Nav>
   </TopNavbar>
 )

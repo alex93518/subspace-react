@@ -42,18 +42,23 @@ const ReplyIcon = styled(FaPencil)`
 
 const VoteUpIcon = styled(FaThumbsOUp)`
   cursor: pointer;
-  vertical-align: bottom !important;
-  margin-right: 15px;
+  vertical-align: sub !important;
+  margin-right: 5px;
   font-size: 15px;
   color: ${props => props['data-isVotedUp'] ? '#2cbe4e' : '#aaa'};  
 `
 
 const VoteDownIcon = styled(FaThumbsODown)`
   cursor: pointer;
-  margin-right: 15px;
-  vertical-align: bottom !important;
+  margin-right: 5px;
+  vertical-align: sub !important;
   font-size: 15px;
   color: ${props => props['data-isVotedDown'] ? '#cb2431' : '#aaa'};
+`
+
+const SpanVotePoint = styled.span`
+  color: #999;
+  margin-right: 15px;
 `
 
 const DivSubmitReply = styled.div`
@@ -65,6 +70,7 @@ const CommentFooter = ({
   isShowReply, isReply, handleReplyClick,
   content, handleTextChange, submitReply,
   onVote, isVotedUp, isVotedDown,
+  commentFooter: { totalUpvotePoint, totalDownvotePoint },
 }) => (
   <span>
     {
@@ -74,10 +80,12 @@ const CommentFooter = ({
       </ButtonReply>
     }
     <VoteUpIcon onClick={() => onVote(true)} data-isVotedUp={isVotedUp} />
+    <SpanVotePoint>{totalUpvotePoint || 0}</SpanVotePoint>
     <VoteDownIcon
       onClick={() => onVote(false)}
       data-isVotedDown={isVotedDown}
     />
+    <SpanVotePoint>{totalDownvotePoint || 0}</SpanVotePoint>
     {
       isShowReply &&
       <PanelReply collapsible expanded={isReply}>
@@ -100,6 +108,7 @@ CommentFooter.propTypes = {
   onVote: PropTypes.func.isRequired,
   isVotedUp: PropTypes.bool.isRequired,
   isVotedDown: PropTypes.bool.isRequired,
+  commentFooter: PropTypes.object.isRequired,
 }
 
 export default compose(
@@ -114,6 +123,8 @@ export default compose(
         fragment on StashComment {
           rawId
           isUserVoted
+          totalUpvotePoint
+          totalDownvotePoint
         }
       `,
     },

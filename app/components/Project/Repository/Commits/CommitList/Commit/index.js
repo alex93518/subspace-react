@@ -21,16 +21,15 @@ const Tr = styled.tr`
 const Td = styled.td`
   vertical-align: middle !important;
   border-top: none !important;
-  padding: 8px 0px !important;
 `
 
 const TdThumb = styled(Td)`
-  padding-right: 15px;
+  padding: 15px !important;
   width: 52px;
 `
 
 const TdCommitLink = styled(Td)`
-  padding-left: 15px;
+  padding: 15px !important;
   text-align: right;
 `
 

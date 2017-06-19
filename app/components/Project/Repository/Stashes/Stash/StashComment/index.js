@@ -40,7 +40,7 @@ const StashComment = ({
       {...variables}
     />
     <HeadSeparator />
-    <h5>Leave a comment</h5>
+    <h4>Leave a comment</h4>
     <ReactQuill
       value={content}
       onChange={handleContentChange}

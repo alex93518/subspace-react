@@ -11,7 +11,6 @@ import { timeFromNow } from 'utils/string';
 const DivCommit = styled.div`
   padding: 10px;
   margin-bottom:-1px;
-  font-size:13px;
   line-height:20px;
   color:#586069;
   background-color:#f1f8ff;

@@ -6,6 +6,13 @@ import Commit from 'components/Project/Repository/Commits/CommitList/Commit'
 
 const TableCommit = styled(Table)`
   margin-bottom: 0px !important;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  color: #777;
+`
+
+const CommitsHead = styled.h4`
+  margin-top: 30px;
 `
 
 const StashCommitStatus = ({
@@ -13,7 +20,7 @@ const StashCommitStatus = ({
   relay: { variables },
 }) => (
   <div>
-    <h4>Commits</h4>
+    <CommitsHead>Commits</CommitsHead>
     <TableCommit>
       <tbody>
         {

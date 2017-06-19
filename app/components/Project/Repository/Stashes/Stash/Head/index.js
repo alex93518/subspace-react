@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
 import Relay from 'react-relay/classic';
-import { Row, Col, Modal } from 'react-bootstrap';
+import { Row, Col, Modal, Image, Media } from 'react-bootstrap';
 import CurrentRelay, { VoteStashMutation, MergeStashMutation } from 'relay';
 import { compose, withState, mapProps, withHandlers } from 'recompose';
 import { redirect } from 'redux/utils'
@@ -51,10 +51,11 @@ const IconDown = styled(FaCaretDown)`
 const NumberDiv = styled.div`
   font-size: 16px;
   font-weight: 700;
+  color: #777;
 `
 
 const IconCol = styled(Col)`
-  padding-left: 0px;
+  padding-left: 15px;
   padding-right: 0px;
   text-align: center;
 `
@@ -73,18 +74,55 @@ const SpanRejectPoint = styled.span`
   color: #cb2431;
 `
 
+const ColStatus = styled(Col)`
+  padding-left: 30px;
+`
+
+const AcceptModal = styled(Modal)`
+  position: fixed;
+  top: 50% !important;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 250px;
+  .modal-dialog {
+    width: 250px;
+  }
+  .modal-body {
+    width: 250px;
+  }
+`
+
+const MediaBody = styled(Media.Body)`
+  padding-left: 13px;
+`
+
+const MediaLeft = styled(Media.Left)`
+  padding-top: 5px;
+`
+
+const AcceptHead = styled.h4`
+  margin-top: 5px;
+`
+
 const StashHead = ({
   user, variables, stashNum, totalCommit, onVote,
   totalVotePoints, isVotedUp, isVotedDown, voteTreshold,
   acceptVotes, rejectVotes, isMerging, updateIsMerging,
 }) => (
   <MainRow>
-    <Modal show={isMerging} onHide={() => updateIsMerging(false)}>
+    <AcceptModal show={isMerging} onHide={() => updateIsMerging(false)}>
       <Modal.Body>
-        <h3>Accepted</h3>
-        Merging...
+        <Media>
+          <MediaLeft>
+            <Image src={'/ajaxSpinner.gif'} width={40} height={40} />
+          </MediaLeft>
+          <MediaBody>
+            <AcceptHead>Accepted</AcceptHead>
+            Merging...
+          </MediaBody>
+        </Media>
       </Modal.Body>
-    </Modal>
+    </AcceptModal>
     <IconCol md={1}>
       <IconUp onClick={() => onVote(true)} data-isVotedUp={isVotedUp} />
       <NumberDiv>
@@ -92,7 +130,7 @@ const StashHead = ({
       </NumberDiv>
       <IconDown onClick={() => onVote(false)} data-isVotedDown={isVotedDown} />
     </IconCol>
-    <Col md={11}>
+    <ColStatus md={11}>
       <H2Head>
         <SpanStashNum>Stash #{stashNum}</SpanStashNum>
       </H2Head>
@@ -104,20 +142,22 @@ const StashHead = ({
         </LinkProject>
       </div>
       <RowVoteStats>
-        <Col md={6}>
-          <SpanAcceptPoint>
-            {acceptVotes.totalVotePoints}
-          </SpanAcceptPoint> acceptance points from
-          {` ${acceptVotes.totalCount}`} users.
-        </Col>
-        <Col md={6}>
-          <SpanRejectPoint>
-            {rejectVotes.totalVotePoints}
-          </SpanRejectPoint> rejection points from
-          {` ${rejectVotes.totalCount}`} users.
+        <Col md={12}>
+          <div>
+            <SpanAcceptPoint>
+              {acceptVotes.totalVotePoints}
+            </SpanAcceptPoint> acceptance points from
+            {` ${acceptVotes.totalCount}`} users.
+          </div>
+          <div>
+            <SpanRejectPoint>
+              {rejectVotes.totalVotePoints}
+            </SpanRejectPoint> rejection points from
+            {` ${rejectVotes.totalCount}`} users.
+          </div>
         </Col>
       </RowVoteStats>
-    </Col>
+    </ColStatus>
   </MainRow>
 )
 

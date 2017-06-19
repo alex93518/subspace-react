@@ -15,12 +15,14 @@ injectGlobal`
   }
 
   body {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-family: 'Source Sans Pro', 'Helvetica Neue', Helvetica, Arial, sans-serif;
     color: #696e73;
+    font-size: 14px;
   }
 
   body.fontLoaded {
-    font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-family: 'Source Sans Pro', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 14px;
   }
 
   #app {
@@ -31,7 +33,7 @@ injectGlobal`
 
   p,
   label {
-    font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-family: 'Source Sans Pro', 'Helvetica Neue', Helvetica, Arial, sans-serif;
     line-height: 1.5em;
   }
 
@@ -60,19 +62,22 @@ injectGlobal`
 
   .tree-view_arrow {
     cursor: pointer;
-    margin-right: 10px;
+    margin-right: 15px;
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
-    width: 25px;
+    height: 20px;
+    color: rgba(0,0,0,0.4);
   }
 
   .tree-view_arrow:after {
-    content: '[ - ]';
+    font-family: 'Glyphicons Halflings';
+    content: "\\e082";
   }
 
   .tree-view_arrow-collapsed:after {
-    content: '[ + ]' !important;
+    font-family: 'Glyphicons Halflings';
+    content: "\\e081" !important;
   }
 `;

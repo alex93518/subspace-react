@@ -9,7 +9,9 @@ import UserVoteList from './UserVoteList';
 
 const PanelHead = styled(Panel)`
   padding: 20px;
-  background: #fbfbfb;
+  background: #eaf5ff;
+  color: #3a87ad;
+  border-color: #bce8f1;
 `
 
 const Stash = ({ stash, relay: { variables } }) => (
