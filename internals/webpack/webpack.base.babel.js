@@ -53,9 +53,7 @@ module.exports = options => ({
     new HappyPack({
       loaders: [{
         path: 'babel-loader',
-        query: Object.assign({
-          cacheDirectory: './webpack_cache/',
-        }, options.babelQuery),
+        query: options.babelQuery,
       }],
     }),
     new BundleAnalyzerPlugin({

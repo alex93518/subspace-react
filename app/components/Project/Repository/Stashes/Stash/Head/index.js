@@ -59,7 +59,7 @@ const IconCol = styled(Col)`
   text-align: center;
 `
 
-const DivVoteStats = styled.div`
+const RowVoteStats = styled(Row)`
   margin-top: 10px;
 `
 
@@ -103,20 +103,20 @@ const StashHead = ({
           <StashLabel>master</StashLabel>
         </LinkProject>
       </div>
-      <DivVoteStats>
-        <div>
+      <RowVoteStats>
+        <Col md={6}>
           <SpanAcceptPoint>
             {acceptVotes.totalVotePoints}
           </SpanAcceptPoint> acceptance points from
           {` ${acceptVotes.totalCount}`} users.
-        </div>
-        <div>
+        </Col>
+        <Col md={6}>
           <SpanRejectPoint>
             {rejectVotes.totalVotePoints}
           </SpanRejectPoint> rejection points from
           {` ${rejectVotes.totalCount}`} users.
-        </div>
-      </DivVoteStats>
+        </Col>
+      </RowVoteStats>
     </Col>
   </MainRow>
 )

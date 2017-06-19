@@ -24,9 +24,9 @@ const PanelComment = styled(Panel)`
       let color = '#fcfcfc';
       if (props['data-isOwnerVoteUp'] !== null) {
         if (props['data-isOwnerVoteUp']) {
-          color = 'rgba(45, 132, 48, 0.11)'
+          color = 'rgba(45, 132, 48, 0.03)'
         } else {
-          color = 'rgba(203, 36, 36, 0.08)'
+          color = 'rgba(203, 36, 36, 0.03)'
         }
       }
       return color
@@ -40,7 +40,7 @@ const Comment = ({
 }) => (
   <MainDiv>
     <DivLinkPhoto>
-      <LinkUserPhoto user={owner} width={44} height={44} />
+      <LinkUserPhoto user={owner} width={40} height={40} />
     </DivLinkPhoto>
     <PanelComment
       data-isOwnerVoteUp={isOwnerVoteUp}
@@ -52,6 +52,7 @@ const Comment = ({
           stashData={stashData}
           parentId={parentId}
           isShowReply={isShowReply}
+          commentFooter={comment}
         />
       }
     >
@@ -77,6 +78,7 @@ export default Relay.createContainer(Comment, {
     comment: () => Relay.QL`
       fragment on StashComment {
         ${CommentHeader.getFragment('commentHeader')}
+        ${CommentFooter.getFragment('commentFooter')}
         id
         owner {
           ${LinkUserPhoto.getFragment('user')}

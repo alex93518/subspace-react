@@ -1,12 +1,16 @@
 import React, { PropTypes } from 'react';
+import Relay from 'react-relay/classic';
 import styled from 'styled-components';
 import { Button, Panel } from 'react-bootstrap';
 import { compose, withState, withHandlers } from 'recompose';
+import { createContainer } from 'recompose-relay'
 import FaPencil from 'react-icons/lib/fa/pencil';
 import FaThumbsOUp from 'react-icons/lib/fa/thumbs-o-up';
 import FaThumbsODown from 'react-icons/lib/fa/thumbs-o-down';
 import ReactQuill from 'react-quill';
-import CurrentRelay, { AddStashCommentMutation } from 'relay';
+import CurrentRelay, {
+  AddStashCommentMutation, VoteStashCommentMutation,
+} from 'relay';
 
 const ButtonReply = styled(Button)`
   background: rgba(255,255,255,0) !important;
@@ -41,7 +45,7 @@ const VoteUpIcon = styled(FaThumbsOUp)`
   vertical-align: bottom !important;
   margin-right: 15px;
   font-size: 15px;
-  color: #999;  
+  color: ${props => props['data-isVotedUp'] ? '#2cbe4e' : '#aaa'};  
 `
 
 const VoteDownIcon = styled(FaThumbsODown)`
@@ -49,7 +53,7 @@ const VoteDownIcon = styled(FaThumbsODown)`
   margin-right: 15px;
   vertical-align: bottom !important;
   font-size: 15px;
-  color: #999;  
+  color: ${props => props['data-isVotedDown'] ? '#cb2431' : '#aaa'};
 `
 
 const DivSubmitReply = styled.div`
@@ -60,6 +64,7 @@ const DivSubmitReply = styled.div`
 const CommentFooter = ({
   isShowReply, isReply, handleReplyClick,
   content, handleTextChange, submitReply,
+  onVote, isVotedUp, isVotedDown,
 }) => (
   <span>
     {
@@ -68,8 +73,11 @@ const CommentFooter = ({
         <ReplyIcon /> Reply
       </ButtonReply>
     }
-    <VoteUpIcon />
-    <VoteDownIcon />
+    <VoteUpIcon onClick={() => onVote(true)} data-isVotedUp={isVotedUp} />
+    <VoteDownIcon
+      onClick={() => onVote(false)}
+      data-isVotedDown={isVotedDown}
+    />
     {
       isShowReply &&
       <PanelReply collapsible expanded={isReply}>
@@ -89,11 +97,58 @@ CommentFooter.propTypes = {
   content: PropTypes.string.isRequired,
   handleTextChange: PropTypes.func.isRequired,
   submitReply: PropTypes.func.isRequired,
+  onVote: PropTypes.func.isRequired,
+  isVotedUp: PropTypes.bool.isRequired,
+  isVotedDown: PropTypes.bool.isRequired,
 }
 
 export default compose(
+  createContainer({
+    initialVariables: {
+      branchHead: 'master',
+      userName: null,
+      projectName: null,
+    },
+    fragments: {
+      commentFooter: () => Relay.QL`
+        fragment on StashComment {
+          rawId
+          isUserVoted
+        }
+      `,
+    },
+  }),
   withState('isReply', 'updateIsReply', false),
   withState('content', 'updateContent', ''),
+  withState(
+    'isVotedUp', 'updateIsVotedUp',
+    props => !!props.commentFooter.isUserVoted
+  ),
+  withState(
+    'isVotedDown', 'updateIsVotedDown',
+    props => (
+      props.commentFooter.isUserVoted == null ?
+        false : !props.commentFooter.isUserVoted
+    )
+  ),
+  withHandlers({
+    toggleVote: props => isVoteUp => {
+      if (
+        isVoteUp === null ||
+        (isVoteUp && isVoteUp === props.isVotedUp) ||
+        (!isVoteUp && !isVoteUp === props.isVotedDown)
+      ) {
+        props.updateIsVotedUp(false)
+        props.updateIsVotedDown(false)
+      } else if (isVoteUp) {
+        props.updateIsVotedUp(true)
+        props.updateIsVotedDown(false)
+      } else {
+        props.updateIsVotedUp(false)
+        props.updateIsVotedDown(true)
+      }
+    },
+  }),
   withHandlers({
     handleReplyClick: props => () => {
       props.updateIsReply(!props.isReply)
@@ -124,6 +179,18 @@ export default compose(
           }
         )
       }
+    },
+    onVote: props => isVoteUp => {
+      const voteVar = typeof (isVoteUp) === 'boolean' ? isVoteUp : null
+      props.toggleVote(voteVar)
+      CurrentRelay.Store.commitUpdate(
+        new VoteStashCommentMutation({
+          id: props.stashData.id,
+          isVoteUp,
+          stashCommentId: props.commentFooter.rawId || null,
+          stashRefId: props.stashData.stashRefId,
+        })
+      )
     },
   })
 )(CommentFooter)
