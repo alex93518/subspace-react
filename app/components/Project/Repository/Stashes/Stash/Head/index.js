@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 import Relay from 'react-relay/classic';
 import { Row, Col, Modal, Image, Media } from 'react-bootstrap';
 import CurrentRelay, { VoteStashMutation, MergeStashMutation } from 'relay';

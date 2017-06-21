@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 import { Col } from 'react-bootstrap';
 import { authActions } from 'redux/auth/actions';
 import { makeSelectAuth } from 'redux/selectors';

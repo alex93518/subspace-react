@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 import { Grid, Row, Col, Button } from 'react-bootstrap';
 import { Field, reduxForm } from 'redux-form/immutable';
 import { TextInput } from 'components/shared/form';

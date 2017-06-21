@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 import FaGoogle from 'react-icons/lib/fa/google';
 import FaGithub from 'react-icons/lib/fa/github';
 import FaStackOverflow from 'react-icons/lib/fa/stack-overflow';

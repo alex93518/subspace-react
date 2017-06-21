@@ -1,5 +1,8 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 import Relay from 'react-relay/classic';
+import { compose, withState, mapProps, lifecycle } from 'recompose';
+import { createContainer } from 'recompose-relay'
 import styled from 'styled-components';
 import { Panel } from 'react-bootstrap';
 import { LinkUserPhoto } from 'components/shared/Links';
@@ -56,17 +59,19 @@ const PanelComment = styled(Panel)`
     }};
   }
   & .panel-body {
+    display: ${props => props['data-isShowContent'] ? 'block' : 'none'};
     border-left: 1px solid #ddd;
     border-right: 1px solid #ddd;
   }
   & .panel-footer {
+    display: ${props => props['data-isShowContent'] ? 'block' : 'none'};
     border: 1px solid #ddd;
   }
 `
 
 const Comment = ({
-  comment, isShowReply, stashData, parentId,
-  comment: { content, owner, isOwnerVoteUp },
+  comment, isShowReply, stashData, parentId, isShowContent,
+  updateIsShowContent, comment: { content, owner, isOwnerVoteUp },
 }) => (
   <MainDiv>
     <DivLinkPhoto>
@@ -74,8 +79,13 @@ const Comment = ({
     </DivLinkPhoto>
     <PanelComment
       data-isOwnerVoteUp={isOwnerVoteUp}
+      data-isShowContent={isShowContent}
       header={
-        <CommentHeader commentHeader={comment} />
+        <CommentHeader
+          commentHeader={comment}
+          isShowContent={isShowContent}
+          updateIsShowContent={updateIsShowContent}
+        />
       }
       footer={
         <CommentFooter
@@ -96,27 +106,72 @@ Comment.propTypes = {
   isShowReply: PropTypes.bool.isRequired,
   stashData: PropTypes.object.isRequired,
   parentId: PropTypes.string,
+  isShowContent: PropTypes.bool.isRequired,
+  updateIsShowContent: PropTypes.func.isRequired,
 }
 
-export default Relay.createContainer(Comment, {
-  initialVariables: {
-    branchHead: 'master',
-    userName: null,
-    projectName: null,
-  },
-  fragments: {
-    comment: () => Relay.QL`
-      fragment on StashComment {
-        ${CommentHeader.getFragment('commentHeader')}
-        ${CommentFooter.getFragment('commentFooter')}
-        id
-        owner {
-          ${LinkUserPhoto.getFragment('user')}
+export default compose(
+  createContainer({
+    initialVariables: {
+      branchHead: 'master',
+      userName: null,
+      projectName: null,
+    },
+    fragments: {
+      comment: () => Relay.QL`
+        fragment on StashComment {
+          ${CommentHeader.getFragment('commentHeader')}
+          ${CommentFooter.getFragment('commentFooter')}
+          id
+          owner {
+            ${LinkUserPhoto.getFragment('user')}
+          }
+          isOwnerVoteUp
+          content
+          createdAt
         }
-        isOwnerVoteUp
-        content
-        createdAt
+      `,
+    },
+  }),
+  mapProps(props => {
+    let isShowCommentContent = true;
+    if (
+      props.showContent === 'upVoters' &&
+      props.comment.isOwnerVoteUp !== true
+    ) {
+      isShowCommentContent = false
+    }
+    if (
+      props.showContent === 'downVoters' &&
+      (
+        props.comment.isOwnerVoteUp === null ||
+        props.comment.isOwnerVoteUp !== false
+      )
+    ) {
+      isShowCommentContent = false
+    }
+    if (
+      props.showContent === 'nonVoters' &&
+      props.comment.isOwnerVoteUp !== null
+    ) {
+      isShowCommentContent = false
+    }
+    if (props.showContent === 'none') {
+      isShowCommentContent = false
+    }
+    return {
+      isShowCommentContent,
+      ...props,
+    }
+  }),
+  withState('isShowContent', 'updateIsShowContent',
+    props => props.isShowCommentContent
+  ),
+  lifecycle({
+    componentWillReceiveProps(nextProps) {
+      if (nextProps.isShowCommentContent !== this.props.isShowCommentContent) {
+        nextProps.updateIsShowContent(nextProps.isShowCommentContent)
       }
-    `,
-  },
-})
+    },
+  })
+)(Comment)

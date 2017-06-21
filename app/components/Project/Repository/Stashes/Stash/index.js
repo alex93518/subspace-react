@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 import Relay from 'react-relay/classic';
 import { Row, Col, Panel } from 'react-bootstrap';
 import styled from 'styled-components';
@@ -9,7 +10,7 @@ import UserVoteList from './UserVoteList';
 
 const PanelHead = styled(Panel)`
   padding: 20px;
-  background: #eaf5ff;
+  background: rgba(234, 245, 255, 1);
   color: #3a87ad;
   border-color: #bce8f1;
 `

@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 import Relay from 'react-relay/classic';
 import { createContainer } from 'recompose-relay'
 import { compose, mapProps, branch, renderComponent } from 'recompose';

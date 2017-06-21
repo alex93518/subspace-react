@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 import { Row, Col, Tabs, Tab } from 'react-bootstrap';
 import Relay from 'react-relay/classic';
 import { createContainer } from 'recompose-relay';

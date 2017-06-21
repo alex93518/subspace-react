@@ -15,13 +15,13 @@ injectGlobal`
   }
 
   body {
-    font-family: 'Source Sans Pro', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif;
     color: #696e73;
     font-size: 14px;
   }
 
   body.fontLoaded {
-    font-family: 'Source Sans Pro', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif;
     font-size: 14px;
   }
 
@@ -33,7 +33,7 @@ injectGlobal`
 
   p,
   label {
-    font-family: 'Source Sans Pro', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif;
     line-height: 1.5em;
   }
 
@@ -42,10 +42,6 @@ injectGlobal`
   }
 
   /* the tree node's style */
-  .tree-view {
-    overflow-y: hidden;
-  }
-
   .tree-view_item {
     display: -webkit-flex;
     display: flex;

@@ -1,10 +1,15 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 import Relay from 'react-relay/classic';
+import { compose, withHandlers } from 'recompose';
+import { createContainer } from 'recompose-relay'
 import moment from 'moment';
+import { DropdownButton, MenuItem } from 'react-bootstrap';
 import styled from 'styled-components';
 import { LinkUserName } from 'components/shared/Links';
 import FaCaretUp from 'react-icons/lib/fa/caret-up';
 import FaCaretDown from 'react-icons/lib/fa/caret-down';
+import MdMoreVert from 'react-icons/lib/md/more-vert';
 
 const SpanVoterStat = styled.span`
   display: inline-block;
@@ -25,52 +30,90 @@ const IconDown = styled(FaCaretDown)`
   color: #cb2431;
 `
 
+const DropdownHead = styled(DropdownButton)`
+  margin-left: 10px !important;
+  background: transparent !important;
+  padding: 0px !important;
+  border: 0px !important;
+`
+
+const IconMore = styled(MdMoreVert)`
+  color: #777;
+  cursor: pointer;
+  font-size: 16px;
+  vertical-align: text-bottom !important;
+`
+
 const CommentHeader = ({
-  commentHeader: { owner, isOwnerVoteUp, createdAt },
+  handleIsShowContent, isShowContent,
+  commentHeader: { id, owner, isOwnerVoteUp, createdAt },
 }) => (
   <div>
     <span>
       <LinkUserName user={owner} /> commented
       {` ${moment(createdAt).fromNow()}`}
     </span>
-    {
-      isOwnerVoteUp !== null &&
-      <SpanVoterStat>
-        {
-          isOwnerVoteUp ?
-            <div>
-              <IconUp />
-              <span>Upvoter</span>
-            </div> :
-            <div>
-              <IconDown />
-              <span>Downvoter</span>
-            </div>
-        }
-      </SpanVoterStat>
-    }
+    <SpanVoterStat>
+      {
+        isOwnerVoteUp !== null &&
+        <span>
+          {
+            isOwnerVoteUp ?
+              <span>
+                <IconUp />
+                <span>Upvoter</span>
+              </span> :
+              <span>
+                <IconDown />
+                <span>Downvoter</span>
+              </span>
+          }
+        </span>
+      }
+      <DropdownHead
+        id={`dropdown-${id}`}
+        title={<IconMore />}
+        noCaret
+        pullRight
+      >
+        <MenuItem onClick={handleIsShowContent}>
+          {isShowContent ? 'Hide' : 'Show'} comment
+        </MenuItem>
+        <MenuItem>Report spam or abuse</MenuItem>
+      </DropdownHead>
+    </SpanVoterStat>
   </div>
 )
 
 CommentHeader.propTypes = {
   commentHeader: PropTypes.object.isRequired,
+  isShowContent: PropTypes.bool.isRequired,
+  handleIsShowContent: PropTypes.func.isRequired,
 }
 
-export default Relay.createContainer(CommentHeader, {
-  initialVariables: {
-    branchHead: 'master',
-    userName: null,
-    projectName: null,
-  },
-  fragments: {
-    commentHeader: () => Relay.QL`
-      fragment on StashComment {
-        owner {
-          ${LinkUserName.getFragment('user')}
+export default compose(
+  createContainer({
+    initialVariables: {
+      branchHead: 'master',
+      userName: null,
+      projectName: null,
+    },
+    fragments: {
+      commentHeader: () => Relay.QL`
+        fragment on StashComment {
+          id
+          owner {
+            ${LinkUserName.getFragment('user')}
+          }
+          isOwnerVoteUp
+          createdAt        
         }
-        isOwnerVoteUp
-        createdAt        
-      }
-    `,
-  },
-})
+      `,
+    },
+  }),
+  withHandlers({
+    handleIsShowContent: props => () => {
+      props.updateIsShowContent(!props.isShowContent)
+    },
+  }),
+)(CommentHeader)

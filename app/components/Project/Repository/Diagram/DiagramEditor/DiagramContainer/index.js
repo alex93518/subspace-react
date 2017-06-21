@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { Row, Col, Tabs, Tab, Badge } from 'react-bootstrap';
 import DiagramInfo from '../DiagramInfo';

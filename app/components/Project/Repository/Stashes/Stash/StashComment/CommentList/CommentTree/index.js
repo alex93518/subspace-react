@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 import Relay from 'react-relay/classic';
 import { createContainer } from 'recompose-relay';
 import styled from 'styled-components';
@@ -17,7 +18,9 @@ const CommentBox = styled.div`
   margin-left: 35px;
 `
 
-const TreeContent = ({ node, lvlDeep, children, stashData, parentId }) => (
+const TreeContent = ({
+  node, lvlDeep, children, stashData, parentId, showContent,
+}) => (
   <div>
     {
     node.comments.edges.length > 0 ?
@@ -29,6 +32,7 @@ const TreeContent = ({ node, lvlDeep, children, stashData, parentId }) => (
             isShowReply={lvlDeep < 4}
             stashData={stashData}
             parentId={parentId}
+            showContent={showContent}
           />
         )}
         defaultCollapsed={false}
@@ -41,6 +45,7 @@ const TreeContent = ({ node, lvlDeep, children, stashData, parentId }) => (
           stashData={stashData}
           parentId={parentId}
           isShowReply={lvlDeep < 4}
+          showContent={showContent}
         />
       </CommentBox>
   }
@@ -53,15 +58,17 @@ TreeContent.propTypes = {
   children: PropTypes.node,
   stashData: PropTypes.object.isRequired,
   parentId: PropTypes.string,
+  showContent: PropTypes.string.isRequired,
 }
 
-const CommentTree = ({ commentTree, stashData }) => (
+const CommentTree = ({ commentTree, stashData, showContent }) => (
   <TreeContent
     key={`commentLvl1-${commentTree.id}`}
     stashData={stashData}
     parentId={commentTree.rawId}
     node={commentTree}
     lvlDeep={1}
+    showContent={showContent}
   >
     {createdAtSort(commentTree.comments.edges).reverse().map(edge2 => (
       <TreeContent
@@ -70,6 +77,7 @@ const CommentTree = ({ commentTree, stashData }) => (
         parentId={edge2.node.rawId}
         node={edge2.node}
         lvlDeep={2}
+        showContent={showContent}
       >
         {createdAtSort(edge2.node.comments.edges).reverse().map(edge3 => (
           <TreeContent
@@ -78,6 +86,7 @@ const CommentTree = ({ commentTree, stashData }) => (
             parentId={edge3.node.rawId}
             node={edge3.node}
             lvlDeep={3}
+            showContent={showContent}
           >
             {createdAtSort(edge3.node.comments.edges).reverse().map(edge4 => (
               <TreeContent
@@ -86,6 +95,7 @@ const CommentTree = ({ commentTree, stashData }) => (
                 parentId={edge4.node.rawId}
                 node={edge4.node}
                 lvlDeep={4}
+                showContent={showContent}
               >
               </TreeContent>
             ))}
@@ -99,6 +109,7 @@ const CommentTree = ({ commentTree, stashData }) => (
 CommentTree.propTypes = {
   commentTree: PropTypes.object.isRequired,
   stashData: PropTypes.object.isRequired,
+  showContent: PropTypes.string.isRequired,
 }
 
 export default compose(

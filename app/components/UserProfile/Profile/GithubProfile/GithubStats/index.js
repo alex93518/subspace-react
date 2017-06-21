@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import MdLocationOn from 'react-icons/lib/md/location-on'
 import MdInsertLink from 'react-icons/lib/md/insert-link'

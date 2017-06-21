@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { Button, ControlLabel, FormControl } from 'react-bootstrap';
 import styled from 'styled-components';
 import Relay from 'react-relay/classic';

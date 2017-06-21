@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { compose, branch, renderNothing } from 'recompose';
 import { ButtonGit } from 'components/shared/ButtonGit';

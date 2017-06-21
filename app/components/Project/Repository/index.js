@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 import Relay from 'react-relay/classic';
 import { matchRoute, matchRouteChild } from 'utils/routeMatcher';
 import MainGrid from 'components/shared/MainGrid';
