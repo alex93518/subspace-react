@@ -4,6 +4,7 @@ import Relay from 'react-relay/classic';
 import { Navbar, Nav, NavDropdown, MenuItem } from 'react-bootstrap';
 import { compose, withState, withHandlers, mapProps } from 'recompose';
 import { createContainer } from 'recompose-relay'
+import FlipMove from 'react-flip-move';
 import styled from 'styled-components';
 import CommentTree from './CommentTree';
 
@@ -96,17 +97,29 @@ const CommentList = ({
         </NavDropdownButton>
       </Nav>
     </Navbar>
-    {
-      edges.map(({ node }) => (
-        <CommentTree
-          key={node.id}
-          commentTree={node}
-          showContent={showContent.key}
-          stashGlobalId={id}
-          {...variables}
-        />
-      ))
-    }
+    <FlipMove
+      duration={400}
+      easing="ease"
+      staggerDurationBy={15}
+      staggerDelayBy={20}
+      appearAnimation={'accordionVertical'}
+      enterAnimation={'accordionVertical'}
+      leaveAnimation={'accordionVertical'}
+    >
+      {
+        edges.map(({ node }) => (
+          <div key={node.id}>
+            <div id={`stashComment-anchor-${node.rawId}`} />
+            <CommentTree
+              commentTree={node}
+              showContent={showContent.key}
+              stashGlobalId={id}
+              {...variables}
+            />
+          </div>
+        ))
+      }
+    </FlipMove>
   </div>
 )
 
@@ -139,6 +152,7 @@ export default compose(
               node {
                 ${CommentTree.getFragment('commentTree', vars)}
                 id
+                rawId
                 createdAt
               }
             }
@@ -175,5 +189,5 @@ export default compose(
         sort: props.SORT[selectedKey].key,
       })
     },
-  })
+  }),
 )(CommentList)

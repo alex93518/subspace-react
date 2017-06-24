@@ -8,6 +8,7 @@ import { createContainer } from 'recompose-relay'
 import FaPencil from 'react-icons/lib/fa/pencil';
 import FaThumbsOUp from 'react-icons/lib/fa/thumbs-o-up';
 import FaThumbsODown from 'react-icons/lib/fa/thumbs-o-down';
+import { goToAnchor } from 'react-scrollable-anchor'
 import ReactQuill from 'react-quill';
 import CurrentRelay, {
   AddStashCommentMutation, VoteStashCommentMutation,
@@ -28,9 +29,11 @@ const PanelReply = styled(Panel)`
   box-shadow: none;
   -webkit-box-shadow: none;
   & div > .panel-body {
-    padding: 0px;
+    padding: 0px !important;
     margin-top: 20px;
     margin-bottom: 5px;
+    border: 0px !important;
+    animation: none !important;
   }
 `
 
@@ -183,9 +186,14 @@ export default compose(
             parentId,
           }),
           {
-            onSuccess: () => {
+            onSuccess: resp => {
               updateContent('')
               updateIsReply(false)
+              if (resp.addStashComment.clientMutationId) {
+                goToAnchor(
+                  `stashComment-anchor-${resp.addStashComment.clientMutationId}`
+                )
+              }
             },
             onFailure: transaction => console.log(transaction.getError()),
           }

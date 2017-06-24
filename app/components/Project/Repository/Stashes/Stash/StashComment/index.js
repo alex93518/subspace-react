@@ -32,7 +32,7 @@ const StashComment = ({
 }) => (
   <MainDiv>
     <ScrollableAnchor id={'commentTop'}>
-      <h4>Comments ({totalAllCount})</h4>
+      <h4>Comments ({totalAllCount || 0})</h4>
     </ScrollableAnchor>
     <HeadSeparator />
     <CommentList
@@ -97,9 +97,13 @@ export default compose(
             parentId: null,
           }),
           {
-            onSuccess: () => {
+            onSuccess: resp => {
               updateContent('')
-              goToAnchor('commentTop')
+              if (resp.addStashComment.clientMutationId) {
+                goToAnchor(
+                  `stashComment-anchor-${resp.addStashComment.clientMutationId}`
+                )
+              }
             },
             onFailure: transaction => console.log(transaction.getError()),
           }

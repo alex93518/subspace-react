@@ -5,6 +5,7 @@ import { createContainer } from 'recompose-relay';
 import styled from 'styled-components';
 import { compose } from 'recompose';
 import TreeView from 'react-treeview';
+import FlipMove from 'react-flip-move';
 import Comment from './Comment'
 
 // Relay not allowed recursive nested object
@@ -47,7 +48,7 @@ const TreeContent = ({
           {...variables}
         />
       </CommentBox>
-  }
+    }
   </div>
 )
 
@@ -73,42 +74,78 @@ const CommentTree = ({
     stashGlobalId={stashGlobalId}
     variables={variables}
   >
-    {commentTree.comments.edges.map(edge2 => (
-      <TreeContent
-        key={`commentLvl2-${edge2.node.id}`}
-        parentId={edge2.node.rawId}
-        node={edge2.node}
-        lvlDeep={2}
-        showContent={showContent}
-        stashGlobalId={stashGlobalId}
-        variables={variables}
-      >
-        {edge2.node.comments.edges.map(edge3 => (
+    <FlipMove
+      duration={400}
+      easing="ease"
+      staggerDurationBy={15}
+      staggerDelayBy={20}
+      appearAnimation={'accordionVertical'}
+      enterAnimation={'accordionVertical'}
+      leaveAnimation={'accordionVertical'}
+    >
+      {commentTree.comments.edges.map(edge2 => (
+        <div key={`commentLvl2-${edge2.node.id}`}>
+          <div id={`stashComment-anchor-${edge2.node.rawId}`} />
           <TreeContent
-            key={`commentLvl3-${edge3.node.id}`}
-            parentId={edge3.node.rawId}
-            node={edge3.node}
-            lvlDeep={3}
+            parentId={edge2.node.rawId}
+            node={edge2.node}
+            lvlDeep={2}
             showContent={showContent}
             stashGlobalId={stashGlobalId}
             variables={variables}
           >
-            {edge3.node.comments.edges.map(edge4 => (
-              <TreeContent
-                key={`commentLvl4-${edge4.node.id}`}
-                parentId={edge4.node.rawId}
-                node={edge4.node}
-                lvlDeep={4}
-                showContent={showContent}
-                stashGlobalId={stashGlobalId}
-                variables={variables}
-              >
-              </TreeContent>
-            ))}
+            <FlipMove
+              duration={400}
+              easing="ease"
+              staggerDurationBy={15}
+              staggerDelayBy={20}
+              appearAnimation={'accordionVertical'}
+              enterAnimation={'accordionVertical'}
+              leaveAnimation={'accordionVertical'}
+            >
+              {edge2.node.comments.edges.map(edge3 => (
+                <div key={`commentLvl3-${edge3.node.id}`}>
+                  <div id={`stashComment-anchor-${edge3.node.rawId}`} />
+                  <TreeContent
+                    parentId={edge3.node.rawId}
+                    node={edge3.node}
+                    lvlDeep={3}
+                    showContent={showContent}
+                    stashGlobalId={stashGlobalId}
+                    variables={variables}
+                  >
+                    <FlipMove
+                      duration={400}
+                      easing="ease"
+                      staggerDurationBy={15}
+                      staggerDelayBy={20}
+                      appearAnimation={'accordionVertical'}
+                      enterAnimation={'accordionVertical'}
+                      leaveAnimation={'accordionVertical'}
+                    >
+                      {edge3.node.comments.edges.map(edge4 => (
+                        <div key={`commentLvl4-${edge4.node.id}`}>
+                          <div id={`stashComment-anchor-${edge4.node.rawId}`} />
+                          <TreeContent
+                            parentId={edge4.node.rawId}
+                            node={edge4.node}
+                            lvlDeep={4}
+                            showContent={showContent}
+                            stashGlobalId={stashGlobalId}
+                            variables={variables}
+                          >
+                          </TreeContent>
+                        </div>
+                      ))}
+                    </FlipMove>
+                  </TreeContent>
+                </div>
+              ))}
+            </FlipMove>
           </TreeContent>
-        ))}
-      </TreeContent>
-    ))}
+        </div>
+      ))}
+    </FlipMove>
   </TreeContent>
 )
 

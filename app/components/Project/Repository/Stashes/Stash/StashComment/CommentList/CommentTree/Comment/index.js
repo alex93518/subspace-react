@@ -3,8 +3,9 @@ import PropTypes from 'prop-types';
 import Relay from 'react-relay/classic';
 import { compose, withState, mapProps, lifecycle } from 'recompose';
 import { createContainer } from 'recompose-relay'
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 import { Panel } from 'react-bootstrap';
+import FlipMove from 'react-flip-move';
 import { LinkUserPhoto } from 'components/shared/Links';
 import CommentHeader from './CommentHeader';
 import CommentFooter from './CommentFooter';
@@ -19,6 +20,17 @@ const DivLinkPhoto = styled.div`
   float: left;
   margin-left: -60px;
   border-radius: 3px;
+`
+
+const PaddingKeyframes = isShowContent => keyframes`
+  from {
+    padding-top: ${isShowContent ? '0' : '15'}px;
+    padding-bottom: ${isShowContent ? '0' : '15'}px;
+  }
+  to {
+    padding-top: ${isShowContent ? '15' : '0'}px;
+    padding-bottom: ${isShowContent ? '15' : '0'}px;
+  }
 `
 
 const PanelComment = styled(Panel)`
@@ -59,12 +71,16 @@ const PanelComment = styled(Panel)`
     }};
   }
   & .panel-body {
-    display: ${props => props['data-isShowContent'] ? 'block' : 'none'};
+    -webkit-animation: ${props => PaddingKeyframes(props['data-isShowContent'])} 0.3s; /* Safari 4+ */
+    -moz-animation:    ${props => PaddingKeyframes(props['data-isShowContent'])} 0.3s; /* Fx 5+ */
+    -o-animation:      ${props => PaddingKeyframes(props['data-isShowContent'])} 0.3s; /* Opera 12+ */
+    animation:         ${props => PaddingKeyframes(props['data-isShowContent'])} 0.3s; /* IE 10+, Fx 29+ */
     border-left: 1px solid #ddd;
     border-right: 1px solid #ddd;
+    padding-top: ${props => props['data-isShowContent'] ? '15' : '0'}px;
+    padding-bottom: ${props => props['data-isShowContent'] ? '15' : '0'}px;
   }
   & .panel-footer {
-    display: ${props => props['data-isShowContent'] ? 'block' : 'none'};
     border: 1px solid #ddd;
   }
 `
@@ -89,16 +105,47 @@ const Comment = ({
         />
       }
       footer={
-        <CommentFooter
-          parentId={parentId}
-          isShowReply={isShowReply}
-          commentFooter={comment}
-          stashGlobalId={stashGlobalId}
-          {...variables}
-        />
+        isShowContent &&
+        <FlipMove
+          duration={150}
+          easing="ease"
+          staggerDurationBy={15}
+          staggerDelayBy={20}
+          appearAnimation={'accordionVertical'}
+          enterAnimation={'accordionVertical'}
+          leaveAnimation={'accordionVertical'}
+        >
+          {
+            isShowContent &&
+            <div key={`comment-footer-${comment.id}`}>
+              <CommentFooter
+                parentId={parentId}
+                isShowReply={isShowReply}
+                commentFooter={comment}
+                stashGlobalId={stashGlobalId}
+                {...variables}
+              />
+            </div>
+          }
+        </FlipMove>
       }
     >
-      <div dangerouslySetInnerHTML={{ __html: content }} />
+      <FlipMove
+        duration={150}
+        easing="ease"
+        staggerDurationBy={15}
+        staggerDelayBy={20}
+        appearAnimation={'accordionVertical'}
+        enterAnimation={'accordionVertical'}
+        leaveAnimation={'accordionVertical'}
+      >
+        {
+          isShowContent &&
+          <div key={`comment-content-${comment.id}`}>
+            <div dangerouslySetInnerHTML={{ __html: content }} />
+          </div>
+        }
+      </FlipMove>
     </PanelComment>
   </MainDiv>
 )
