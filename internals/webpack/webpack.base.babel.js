@@ -1,6 +1,5 @@
 const path = require('path');
 const webpack = require('webpack');
-const HappyPack = require('happypack');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 module.exports = options => ({
@@ -12,7 +11,8 @@ module.exports = options => ({
   module: {
     loaders: [{
       test: /\.js$/, // Transform all .js files required somewhere with Babel
-      loader: 'happypack/loader',
+      loader: 'babel-loader',
+      query: options.babelQuery,
       exclude: /node_modules/,
     }, {
       test: /\.css$/,
@@ -50,12 +50,7 @@ module.exports = options => ({
     }),
     new webpack.NamedModulesPlugin(),
     // new webpack.IgnorePlugin(/\.\/locale$/),
-    new HappyPack({
-      loaders: [{
-        path: 'babel-loader',
-        query: options.babelQuery,
-      }],
-    }),
+
     new BundleAnalyzerPlugin({
       analyzerMode: 'disabled',
       analyzerHost: '127.0.0.1',

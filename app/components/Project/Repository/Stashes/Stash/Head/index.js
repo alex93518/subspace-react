@@ -188,14 +188,13 @@ export default compose(
     fragments: {
       stashHead: () => Relay.QL`
         fragment on Ref {
-          id
-          rawId
           name
           repository {
             id
             rawId
           }
           stash {
+            id
             rawId
             stashNum
             voteTreshold
@@ -229,7 +228,6 @@ export default compose(
     },
   }),
   mapProps(({
-    id,
     repository,
     stashHead: {
       stash,
@@ -250,7 +248,6 @@ export default compose(
     },
     relay: { variables },
   }) => ({
-    id,
     totalVotePoints,
     totalCommit: totalCount,
     stashNum,
@@ -299,14 +296,13 @@ export default compose(
       props.toggleVote(voteVar)
       CurrentRelay.Store.commitUpdate(
         new VoteStashMutation({
-          id: props.id,
+          id: props.stash.id,
           isVoteUp,
           stashId: props.stash.rawId || null,
-          stashRefId: props.rawId,
         }),
         {
           onSuccess: resp => {
-            const { voteStash: { ref: { stash } } } = resp
+            const { voteStash: { stash } } = resp
             const acceptVotePoints = stash.acceptVotes.totalVotePoints
             const rejectVotePoints = stash.rejectVotes.totalVotePoints
             const totalPoints = acceptVotePoints + rejectVotePoints

@@ -1,11 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Relay from 'react-relay/classic';
-import { Navbar, Nav, NavItem, NavDropdown, MenuItem } from 'react-bootstrap';
+import { Navbar, Nav, NavDropdown, MenuItem } from 'react-bootstrap';
 import { compose, withState, withHandlers, mapProps } from 'recompose';
 import { createContainer } from 'recompose-relay'
 import styled from 'styled-components';
-import R from 'ramda';
 import CommentTree from './CommentTree';
 
 const DivComment = styled.div`
@@ -13,36 +12,54 @@ const DivComment = styled.div`
   text-align: center;
 `
 
-const NavSort = styled(NavItem)`
-  a {
-    padding-right: 0px !important;
-    color: #aaa !important;
+const NavDropdownButton = styled(NavDropdown)`
+  border: 1px solid rgba(27,31,35,0.2);
+  border-radius: 4px;
+  background-color: #eff3f6;
+  background-image: -webkit-linear-gradient(270deg, #fafbfc 0%, #eff3f6 90%);
+  background-image: linear-gradient(-180deg, #fafbfc 0%, #eff3f6 90%);
+  margin-top: 5px;
+  margin-right: 5px;
+  color: #777;
+  font-size: 13px;
+  & a {
+    padding: 5px 10px !important;
   }
 `
 
+const SpanSort = styled.span`
+  color: #999;
+  margin-right: 5px;
+`
+
+const SpanSortContent = styled.span`
+  font-weight: 700;
+`
+
+const DropdownButton = ({ title, content }) => (
+  <span>
+    <SpanSort>{ title }</SpanSort>
+    <SpanSortContent>{ content }</SpanSortContent>
+  </span>
+)
+
+DropdownButton.propTypes = {
+  title: PropTypes.string.isRequired,
+  content: PropTypes.string.isRequired,
+}
+
 const CommentList = ({
-  commentList: { comments: { totalCount, edges } },
-  stashData, showContent, handleSelectShowContent, handleSelectSort,
-  SORT, sortBy, createdAtSort,
+  commentList: { id, comments: { totalCount, edges } },
+  showContent, handleSelectShowContent, handleSelectSort,
+  SHOWCONTENT, SORT, sortBy, relay: { variables },
 }) => (
   totalCount === 0 ? <DivComment>No comment yet</DivComment> :
   <div>
     <Navbar fluid>
-      <Nav
-        activeKey={showContent}
-        onSelect={handleSelectShowContent}
-      >
-        <NavItem eventKey={'all'}>Show All</NavItem>
-        <NavItem eventKey={'upVoters'}>Upvoters</NavItem>
-        <NavItem eventKey={'downVoters'}>Downvoters</NavItem>
-        <NavItem eventKey={'nonVoters'}>Nonvoters</NavItem>
-        <NavItem eventKey={'none'}>Hide All</NavItem>
-      </Nav>
       <Nav pullRight onSelect={handleSelectSort}>
-        <NavSort disabled>Sort by :</NavSort>
-        <NavDropdown
-          title={`${sortBy.text}`}
-          id={'split-button'}
+        <NavDropdownButton
+          title={<DropdownButton title={'Sort by:'} content={sortBy.text} />}
+          id={'split-button-sort'}
         >
           {
             SORT.map(sort =>
@@ -54,16 +71,39 @@ const CommentList = ({
               </MenuItem>
             )
           }
-        </NavDropdown>
+        </NavDropdownButton>
+      </Nav>
+      <Nav pullRight onSelect={handleSelectShowContent}>
+        <NavDropdownButton
+          title={
+            <DropdownButton
+              title={'Show content:'}
+              content={showContent.text}
+            />
+          }
+          id={'split-button-sort'}
+        >
+          {
+            SHOWCONTENT.map(content =>
+              <MenuItem
+                key={`showcontent${content.idx}`}
+                eventKey={content.idx}
+              >
+                {content.text}
+              </MenuItem>
+            )
+          }
+        </NavDropdownButton>
       </Nav>
     </Navbar>
     {
-      createdAtSort(edges).reverse().map(({ node }) => (
+      edges.map(({ node }) => (
         <CommentTree
           key={node.id}
           commentTree={node}
-          stashData={stashData}
-          showContent={showContent}
+          showContent={showContent.key}
+          stashGlobalId={id}
+          {...variables}
         />
       ))
     }
@@ -72,13 +112,13 @@ const CommentList = ({
 
 CommentList.propTypes = {
   commentList: PropTypes.object.isRequired,
-  stashData: PropTypes.object.isRequired,
-  showContent: PropTypes.string.isRequired,
+  showContent: PropTypes.object.isRequired,
   handleSelectShowContent: PropTypes.func.isRequired,
   handleSelectSort: PropTypes.func.isRequired,
   SORT: PropTypes.array.isRequired,
+  SHOWCONTENT: PropTypes.array.isRequired,
   sortBy: PropTypes.object.isRequired,
-  createdAtSort: PropTypes.func.isRequired,
+  relay: PropTypes.object.isRequired,
 }
 
 export default compose(
@@ -90,13 +130,14 @@ export default compose(
       sort: 'popular',
     },
     fragments: {
-      commentList: () => Relay.QL`
+      commentList: vars => Relay.QL`
         fragment on Stash {
+          id
           comments(first: 50, sortBy: $sort) {
             totalCount
             edges {
               node {
-                ${CommentTree.getFragment('commentTree')}
+                ${CommentTree.getFragment('commentTree', vars)}
                 id
                 createdAt
               }
@@ -114,13 +155,19 @@ export default compose(
       { idx: 2, key: 'newest', text: 'Newest first' },
       { idx: 3, key: 'oldest', text: 'Oldest first' },
     ],
-    createdAtSort: R.sortBy(R.path(['node', 'createdAt'])),
+    SHOWCONTENT: [
+      { idx: 0, key: 'all', text: 'All' },
+      { idx: 1, key: 'upVoters', text: 'Upvoters' },
+      { idx: 2, key: 'downVoters', text: 'Downvoters' },
+      { idx: 3, key: 'nonVoters', text: 'Nonvoters' },
+      { idx: 4, key: 'none', text: 'None' },
+    ],
   })),
-  withState('showContent', 'updateShowContent', 'all'),
+  withState('showContent', 'updateShowContent', props => props.SHOWCONTENT[0]),
   withState('sortBy', 'updateSortBy', props => props.SORT[0]),
   withHandlers({
     handleSelectShowContent: props => selectedKey => {
-      props.updateShowContent(selectedKey)
+      props.updateShowContent(props.SHOWCONTENT[selectedKey])
     },
     handleSelectSort: props => selectedKey => {
       props.updateSortBy(props.SORT[selectedKey])

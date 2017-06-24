@@ -22,7 +22,7 @@ const Stash = ({ stash, relay: { variables } }) => (
         <StashHead stashHead={stash} {...variables} />
         <StashCommitStatus stashCommitStatus={stash.target} {...variables} />
       </PanelHead>
-      <StashComment stashComment={stash} {...variables} />
+      <StashComment stashComment={stash.stash} {...variables} />
     </Col>
     <Col md={2}>
       <UserVoteList
@@ -52,8 +52,8 @@ export default Relay.createContainer(Stash, {
     stash: vars => Relay.QL`
       fragment on Ref {
         ${StashHead.getFragment('stashHead', vars)}
-        ${StashComment.getFragment('stashComment', vars)}
         stash {
+          ${StashComment.getFragment('stashComment', vars)}
           acceptVotes (first: 9999) {
             ${UserVoteList.getFragment('userVoteList')}
           }

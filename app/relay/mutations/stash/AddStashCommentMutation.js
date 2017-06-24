@@ -9,14 +9,12 @@ export class AddStashCommentMutation extends Relay.Mutation {
     const {
       content,
       stashId,
-      stashRefId,
       parentId,
     } = this.props
 
     return {
       content,
       stashId,
-      stashRefId,
       parentId: parentId || null,
     };
   }
@@ -26,7 +24,7 @@ export class AddStashCommentMutation extends Relay.Mutation {
       {
         type: 'FIELDS_CHANGE',
         fieldIDs: {
-          ref: this.props.id,
+          stash: this.props.id,
         },
       },
     ];
@@ -35,7 +33,7 @@ export class AddStashCommentMutation extends Relay.Mutation {
   getFatQuery() {
     return Relay.QL`
       fragment on AddStashCommentPayload {
-        ref
+        stash
       }
     `;
   }

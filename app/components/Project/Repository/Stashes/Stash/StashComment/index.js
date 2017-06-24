@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import Relay from 'react-relay/classic';
 import { createContainer } from 'recompose-relay';
 import CurrentRelay, { AddStashCommentMutation } from 'relay';
-import { compose, withState, withHandlers, mapProps } from 'recompose';
+import { compose, withState, withHandlers } from 'recompose';
 import { Button } from 'react-bootstrap';
 import styled from 'styled-components';
 import ReactQuill from 'react-quill';
@@ -26,8 +26,8 @@ const DivAddComment = styled.div`
 `
 
 const StashComment = ({
-  stashComment: { stash, stash: { comments: { totalAllCount } } },
-  stashData, submitComment, content, handleContentChange,
+  stashComment, stashComment: { comments: { totalAllCount } },
+  submitComment, content, handleContentChange,
   relay: { variables },
 }) => (
   <MainDiv>
@@ -36,8 +36,7 @@ const StashComment = ({
     </ScrollableAnchor>
     <HeadSeparator />
     <CommentList
-      commentList={stash}
-      stashData={stashData}
+      commentList={stashComment}
       {...variables}
     />
     <HeadSeparator />
@@ -57,7 +56,6 @@ StashComment.propTypes = {
   content: PropTypes.string.isRequired,
   handleContentChange: PropTypes.func.isRequired,
   submitComment: PropTypes.func.isRequired,
-  stashData: PropTypes.object.isRequired,
   relay: PropTypes.object.isRequired,
 }
 
@@ -70,15 +68,12 @@ export default compose(
     },
     fragments: {
       stashComment: vars => Relay.QL`
-        fragment on Ref {
+        fragment on Stash {
+          ${CommentList.getFragment('commentList', vars)}
           id
           rawId
-          stash {
-            ${CommentList.getFragment('commentList', vars)}
-            stashId: rawId
-            comments {
-              totalAllCount
-            }
+          comments {
+            totalAllCount
           }
         }
       `,
@@ -90,7 +85,7 @@ export default compose(
       props.updateContent(value);
     },
     submitComment: ({
-      stashComment: { id, rawId, stash: { stashId } },
+      stashComment: { id, rawId },
       content, updateContent,
     }) => () => {
       if (content) {
@@ -98,8 +93,7 @@ export default compose(
           new AddStashCommentMutation({
             id,
             content,
-            stashId: stashId || null,
-            stashRefId: rawId,
+            stashId: rawId || null,
             parentId: null,
           }),
           {
@@ -112,13 +106,5 @@ export default compose(
         )
       }
     },
-  }),
-  mapProps(props => ({
-    stashData: {
-      id: props.stashComment.id,
-      stashId: props.stashComment.stash.stashId || null,
-      stashRefId: props.stashComment.rawId,
-    },
-    ...props,
-  }))
+  })
 )(StashComment)

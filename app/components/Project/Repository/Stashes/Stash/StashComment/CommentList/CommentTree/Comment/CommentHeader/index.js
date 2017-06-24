@@ -77,7 +77,7 @@ const CommentHeader = ({
         pullRight
       >
         <MenuItem onClick={handleIsShowContent}>
-          {isShowContent ? 'Hide' : 'Show'} comment
+          {isShowContent ? 'Hide' : 'Show'} content
         </MenuItem>
         <MenuItem>Report spam or abuse</MenuItem>
       </DropdownHead>

@@ -71,7 +71,7 @@ const CommentFooter = ({
   isShowReply, isReply, handleReplyClick,
   content, handleTextChange, submitReply,
   onVote, isVotedUp, isVotedDown,
-  commentFooter: { totalUpvotePoint, totalDownvotePoint },
+  commentFooter: { totalUpVotePoints, totalDownVotePoints },
 }) => (
   <span>
     {
@@ -81,12 +81,12 @@ const CommentFooter = ({
       </ButtonReply>
     }
     <VoteUpIcon onClick={() => onVote(true)} data-isVotedUp={isVotedUp} />
-    <SpanVotePoint>{totalUpvotePoint || 0}</SpanVotePoint>
+    <SpanVotePoint>{totalUpVotePoints || 0}</SpanVotePoint>
     <VoteDownIcon
       onClick={() => onVote(false)}
       data-isVotedDown={isVotedDown}
     />
-    <SpanVotePoint>{totalDownvotePoint || 0}</SpanVotePoint>
+    <SpanVotePoint>{totalDownVotePoints || 0}</SpanVotePoint>
     {
       isShowReply &&
       <PanelReply collapsible expanded={isReply}>
@@ -118,14 +118,16 @@ export default compose(
       branchHead: 'master',
       userName: null,
       projectName: null,
+      sort: 'popular',
     },
     fragments: {
       commentFooter: () => Relay.QL`
         fragment on StashComment {
           rawId
+          stashId
           isUserVoted
-          totalUpvotePoint
-          totalDownvotePoint
+          totalUpVotePoints
+          totalDownVotePoints
         }
       `,
     },
@@ -169,17 +171,15 @@ export default compose(
       props.updateContent(value)
     },
     submitReply: ({
-      content, updateContent, updateIsReply,
-      stashData: { id, stashId, stashRefId },
-      parentId,
+      stashGlobalId, content, updateContent, updateIsReply,
+      parentId, commentFooter: { stashId },
     }) => () => {
       if (content) {
         CurrentRelay.Store.commitUpdate(
           new AddStashCommentMutation({
-            id,
+            id: stashGlobalId,
             content,
             stashId,
-            stashRefId,
             parentId,
           }),
           {
@@ -197,10 +197,10 @@ export default compose(
       props.toggleVote(voteVar)
       CurrentRelay.Store.commitUpdate(
         new VoteStashCommentMutation({
-          id: props.stashData.id,
+          id: props.stashGlobalId,
           isVoteUp,
           stashCommentId: props.commentFooter.rawId || null,
-          stashRefId: props.stashData.stashRefId,
+          stashId: props.commentFooter.stashId,
         })
       )
     },

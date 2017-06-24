@@ -70,8 +70,9 @@ const PanelComment = styled(Panel)`
 `
 
 const Comment = ({
-  comment, isShowReply, stashData, parentId, isShowContent,
+  comment, isShowReply, parentId, isShowContent, stashGlobalId,
   updateIsShowContent, comment: { content, owner, isOwnerVoteUp },
+  relay: { variables },
 }) => (
   <MainDiv>
     <DivLinkPhoto>
@@ -89,10 +90,11 @@ const Comment = ({
       }
       footer={
         <CommentFooter
-          stashData={stashData}
           parentId={parentId}
           isShowReply={isShowReply}
           commentFooter={comment}
+          stashGlobalId={stashGlobalId}
+          {...variables}
         />
       }
     >
@@ -104,10 +106,11 @@ const Comment = ({
 Comment.propTypes = {
   comment: PropTypes.object.isRequired,
   isShowReply: PropTypes.bool.isRequired,
-  stashData: PropTypes.object.isRequired,
   parentId: PropTypes.string,
   isShowContent: PropTypes.bool.isRequired,
   updateIsShowContent: PropTypes.func.isRequired,
+  stashGlobalId: PropTypes.string.isRequired,
+  relay: PropTypes.object.isRequired,
 }
 
 export default compose(
@@ -116,12 +119,13 @@ export default compose(
       branchHead: 'master',
       userName: null,
       projectName: null,
+      sort: 'popular',
     },
     fragments: {
-      comment: () => Relay.QL`
+      comment: vars => Relay.QL`
         fragment on StashComment {
           ${CommentHeader.getFragment('commentHeader')}
-          ${CommentFooter.getFragment('commentFooter')}
+          ${CommentFooter.getFragment('commentFooter', vars)}
           id
           owner {
             ${LinkUserPhoto.getFragment('user')}

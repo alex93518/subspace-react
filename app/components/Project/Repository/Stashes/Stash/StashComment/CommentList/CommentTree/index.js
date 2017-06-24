@@ -4,7 +4,6 @@ import Relay from 'react-relay/classic';
 import { createContainer } from 'recompose-relay';
 import styled from 'styled-components';
 import { compose } from 'recompose';
-import R from 'ramda';
 import TreeView from 'react-treeview';
 import Comment from './Comment'
 
@@ -12,14 +11,12 @@ import Comment from './Comment'
 // https://github.com/facebook/graphql/issues/91
 // Set to 4 deep level comments
 
-const createdAtSort = R.sortBy(R.path(['node', 'createdAt']))
-
 const CommentBox = styled.div`
-  margin-left: 35px;
+  margin-left: 30px;
 `
 
 const TreeContent = ({
-  node, lvlDeep, children, stashData, parentId, showContent,
+  node, lvlDeep, children, stashGlobalId, parentId, showContent, variables,
 }) => (
   <div>
     {
@@ -30,9 +27,10 @@ const TreeContent = ({
           <Comment
             comment={node}
             isShowReply={lvlDeep < 4}
-            stashData={stashData}
+            stashGlobalId={stashGlobalId}
             parentId={parentId}
             showContent={showContent}
+            {...variables}
           />
         )}
         defaultCollapsed={false}
@@ -42,10 +40,11 @@ const TreeContent = ({
       <CommentBox>
         <Comment
           comment={node}
-          stashData={stashData}
+          stashGlobalId={stashGlobalId}
           parentId={parentId}
           isShowReply={lvlDeep < 4}
           showContent={showContent}
+          {...variables}
         />
       </CommentBox>
   }
@@ -56,46 +55,53 @@ TreeContent.propTypes = {
   node: PropTypes.object.isRequired,
   lvlDeep: PropTypes.number.isRequired,
   children: PropTypes.node,
-  stashData: PropTypes.object.isRequired,
   parentId: PropTypes.string,
   showContent: PropTypes.string.isRequired,
+  stashGlobalId: PropTypes.string.isRequired,
+  variables: PropTypes.object.isRequired,
 }
 
-const CommentTree = ({ commentTree, stashData, showContent }) => (
+const CommentTree = ({
+  commentTree, showContent, stashGlobalId, relay: { variables },
+}) => (
   <TreeContent
     key={`commentLvl1-${commentTree.id}`}
-    stashData={stashData}
     parentId={commentTree.rawId}
     node={commentTree}
     lvlDeep={1}
     showContent={showContent}
+    stashGlobalId={stashGlobalId}
+    variables={variables}
   >
-    {createdAtSort(commentTree.comments.edges).reverse().map(edge2 => (
+    {commentTree.comments.edges.map(edge2 => (
       <TreeContent
         key={`commentLvl2-${edge2.node.id}`}
-        stashData={stashData}
         parentId={edge2.node.rawId}
         node={edge2.node}
         lvlDeep={2}
         showContent={showContent}
+        stashGlobalId={stashGlobalId}
+        variables={variables}
       >
-        {createdAtSort(edge2.node.comments.edges).reverse().map(edge3 => (
+        {edge2.node.comments.edges.map(edge3 => (
           <TreeContent
             key={`commentLvl3-${edge3.node.id}`}
-            stashData={stashData}
             parentId={edge3.node.rawId}
             node={edge3.node}
             lvlDeep={3}
             showContent={showContent}
+            stashGlobalId={stashGlobalId}
+            variables={variables}
           >
-            {createdAtSort(edge3.node.comments.edges).reverse().map(edge4 => (
+            {edge3.node.comments.edges.map(edge4 => (
               <TreeContent
                 key={`commentLvl4-${edge4.node.id}`}
-                stashData={stashData}
                 parentId={edge4.node.rawId}
                 node={edge4.node}
                 lvlDeep={4}
                 showContent={showContent}
+                stashGlobalId={stashGlobalId}
+                variables={variables}
               >
               </TreeContent>
             ))}
@@ -108,8 +114,9 @@ const CommentTree = ({ commentTree, stashData, showContent }) => (
 
 CommentTree.propTypes = {
   commentTree: PropTypes.object.isRequired,
-  stashData: PropTypes.object.isRequired,
   showContent: PropTypes.string.isRequired,
+  stashGlobalId: PropTypes.string.isRequired,
+  relay: PropTypes.object.isRequired,
 }
 
 export default compose(
@@ -118,36 +125,37 @@ export default compose(
       branchHead: 'master',
       userName: null,
       projectName: null,
+      sort: 'popular',
     },
     fragments: {
-      commentTree: () => Relay.QL`
+      commentTree: vars => Relay.QL`
         fragment on StashComment {
           id
           rawId
           createdAt
-          ${Comment.getFragment('comment')}
-          comments(first: 9999) {
+          ${Comment.getFragment('comment', vars)}
+          comments(first: 9999, sortBy: $sort) {
             edges {
               node {
                 id
                 rawId
                 createdAt
-                ${Comment.getFragment('comment')}
-                comments(first: 9999) {
+                ${Comment.getFragment('comment', vars)}
+                comments(first: 9999, sortBy: $sort) {
                   edges {
                     node {
                       id
                       rawId
                       createdAt
-                      ${Comment.getFragment('comment')}
-                      comments(first: 9999) {
+                      ${Comment.getFragment('comment', vars)}
+                      comments(first: 9999, sortBy: $sort) {
                         edges {
                           node {
                             id
                             rawId
                             createdAt
-                            ${Comment.getFragment('comment')}
-                            comments(first: 9999) {
+                            ${Comment.getFragment('comment', vars)}
+                            comments(first: 9999, sortBy: $sort) {
                               edges
                             }
                           }

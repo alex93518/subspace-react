@@ -9,13 +9,13 @@ export class VoteStashCommentMutation extends Relay.Mutation {
     const {
       isVoteUp,
       stashCommentId,
-      stashRefId,
+      stashId,
     } = this.props
 
     return {
       isVoteUp,
       stashCommentId,
-      stashRefId,
+      stashId,
     };
   }
 
@@ -24,7 +24,7 @@ export class VoteStashCommentMutation extends Relay.Mutation {
       {
         type: 'FIELDS_CHANGE',
         fieldIDs: {
-          ref: this.props.id,
+          stash: this.props.id,
         },
       },
     ];
@@ -33,7 +33,7 @@ export class VoteStashCommentMutation extends Relay.Mutation {
   getFatQuery() {
     return Relay.QL`
       fragment on voteStashCommentPayload {
-        ref
+        stash
       }
     `;
   }
