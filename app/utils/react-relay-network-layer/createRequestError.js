@@ -17,7 +17,7 @@ function formatRequestErrors(request, errors) {
 
       // custom errors thrown in graphql-server may not have locations
       const locationMessage = locations
-        ? '\n' +
+        ? `\n${
             locations
               .map(({ column, line }) => {
                 const queryLine = queryLines[line - 1];
@@ -29,7 +29,7 @@ function formatRequestErrors(request, errors) {
                   .map(messageLine => indent + messageLine)
                   .join('\n');
               })
-              .join('\n')
+              .join('\n')}`
         : '';
       return prefix + message + locationMessage;
     })

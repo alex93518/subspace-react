@@ -1,3 +1,5 @@
+/* eslint-disable no-underscore-dangle */
+
 import queries from './relayQueries';
 import mutation from './relayMutation';
 import fetchWithMiddleware from './fetchWithMiddleware';

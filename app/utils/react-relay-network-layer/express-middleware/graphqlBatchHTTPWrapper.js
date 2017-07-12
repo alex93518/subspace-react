@@ -1,4 +1,4 @@
-export default function(graphqlHTTPMiddleware) {
+export default function (graphqlHTTPMiddleware) {
   return (req, res) => {
     const subResponses = [];
     return Promise.all(

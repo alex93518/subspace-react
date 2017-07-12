@@ -1,4 +1,4 @@
-/* eslint-disable no-console */
+/* eslint-disable no-console, no-plusplus */
 
 const timeoutError = new Error('fetch timeout');
 

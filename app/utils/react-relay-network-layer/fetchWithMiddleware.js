@@ -1,4 +1,4 @@
-/* eslint-disable no-param-reassign */
+/* eslint-disable no-param-reassign, prefer-const */
 
 import createRequestError from './createRequestError';
 
@@ -25,13 +25,12 @@ export default function fetchWithMiddleware(reqFromRelay, middlewares) {
           throw err;
         });
       })
-      .then(res => {
+      .then(res =>
         // sub-promise for combining `res` with parsed json
-        return res.json().then(json => {
-          res.json = json;
-          return res;
-        });
-      });
+         res.json().then(json => {
+           res.json = json;
+           return res;
+         }));
   };
 
   const wrappedFetch = compose(...middlewares)(fetchAfterAllWrappers);
@@ -47,9 +46,9 @@ export default function fetchWithMiddleware(reqFromRelay, middlewares) {
       );
     } else if (!{}.hasOwnProperty.call(payload, 'data')) {
       throw new Error(
-        'Server response.data was missing for query `' +
-          reqFromRelay.relayReqObj.getDebugName() +
-          '`.'
+        `Server response.data was missing for query \`${
+          reqFromRelay.relayReqObj.getDebugName()
+          }\`.`
       );
     }
     return payload.data;
@@ -69,10 +68,9 @@ export default function fetchWithMiddleware(reqFromRelay, middlewares) {
 function compose(...funcs) {
   if (funcs.length === 0) {
     return arg => arg;
-  } else {
-    const last = funcs[funcs.length - 1];
-    const rest = funcs.slice(0, -1);
-    return (...args) =>
-      rest.reduceRight((composed, f) => f(composed), last(...args));
   }
+  const last = funcs[funcs.length - 1];
+  const rest = funcs.slice(0, -1);
+  return (...args) =>
+      rest.reduceRight((composed, f) => f(composed), last(...args));
 }
