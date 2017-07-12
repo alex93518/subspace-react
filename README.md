@@ -1,4 +1,4 @@
-## Terrella Client
+## Subspace Client
 
 ### Development
 
@@ -17,6 +17,6 @@ yarn start
 ##### Development
 
 - Add hosts from `.env` to your local `/etc/hosts`
-- Build local `terrella-git` image from [terrella-git repo](https://github.com/terrella-io/terrella-git/)
-- Build local `terrella-api` image from [terrella-api repo](https://github.com/terrella-io/terrella-api/)
+- Build local `subspace-git` image from [subspace-git repo](https://github.com/subspace-net/subspace-git/)
+- Build local `subspace-api` image from [subspace-api repo](https://github.com/subspace-net/subspace-api/)
 - Start docker-compose with `yarn run docker:dev -- up`

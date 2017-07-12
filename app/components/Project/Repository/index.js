@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Relay from 'react-relay/classic';
 import { matchRoute, matchRouteChild } from 'utils/routeMatcher';
-import MainGrid from 'components/shared/MainGrid';
 import MainContainer from './MainContainer';
 import TreeContainer from './TreeContainer';
 import BlobContainer from './BlobContainer';
@@ -10,8 +9,6 @@ import Commits from './Commits';
 import Commit from './Commit';
 import Branches from './Branches';
 import Stashes from './Stashes';
-import Diagrams from './Diagram/Diagrams';
-import DiagramEditor from './Diagram/DiagramEditor';
 
 const Components = {
   MainContainer: (repository, props) =>
@@ -28,25 +25,6 @@ const Components = {
     <Branches {...props} branches={repository} />,
   Stashes: (repository, props) =>
     <Stashes {...props} stashes={repository} />,
-  Diagrams: (repository, props) =>
-    <MainGrid>
-      <Diagrams {...props} diagrams={repository} />
-    </MainGrid>,
-  DiagramEditor: (repository, props) =>
-    <DiagramEditor
-      {...props}
-      repositoryId={repository.id}
-      repositoryRawId={repository.rawId}
-      diagramEditor={repository}
-    />,
-  NewDiagramEditor: (repository, props) =>
-    <DiagramEditor
-      {...props}
-      repositoryId={repository.id}
-      repositoryRawId={repository.rawId}
-      diagramEditor={null}
-      isNew
-    />,
 }
 
 const Repository = ({
@@ -70,7 +48,6 @@ export default Relay.createContainer(Repository, {
     projectName: null,
     splat: null,
     commitId: null,
-    diagramId: null,
   },
   fragments: {
     repository: vars => Relay.QL`
@@ -85,8 +62,6 @@ export default Relay.createContainer(Repository, {
           Commit: () => Commit.getFragment('commit', vars),
           Branches: () => Branches.getFragment('branches', vars),
           Stashes: () => Stashes.getFragment('stashes', vars),
-          Diagrams: () => Diagrams.getFragment('diagrams', vars),
-          DiagramEditor: () => DiagramEditor.getFragment('diagramEditor', vars),
         })}
       }
     `,

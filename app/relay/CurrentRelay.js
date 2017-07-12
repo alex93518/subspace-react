@@ -5,7 +5,7 @@ import {
   urlMiddleware,
   authMiddleware,
   loggerMiddleware, // eslint-disable-line
-} from 'react-relay-network-layer'
+} from 'utils/react-relay-network-layer'
 
 window.graph_url = process.env.GRAPHQL_ENDPOINT
 
@@ -14,14 +14,14 @@ const getCustomNetworkLayer = (token, provider) => new RelayNetworkLayer(
     urlMiddleware({
       url: () => (
         process.env.GRAPHQL_ENDPOINT ||
-        'http://terrella-api.com/graphql'
+        'http://subspace-api.nqfviyftp5.us-east-1.elasticbeanstalk.com/graphql'
       ),
     }),
     // loggerMiddleware(),
     authMiddleware({
       token,
       prefix: '',
-      header: provider === 'firebase' ? 'f_base' : 's_exch',
+      header: provider === 'firebase' ? 'fbase' : 'stexch',
       tokenRefreshPromise: getToken,
     }),
   ],

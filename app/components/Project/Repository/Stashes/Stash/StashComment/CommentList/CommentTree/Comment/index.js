@@ -36,38 +36,29 @@ const PaddingKeyframes = isShowContent => keyframes`
 const PanelComment = styled(Panel)`
   border: 0px;
   & .panel-heading {
-    background: ${props => {
-      let color = '#fcfcfc';
-      if (props['data-isOwnerVoteUp'] !== null) {
-        if (props['data-isOwnerVoteUp']) {
-          color = 'rgba(45, 132, 48, 0.03)'
-        } else {
-          color = 'rgba(203, 36, 36, 0.03)'
-        }
-      }
-      return color
-    }};
+    background: #fcfcfc;
+    color: #777;
     border: 1px solid ${props => {
       let color = '#ddd';
       if (props['data-isOwnerVoteUp'] !== null) {
         if (props['data-isOwnerVoteUp']) {
           color = 'rgba(45, 132, 48, 0.6)'
         } else {
-          color = 'rgba(169, 12, 12, 0.36)'
+          color = 'rgba(169, 12, 12, 0.6)'
         }
       }
       return color
     }};
-    color: ${props => {
-      let color = '#777';
+    border-left: ${props => {
+      let border = '1px solid #ddd'
       if (props['data-isOwnerVoteUp'] !== null) {
         if (props['data-isOwnerVoteUp']) {
-          color = 'rgba(45, 132, 48, 1)'
+          border = '6px solid rgba(45, 132, 48, 0.6)'
         } else {
-          color = 'rgba(203, 36, 36, 1)'
+          border = '6px solid rgba(169, 12, 12, 0.6)'
         }
       }
-      return color
+      return border
     }};
   }
   & .panel-body {

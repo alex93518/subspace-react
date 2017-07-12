@@ -12,14 +12,14 @@ const LoginStep = ({ handleSubmit, username }) => (
         <h3>Welcome, {username}</h3>
         <h3>One more step to go</h3>
         <form onSubmit={handleSubmit}>
-          Choose your terrella username:
+          Choose your subspace username:
           <Field
             name="userName"
             component={TextInput}
             type="text"
             placeholder="Enter username"
           />
-          Choose your terrella git password:
+          Choose your subspace git password:
           <Field
             name="password"
             component={TextInput}

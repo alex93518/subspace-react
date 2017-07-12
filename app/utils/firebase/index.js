@@ -1,4 +1,5 @@
-import firebase from 'firebase';
+import * as firebase from 'firebase/app';
+import 'firebase/auth';
 import { firebaseConfig } from './config';
 
 try {
@@ -12,7 +13,7 @@ try {
 }
 
 export const firebaseApp = firebase;
-export const firebaseAuth = firebaseApp.auth();
+export const firebaseAuth = firebase.auth();
 
 export const getToken = async () => {
   const auth = await firebaseAuth.getToken()

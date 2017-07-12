@@ -16,7 +16,7 @@ const Footer = () => (
   <MainContainer>
     <FooterContainer>
       <div>
-        <span>© 2017 Terrella, Inc.</span>
+        <span>© 2017 Subspace, Inc.</span>
       </div>
     </FooterContainer>
   </MainContainer>

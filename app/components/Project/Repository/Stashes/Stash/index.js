@@ -9,22 +9,22 @@ import StashComment from './StashComment';
 import UserVoteList from './UserVoteList';
 
 const PanelHead = styled(Panel)`
-  padding: 20px;
-  background: rgba(234, 245, 255, 1);
-  color: #3a87ad;
-  border-color: #bce8f1;
+  padding: 15px;
+  background: #f9f9f9;
+  color: #777;
+  border-color: #ddd;
 `
 
 const Stash = ({ stash, relay: { variables } }) => (
   <Row>
-    <Col md={10}>
+    <Col md={9}>
       <PanelHead>
         <StashHead stashHead={stash} {...variables} />
         <StashCommitStatus stashCommitStatus={stash.target} {...variables} />
       </PanelHead>
       <StashComment stashComment={stash.stash} {...variables} />
     </Col>
-    <Col md={2}>
+    <Col md={3}>
       <UserVoteList
         userVoteList={stash.stash.acceptVotes}
         title={'Accepted by'}

@@ -7,7 +7,7 @@ import { compose, withState, withHandlers } from 'recompose';
 import { Button } from 'react-bootstrap';
 import styled from 'styled-components';
 import ReactQuill from 'react-quill';
-import ScrollableAnchor, { goToAnchor } from 'react-scrollable-anchor'
+import { Element, scroller } from 'react-scroll';
 import Separator from 'components/shared/Separator';
 import CommentList from './CommentList';
 
@@ -31,9 +31,9 @@ const StashComment = ({
   relay: { variables },
 }) => (
   <MainDiv>
-    <ScrollableAnchor id={'commentTop'}>
+    <Element name={'commentTop'}>
       <h4>Comments ({totalAllCount || 0})</h4>
-    </ScrollableAnchor>
+    </Element>
     <HeadSeparator />
     <CommentList
       commentList={stashComment}
@@ -100,7 +100,7 @@ export default compose(
             onSuccess: resp => {
               updateContent('')
               if (resp.addStashComment.clientMutationId) {
-                goToAnchor(
+                scroller.scrollTo(
                   `stashComment-anchor-${resp.addStashComment.clientMutationId}`
                 )
               }

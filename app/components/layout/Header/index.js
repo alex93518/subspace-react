@@ -61,7 +61,7 @@ const Header = ({ auth: { authenticated, user, userName } }) => (
   <TopNavbar>
     <Navbar.Header>
       <Navbar.Brand>
-        <LinkBrand to="/">Terrella</LinkBrand>
+        <LinkBrand to="/">Subspace</LinkBrand>
       </Navbar.Brand>
     </Navbar.Header>
     <Nav>

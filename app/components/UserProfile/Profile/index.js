@@ -52,7 +52,7 @@ const getTabTitle = (provider, providerData, isOwner) => {
     providerLogo = <SpanIcon><FaGithub /></SpanIcon>
   } else if (provider === 'Google') {
     providerLogo = <SpanIcon><FaGoogle /></SpanIcon>
-  } else if (provider === 'Terrella') {
+  } else if (provider === 'Subspace') {
     providerLogo = <SpanIcon><FaAt /></SpanIcon>
   }
 
@@ -69,7 +69,7 @@ const Profile = ({
     <Tabs activeKey={tabKey} onSelect={onTabSelect} id="providerAccounts">
       <Tab
         eventKey={1}
-        title={getTabTitle('Terrella', null, false)}
+        title={getTabTitle('Subspace', null, false)}
       >
         <DivTabContent>
           <MainAccount

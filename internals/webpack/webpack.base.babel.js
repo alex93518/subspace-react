@@ -74,7 +74,7 @@ module.exports = options => ({
     alias: {
       'recompose-relay': path.resolve(
         process.cwd(),
-        'app/relay/CreateContainer.js'
+        'app/relay/createContainer.js'
       ),
     },
     mainFields: [

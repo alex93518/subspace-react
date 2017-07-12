@@ -6,10 +6,8 @@ import { Grid } from 'react-bootstrap';
 import GoCode from 'react-icons/lib/go/code'
 import GoIssueOpened from 'react-icons/lib/go/issue-opened'
 import GoQuestion from 'react-icons/lib/go/question'
-import MdInsertChart from 'react-icons/lib/md/insert-chart'
 import NavTabs from 'components/shared/NavTabs';
 import RepoLink from 'components/shared/repo/TitleLink'
-import { routeName } from 'utils/routeMatcher'
 import Repository from './Repository'
 
 const NavLabel = styled.span`
@@ -29,10 +27,6 @@ const getNavConfig = (owner, name) => [
     link: `/${owner}/${name}#qa`,
     label: (<NavLabel><GoQuestion /> Q&amp;A</NavLabel>),
   },
-  {
-    link: `/${owner}/${name}/diagrams`,
-    label: (<NavLabel><MdInsertChart /> Diagrams</NavLabel>),
-  },
 ]
 
 const RepoTitle = styled.h3`
@@ -47,18 +41,8 @@ const MainContainer = styled.div`
   padding-bottom: 30px;
 `
 
-const getConfigActiveKey = (owner, name, route) => {
+const getConfigActiveKey = (owner, name) => {
   const config = getNavConfig(owner, name)
-  if (
-    routeName(route) === 'Diagrams' ||
-    routeName(route) === 'DiagramEditor' ||
-    routeName(route) === 'NewDiagramEditor'
-  ) {
-    return {
-      config,
-      activeKey: config[3].link,
-    }
-  }
   return {
     config,
     activeKey: config[0].link,
@@ -74,10 +58,7 @@ const Project = ({
       isPrivate,
     },
   },
-  relay: {
-    variables,
-    route,
-  },
+  relay: { variables },
 }) => (
   <div>
     <TopContainer>
@@ -90,7 +71,7 @@ const Project = ({
           />
         </RepoTitle>
         <NavTabs
-          configActive={getConfigActiveKey(owner.userName, name, route)}
+          configActive={getConfigActiveKey(owner.userName, name)}
         />
       </Grid>
     </TopContainer>

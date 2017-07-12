@@ -5,10 +5,10 @@ import styled from 'styled-components';
 import { Button, Panel } from 'react-bootstrap';
 import { compose, withState, withHandlers } from 'recompose';
 import { createContainer } from 'recompose-relay'
+import { scroller } from 'react-scroll';
 import FaPencil from 'react-icons/lib/fa/pencil';
 import FaThumbsOUp from 'react-icons/lib/fa/thumbs-o-up';
 import FaThumbsODown from 'react-icons/lib/fa/thumbs-o-down';
-import { goToAnchor } from 'react-scrollable-anchor'
 import ReactQuill from 'react-quill';
 import CurrentRelay, {
   AddStashCommentMutation, VoteStashCommentMutation,
@@ -190,7 +190,7 @@ export default compose(
               updateContent('')
               updateIsReply(false)
               if (resp.addStashComment.clientMutationId) {
-                goToAnchor(
+                scroller.scrollTo(
                   `stashComment-anchor-${resp.addStashComment.clientMutationId}`
                 )
               }

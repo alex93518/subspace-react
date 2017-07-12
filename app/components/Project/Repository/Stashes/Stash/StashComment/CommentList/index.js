@@ -4,6 +4,7 @@ import Relay from 'react-relay/classic';
 import { Navbar, Nav, NavDropdown, MenuItem } from 'react-bootstrap';
 import { compose, withState, withHandlers, mapProps } from 'recompose';
 import { createContainer } from 'recompose-relay'
+import { Element } from 'react-scroll';
 import FlipMove from 'react-flip-move';
 import styled from 'styled-components';
 import CommentTree from './CommentTree';
@@ -19,7 +20,7 @@ const NavDropdownButton = styled(NavDropdown)`
   background-color: #eff3f6;
   background-image: -webkit-linear-gradient(270deg, #fafbfc 0%, #eff3f6 90%);
   background-image: linear-gradient(-180deg, #fafbfc 0%, #eff3f6 90%);
-  margin-top: 5px;
+  margin-top: 4px;
   margin-right: 5px;
   color: #777;
   font-size: 13px;
@@ -109,7 +110,7 @@ const CommentList = ({
       {
         edges.map(({ node }) => (
           <div key={node.id}>
-            <div id={`stashComment-anchor-${node.rawId}`} />
+            <Element name={`stashComment-anchor-${node.rawId}`} />
             <CommentTree
               commentTree={node}
               showContent={showContent.key}

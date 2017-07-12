@@ -1,6 +1,5 @@
-import firebase from 'firebase';
 import { call, take } from 'redux-saga/effects';
-import { firebaseAuth } from 'utils/firebase';
+import { firebaseApp, firebaseAuth } from 'utils/firebase';
 import { actionsGenerator, redirect } from 'redux/utils'
 import CurrentRelay, { CreateUserMutation } from 'relay';
 import {
@@ -45,7 +44,7 @@ export const authActions = actionsGenerator({
 })
 
 export const signInWithGithub = () => authActions.signIn.init({
-  authProvider: new firebase.auth.GithubAuthProvider(),
+  authProvider: new firebaseApp.auth.GithubAuthProvider(),
   getNameAndCreateUser,
 });
 
@@ -53,12 +52,12 @@ export const addGithubProvider = (id, userId, callback) =>
   authActions.addFirebaseProvider.init({
     id,
     userId,
-    authProvider: new firebase.auth.GithubAuthProvider(),
+    authProvider: new firebaseApp.auth.GithubAuthProvider(),
     callback,
   });
 
 export const signInWithGoogle = () => authActions.signIn.init({
-  authProvider: new firebase.auth.GoogleAuthProvider(),
+  authProvider: new firebaseApp.auth.GoogleAuthProvider(),
   getNameAndCreateUser,
 });
 
@@ -66,7 +65,7 @@ export const addGoogleProvider = (id, userId, callback) =>
   authActions.addFirebaseProvider.init({
     id,
     userId,
-    authProvider: new firebase.auth.GoogleAuthProvider(),
+    authProvider: new firebaseApp.auth.GoogleAuthProvider(),
     callback,
   });
 
