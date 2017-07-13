@@ -24,7 +24,7 @@
     "build:dll": "node ./internals/scripts/dependencies.js",
     "start:dev": "cross-env NODE_ENV=development GRAPHQL_ENDPOINT=http://localhost:9000/graphql node server",
     "start:docker": "node server",
-    "start": "npm run build && npm run start:prod",
+    "start": "npm run start:prod",
     "start:prod": "cross-env NODE_ENV=production node server",
     "presetup": "npm i chalk shelljs",
     "setup": "node ./internals/scripts/setup.js",
