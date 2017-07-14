@@ -4,7 +4,7 @@
   "description": "Subspace Client",
   "repository": {
     "type": "git",
-    "url": "git://github.com/terrella-io/terrella-react.git"
+    "url": "git://github.com/subspace-net/subspace-react.git"
   },
   "engines": {
     "npm": ">=3",
@@ -60,7 +60,27 @@
       "minimist",
       "react-icons",
       "sanitize.css",
-      "eslint-plugin-graphql"
+      "eslint-plugin-graphql",
+      "babel-core",
+      "babel-loader",
+      "babel-plugin-relay",
+      "babel-plugin-styled-components",
+      "babel-plugin-transform-react-remove-prop-types",
+      "babel-preset-latest",
+      "babel-preset-react",
+      "babel-preset-react-hmre",
+      "babel-preset-stage-0",
+      "copy-webpack-plugin",
+      "css-loader",
+      "exports-loader",
+      "file-loader",
+      "html-loader",
+      "html-webpack-plugin",
+      "offline-plugin",
+      "rimraf",
+      "style-loader",
+      "webpack",
+      "webpack-bundle-analyzer"
     ],
     "include": [
       "core-js",
@@ -178,6 +198,7 @@
     "babel-cli": "^6.24.1",
     "babel-core": "^6.25.0",
     "babel-eslint": "7.1.1",
+    "babel-loader": "^7.1.1",
     "babel-plugin-dynamic-import-node": "1.0.0",
     "babel-plugin-react-intl": "^2.3.1",
     "babel-plugin-react-relay": "^0.10.0",
