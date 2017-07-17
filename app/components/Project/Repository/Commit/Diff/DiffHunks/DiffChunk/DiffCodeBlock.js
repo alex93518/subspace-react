@@ -1,10 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
-import SyntaxHighlighter from 'react-syntax-highlighter';
-import { xcode } from 'react-syntax-highlighter/dist/styles';
+import SyntaxHighlighter from 'react-syntax-highlighter/dist/light';
+import xcode from 'react-syntax-highlighter/dist/styles/xcode';
 
 const CodeBlock = styled(SyntaxHighlighter)`
+  font-size: 13px;
   & .react-syntax-highlighter-line-number {
     display: block;
     height: 20px;

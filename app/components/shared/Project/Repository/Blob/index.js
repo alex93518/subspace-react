@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Relay from 'react-relay/classic';
-import SyntaxHighlighter from 'react-syntax-highlighter';
-import { xcode } from 'react-syntax-highlighter/dist/styles';
+import SyntaxHighlighter from 'react-syntax-highlighter/dist/light';
+import xcode from 'react-syntax-highlighter/dist/styles/xcode';
 import { compose, mapProps, branch, renderComponent } from 'recompose';
 import { createContainer } from 'recompose-relay'
 import path from 'path';
