@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Relay from 'react-relay/classic';
 import MainGrid from 'components/shared/MainGrid';
-import Stash from './Stash'
+import StashListItem from './StashListItem'
 
 const Stashes = ({
   stashes: { stashes: { edges } },
@@ -12,7 +12,7 @@ const Stashes = ({
     <div>
       {
         edges && edges.map(({ node, node: { id } }) =>
-          <Stash key={id} stash={node} {...variables} />
+          <StashListItem key={id} stashListItem={node} {...variables} />
         )
       }
     </div>
@@ -37,7 +37,7 @@ export default Relay.createContainer(Stashes, {
           edges {
             node {
               id
-              ${Stash.getFragment('stash', vars)}
+              ${StashListItem.getFragment('stashListItem', vars)}
             }
           }
         }

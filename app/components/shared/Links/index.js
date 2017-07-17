@@ -38,5 +38,8 @@ export const LinkCommit = ({ ...props }) =>
 export const LinkCommitsFile = ({ ...props }) =>
   <LinkBase pathFunc={links.getCommitsFilePath} {...props} />
 
+export const LinkStash = ({ ...props }) =>
+  <LinkBase pathFunc={links.getStashPath} {...props} />
+
 export * from './LinkUserName';
 export * from './LinkUserPhoto';

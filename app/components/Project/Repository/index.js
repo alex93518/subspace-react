@@ -9,6 +9,7 @@ import Commits from './Commits';
 import Commit from './Commit';
 import Branches from './Branches';
 import Stashes from './Stashes';
+import Stash from './Stash';
 
 const Components = {
   MainContainer: (repository, props) =>
@@ -25,6 +26,8 @@ const Components = {
     <Branches {...props} branches={repository} />,
   Stashes: (repository, props) =>
     <Stashes {...props} stashes={repository} />,
+  Stash: (repository, props) =>
+    <Stash {...props} stash={repository} />,
 }
 
 const Repository = ({
@@ -48,6 +51,7 @@ export default Relay.createContainer(Repository, {
     projectName: null,
     splat: null,
     commitId: null,
+    stashNum: null,
   },
   fragments: {
     repository: vars => Relay.QL`
@@ -62,6 +66,7 @@ export default Relay.createContainer(Repository, {
           Commit: () => Commit.getFragment('commit', vars),
           Branches: () => Branches.getFragment('branches', vars),
           Stashes: () => Stashes.getFragment('stashes', vars),
+          Stash: () => Stash.getFragment('stash', vars),
         })}
       }
     `,

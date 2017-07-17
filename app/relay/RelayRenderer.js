@@ -52,7 +52,7 @@ export const RelayRenderer = ({
         <SpinnerContainer>
           <SpinnerDiv>
             <h3>Loading ...</h3>
-            <Spinner name="line-scale" color="goldenrod" />
+            <Spinner fadeIn="none" name="line-scale" color="goldenrod" />
           </SpinnerDiv>
         </SpinnerContainer>
       )

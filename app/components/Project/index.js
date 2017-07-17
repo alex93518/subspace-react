@@ -96,7 +96,7 @@ export default Relay.createContainer(Project, {
     projectName: null,
     splat: null,
     commitId: null,
-    diagramId: null,
+    stashNum: null,
   },
   fragments: {
     viewer: vars => Relay.QL`

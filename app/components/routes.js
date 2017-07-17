@@ -182,31 +182,17 @@ export default [
     }),
   },
   {
+    path: '/:userName/:projectName/:branchHead/stash/:stashNum',
+    component: Loadable('Project', {
+      query: viewerQuery,
+      name: 'Stash',
+    }),
+  },
+  {
     path: '/:userName/:projectName/branches',
     component: Loadable('Project', {
       query: viewerQuery,
       name: 'Branches',
-    }),
-  },
-  {
-    path: '/:userName/:projectName/diagrams/new',
-    component: Loadable('Project', {
-      name: 'NewDiagramEditor',
-      query: viewerQuery,
-    }),
-  },
-  {
-    path: '/:userName/:projectName/diagrams/:diagramId',
-    component: Loadable('Project', {
-      name: 'DiagramEditor',
-      query: viewerQuery,
-    }),
-  },
-  {
-    path: '/:userName/:projectName/diagrams',
-    component: Loadable('Project', {
-      name: 'Diagrams',
-      query: viewerQuery,
     }),
   },
   {
