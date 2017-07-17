@@ -21,7 +21,9 @@ export function* signInWithStackexchangeFn({
     new Promise(resolve => {
       stackexchange.init({
         ...stackexchangeConfig,
-        channelUrl: `${process.env.CLIENT_HOST}/blank.html` || 'http://subspace-react.nqfviyftp5.us-east-1.elasticbeanstalk.com/blank.html',
+        channelUrl: process.env.CLIENT_HOST ?
+          `${process.env.CLIENT_HOST}/blank.html` :
+          'http://subspace-react.nqfviyftp5.us-east-1.elasticbeanstalk.com/blank.html',
         complete: resolve,
       })
     })
@@ -108,7 +110,9 @@ export function* addStackexchangeProviderFn({
     new Promise(resolve => {
       stackexchange.init({
         ...stackexchangeConfig,
-        channelUrl: `${process.env.CLIENT_HOST}/blank.html` || 'http://subspace-react.nqfviyftp5.us-east-1.elasticbeanstalk.com/blank.html',
+        channelUrl: process.env.CLIENT_HOST ?
+          `${process.env.CLIENT_HOST}/blank.html` :
+          'http://subspace-react.nqfviyftp5.us-east-1.elasticbeanstalk.com/blank.html',
         complete: resolve,
       })
     })
