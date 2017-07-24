@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Relay from 'react-relay/classic';
+import { createFragmentContainer, graphql } from 'react-relay';
 import styled from 'styled-components';
 import {
   LinkUserName,
@@ -57,53 +57,42 @@ const LastCommit = ({
       user,
     },
   },
-  relay: {
-    variables,
-  },
 }) => (
   <DivCommit>
     <DivUser>
       <LinkUserPhoto user={user} width={20} height={20} />
       <LinkUser user={user} />
-      <LinkShortMsg vars={{ ...variables, commitId: oid }}>
+      <LinkShortMsg to={oid}>
         {shortMessage}
       </LinkShortMsg>
     </DivUser>
     <DivStatus>
       Latest commit
-      <LinkShortId vars={{ ...variables, commitId: oid }}>
+      <LinkShortId to={oid}>
         {shortId}
       </LinkShortId>
       {timeFromNow(commitTime)}
     </DivStatus>
   </DivCommit>
-)
+);
 
 LastCommit.propTypes = {
   lastCommit: PropTypes.object.isRequired,
-  relay: PropTypes.object.isRequired,
 }
 
-export default Relay.createContainer(LastCommit, {
-  initialVariables: {
-    branchHead: 'master',
-    userName: null,
-    projectName: null,
-  },
-  fragments: {
-    lastCommit: () => Relay.QL`
-      fragment on Commit {
-        shortMessage
-        commitTime
-        shortId
-        oid
-        author {
-          user {
-            ${LinkUserName.getFragment('user')}
-            ${LinkUserPhoto.getFragment('user')}
-          }
+export default createFragmentContainer(LastCommit, {
+  lastCommit: graphql`
+    fragment LastCommit_lastCommit on Commit {
+      shortMessage
+      commitTime
+      shortId
+      oid
+      author {
+        user {
+          ...LinkUserName_user
+          ...LinkUserPhoto_user
         }
       }
-    `,
-  },
+    }
+  `,
 })

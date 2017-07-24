@@ -1,13 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Relay from 'react-relay/classic';
+import { graphql } from 'react-relay';
+import withRelayFragment from 'relay/withRelayFragment';
 import styled from 'styled-components';
 import { ButtonGroup } from 'react-bootstrap';
 import { timeFromNow } from 'utils/string';
 import { ButtonGit } from 'components/shared/ButtonGit'
 import CopyClipboardButton from 'components/shared/CopyClipboardButton'
 import { compose, mapProps } from 'recompose';
-import { createContainer } from 'recompose-relay'
 import { parseDiff, totalHunk } from 'utils/diff'
 import {
   LinkUserName,
@@ -69,7 +69,7 @@ const SpanDeletions = styled.span`
 `
 
 const Commit = ({
-  commit: {
+  commitItem: {
     oid,
     shortId,
     shortMessage,
@@ -77,9 +77,6 @@ const Commit = ({
     author: {
       user,
     },
-  },
-  relay: {
-    variables,
   },
   additions,
   deletions,
@@ -90,7 +87,7 @@ const Commit = ({
     </TdThumb>
     <Td>
       <CommitMessage>
-        <LinkCommitTitle vars={{ ...variables, commitId: oid }}>
+        <LinkCommitTitle to={oid}>
           {shortMessage}
         </LinkCommitTitle>
       </CommitMessage>
@@ -108,56 +105,45 @@ const Commit = ({
       <ButtonGroup>
         <CopyClipboard text={oid} />
         <ButtonCommit>
-          <LinkCommitGit
-            vars={{ ...variables, commitId: oid }}
-          >
+          <LinkCommitGit to={oid}>
             {shortId}
           </LinkCommitGit>
         </ButtonCommit>
       </ButtonGroup>
     </TdCommitLink>
   </Tr>
-)
+);
 
 Commit.propTypes = {
-  commit: PropTypes.object.isRequired,
-  relay: PropTypes.object.isRequired,
+  commitItem: PropTypes.object.isRequired,
   additions: PropTypes.number.isRequired,
   deletions: PropTypes.number.isRequired,
-}
+};
 
 export default compose(
-  createContainer({
-    initialVariables: {
-      branchHead: 'master',
-      userName: null,
-      projectName: null,
-    },
-    fragments: {
-      commit: () => Relay.QL`
-        fragment on Commit {
-          oid
-          shortId
-          shortMessage
-          commitTime
-          author {
-            user {
-              ${LinkUserName.getFragment('user')}
-              ${LinkUserPhoto.getFragment('user')}
-            }
-          }
-          diff {
-            diff
+  withRelayFragment({
+    commitItem: graphql`
+      fragment Commit_commitItem on Commit {
+        oid
+        shortId
+        shortMessage
+        commitTime
+        author {
+          user {
+            ...LinkUserName_user
+            ...LinkUserPhoto_user
           }
         }
-      `,
-    },
+        diff {
+          diff
+        }
+      }
+    `,
   }),
-  mapProps(({ commit, relay }) => {
-    const diff = parseDiff(commit)
+  mapProps(({ commitItem }) => {
+    const diff = parseDiff(commitItem);
     return ({
-      commit,
-      relay,
+      commitItem,
       additions: totalHunk('additions', diff),
       deletions: totalHunk('deletions', diff),
     })

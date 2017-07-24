@@ -1,13 +1,15 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Relay from 'react-relay/classic';
+import { graphql } from 'react-relay';
+import withRelayFragment from 'relay/withRelayFragment';
 import styled from 'styled-components';
-import { createContainer } from 'recompose-relay'
 import { compose, mapProps } from 'recompose';
 import { Table, ButtonGroup } from 'react-bootstrap';
 import { lineCount, bytesToSize } from 'utils/string';
 import { ButtonGit } from 'components/shared/ButtonGit';
 import { LinkCommitsFile } from 'components/shared/Links';
+import { withRouter } from 'react-router-dom';
+import { matchRoute } from 'utils/routeMatcher';
 
 const FileStatusTable = styled(Table)`
   margin-top: 15px;
@@ -47,7 +49,7 @@ const LinkHistoryFile = styled(LinkCommitsFile)`
   }
 `
 
-const FileStatus = ({ text, byteSize, vars, pathName }) => (
+const FileStatus = ({ text, byteSize, splat }) => (
   <FileStatusTable>
     <tbody>
       <tr>
@@ -61,7 +63,7 @@ const FileStatus = ({ text, byteSize, vars, pathName }) => (
             <ButtonGit disabled>Raw</ButtonGit>
             <ButtonGit disabled>Blame</ButtonGit>
             <ButtonGit>
-              <LinkHistoryFile vars={{ pathName, ...vars }}>
+              <LinkHistoryFile to={splat}>
                 History
               </LinkHistoryFile>
             </ButtonGit>
@@ -75,37 +77,28 @@ const FileStatus = ({ text, byteSize, vars, pathName }) => (
 FileStatus.propTypes = {
   byteSize: PropTypes.number.isRequired,
   text: PropTypes.string.isRequired,
-  vars: PropTypes.object.isRequired,
-  pathName: PropTypes.string,
+  splat: PropTypes.string,
 }
 
 export default compose(
-  createContainer({
-    initialVariables: {
-      branchHead: 'master',
-      userName: null,
-      projectName: null,
-      splat: null,
-    },
-    fragments: {
-      fileStatus: () => Relay.QL`
-        fragment on TreeEntry {
-          object {
-            ... on Blob {
-              text
-              byteSize
-            }
+  withRouter,
+  withRelayFragment({
+    fileStatus: graphql`
+      fragment FileStatus_fileStatus on TreeEntry {
+        object {
+          ... on Blob {
+            text
+            byteSize
           }
         }
-      `,
-    },
+      }
+    `,
   }),
   mapProps(({
     fileStatus: { object },
-    relay: { variables },
+    location: { pathname },
   }) => ({
     ...object,
-    vars: variables,
-    pathName: variables.splat,
+    splat: matchRoute(pathname).params['0'] || null,
   }))
 )(FileStatus)

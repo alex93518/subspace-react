@@ -1,9 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Relay from 'react-relay/classic';
+import { graphql } from 'react-relay';
+import withRelayFragment from 'relay/withRelayFragment';
 import { Navbar, Nav, NavDropdown, MenuItem } from 'react-bootstrap';
 import { compose, withState, withHandlers, mapProps } from 'recompose';
-import { createContainer } from 'recompose-relay'
 import { Element } from 'react-scroll';
 import FlipMove from 'react-flip-move';
 import styled from 'styled-components';
@@ -53,7 +53,7 @@ DropdownButton.propTypes = {
 const CommentList = ({
   commentList: { id, comments: { totalCount, edges } },
   showContent, handleSelectShowContent, handleSelectSort,
-  SHOWCONTENT, SORT, sortBy, relay: { variables },
+  SHOWCONTENT, SORT, sortBy,
 }) => (
   totalCount === 0 ? <DivComment>No comment yet</DivComment> :
   <div>
@@ -65,12 +65,12 @@ const CommentList = ({
         >
           {
             SORT.map(sort =>
-              <MenuItem
+              (<MenuItem
                 key={`splitcontent${sort.idx}`}
                 eventKey={sort.idx}
               >
                 {sort.text}
-              </MenuItem>
+              </MenuItem>)
             )
           }
         </NavDropdownButton>
@@ -87,12 +87,12 @@ const CommentList = ({
         >
           {
             SHOWCONTENT.map(content =>
-              <MenuItem
+              (<MenuItem
                 key={`showcontent${content.idx}`}
                 eventKey={content.idx}
               >
                 {content.text}
-              </MenuItem>
+              </MenuItem>)
             )
           }
         </NavDropdownButton>
@@ -115,7 +115,6 @@ const CommentList = ({
               commentTree={node}
               showContent={showContent.key}
               stashGlobalId={id}
-              {...variables}
             />
           </div>
         ))
@@ -132,35 +131,26 @@ CommentList.propTypes = {
   SORT: PropTypes.array.isRequired,
   SHOWCONTENT: PropTypes.array.isRequired,
   sortBy: PropTypes.object.isRequired,
-  relay: PropTypes.object.isRequired,
 }
 
 export default compose(
-  createContainer({
-    initialVariables: {
-      branchHead: 'master',
-      userName: null,
-      projectName: null,
-      sort: 'popular',
-    },
-    fragments: {
-      commentList: vars => Relay.QL`
-        fragment on Stash {
-          id
-          comments(first: 50, sortBy: $sort) {
-            totalCount
-            edges {
-              node {
-                ${CommentTree.getFragment('commentTree', vars)}
-                id
-                rawId
-                createdAt
-              }
+  withRelayFragment({
+    commentList: graphql`
+      fragment CommentList_commentList on Stash {
+        id
+        comments(first: 9999, sortBy: $sort) {
+          totalCount
+          edges {
+            node {
+              id
+              rawId
+              createdAt
+              ...CommentTree_commentTree
             }
           }
         }
-      `,
-    },
+      }
+    `,
   }),
   mapProps(props => ({
     ...props,
@@ -182,13 +172,13 @@ export default compose(
   withState('sortBy', 'updateSortBy', props => props.SORT[0]),
   withHandlers({
     handleSelectShowContent: props => selectedKey => {
-      props.updateShowContent(props.SHOWCONTENT[selectedKey])
+      props.updateShowContent(props.SHOWCONTENT[selectedKey]);
     },
     handleSelectSort: props => selectedKey => {
-      props.updateSortBy(props.SORT[selectedKey])
+      props.updateSortBy(props.SORT[selectedKey]);
       props.relay.setVariables({
         sort: props.SORT[selectedKey].key,
-      })
+      });
     },
   }),
 )(CommentList)

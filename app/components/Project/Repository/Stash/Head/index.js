@@ -1,16 +1,17 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Relay from 'react-relay/classic';
+import { graphql } from 'react-relay';
+import withRelayFragment from 'relay/withRelayFragment';
 import { Row, Col, Modal, Image, Media } from 'react-bootstrap';
-import CurrentRelay, { VoteStashMutation, MergeStashMutation } from 'relay';
+import { voteStashMutation } from 'relay';
+// import { mergeStashMutation } from 'relay';
 import { compose, withState, mapProps, withHandlers } from 'recompose';
-import { redirect } from 'redux/utils'
-import { createContainer } from 'recompose-relay'
+// import { redirect } from 'redux/utils';
 import styled from 'styled-components';
 import FaCaretUp from 'react-icons/lib/fa/caret-up';
 import FaCaretDown from 'react-icons/lib/fa/caret-down';
 import { LinkUserName, LinkProject } from 'components/shared/Links';
-import { getProjectPath } from 'utils/path';
+// import { getProjectPath } from 'utils/path';
 
 const MainRow = styled(Row)`
   margin-bottom: 20px;
@@ -106,7 +107,7 @@ const AcceptHead = styled.h4`
 `
 
 const StashHead = ({
-  user, variables, stashNum, totalCommit, onVote,
+  user, stashNum, totalCommit, onVote,
   totalVotePoints, isVotedUp, isVotedDown, voteTreshold,
   acceptVotes, rejectVotes, isMerging, updateIsMerging,
 }) => (
@@ -138,7 +139,7 @@ const StashHead = ({
       <div>
         <LinkUserName user={user} /> wants to push {totalCommit} commits into
         {' '}
-        <LinkProject to={'master'} vars={variables}>
+        <LinkProject to={'master'}>
           <StashLabel>master</StashLabel>
         </LinkProject>
       </div>
@@ -164,7 +165,6 @@ const StashHead = ({
 
 StashHead.propTypes = {
   user: PropTypes.object.isRequired,
-  variables: PropTypes.object.isRequired,
   stashNum: PropTypes.number.isRequired,
   totalCommit: PropTypes.number.isRequired,
   onVote: PropTypes.func.isRequired,
@@ -179,53 +179,46 @@ StashHead.propTypes = {
 }
 
 export default compose(
-  createContainer({
-    initialVariables: {
-      branchHead: 'master',
-      userName: null,
-      projectName: null,
-    },
-    fragments: {
-      stashHead: () => Relay.QL`
-        fragment on Ref {
-          name
-          repository {
-            id
-            rawId
+  withRelayFragment({
+    stashHead: graphql`
+      fragment Head_stashHead on Ref {
+        name
+        repository {
+          id
+          rawId
+        }
+        stash {
+          id
+          rawId
+          stashNum
+          voteTreshold
+          votes (first: 9999) {
+            totalVotePoints
           }
-          stash {
-            id
-            rawId
-            stashNum
-            voteTreshold
-            votes (first: 9999) {
-              totalVotePoints
-            }
-            isUserVoted
-            acceptVotes {
-              totalCount
-              totalVotePoints
-            }
-            rejectVotes {
-              totalCount
-              totalVotePoints
-            }
+          isUserVoted
+          acceptVotes {
+            totalCount
+            totalVotePoints
           }
-          target {
-            ... on Commit {
-              history(first: 99, isStash: true) {
-                totalCount
-              }
-              author {
-                user {
-                  ${LinkUserName.getFragment('user')}
-                }
+          rejectVotes {
+            totalCount
+            totalVotePoints
+          }
+        }
+        target {
+          ... on Commit {
+            history(first: 99, isStash: true) {
+              totalCount
+            }
+            author {
+              user {
+                ...LinkUserName_user
               }
             }
           }
         }
-      `,
-    },
+      }
+    `,
   }),
   mapProps(({
     repository,
@@ -246,13 +239,11 @@ export default compose(
       },
       ...rest
     },
-    relay: { variables },
   }) => ({
     totalVotePoints,
     totalCommit: totalCount,
     stashNum,
     user,
-    variables,
     voteTreshold,
     stash,
     acceptVotes,
@@ -279,54 +270,78 @@ export default compose(
         (isVoteUp && isVoteUp === props.isVotedUp) ||
         (!isVoteUp && !isVoteUp === props.isVotedDown)
       ) {
-        props.updateIsVotedUp(false)
-        props.updateIsVotedDown(false)
+        props.updateIsVotedUp(false);
+        props.updateIsVotedDown(false);
       } else if (isVoteUp) {
-        props.updateIsVotedUp(true)
-        props.updateIsVotedDown(false)
+        props.updateIsVotedUp(true);
+        props.updateIsVotedDown(false);
       } else {
-        props.updateIsVotedUp(false)
-        props.updateIsVotedDown(true)
+        props.updateIsVotedUp(false);
+        props.updateIsVotedDown(true);
       }
     },
   }),
   withHandlers({
     onVote: props => isVoteUp => {
-      const voteVar = typeof (isVoteUp) === 'boolean' ? isVoteUp : null
-      props.toggleVote(voteVar)
-      CurrentRelay.Store.commitUpdate(
-        new VoteStashMutation({
-          id: props.stash.id,
-          isVoteUp,
-          stashId: props.stash.rawId || null,
-        }),
-        {
-          onSuccess: resp => {
-            const { voteStash: { stash } } = resp
-            const acceptVotePoints = stash.acceptVotes.totalVotePoints
-            const rejectVotePoints = stash.rejectVotes.totalVotePoints
-            const totalPoints = acceptVotePoints + rejectVotePoints
-            if (totalPoints >= stash.voteTreshold) {
-              props.updateIsMerging(true);
-              CurrentRelay.Store.commitUpdate(
-                new MergeStashMutation({
-                  id: props.repository.id,
-                  stashName: props.name,
-                  repositoryId: props.repository.rawId,
-                }),
-                {
-                  onSuccess: () => {
-                    props.updateIsMerging(false)
-                    redirect(`${getProjectPath(props.variables)}/master`)
-                  },
-                  onFailure: transaction => console.log(transaction.getError()),
-                }
-              )
-            }
-          },
-          onFailure: transaction => console.log(transaction.getError()),
-        }
-      )
+      const prevIsVotedUp = props.isVotedUp;
+      const prevIsVotedDown = props.isVotedDown;
+      const voteVar = typeof (isVoteUp) === 'boolean' ? isVoteUp : null;
+      props.toggleVote(voteVar);
+      voteStashMutation({
+        isVoteUp,
+        stashId: props.stash.rawId || null,
+        onCompleted: resp => {
+          if (resp.voteStash.clientMutationId === null) {
+            props.updateIsVotedUp(prevIsVotedUp);
+            props.updateIsVotedDown(prevIsVotedDown);
+
+            // TODO: add login first flow
+            alert('Login first');
+            return;
+          }
+
+          const { voteStash: { stash } } = resp;
+          const acceptVotePoints = stash.acceptVotes.totalVotePoints;
+          const rejectVotePoints = stash.rejectVotes.totalVotePoints;
+          const totalPoints = acceptVotePoints + rejectVotePoints;
+          if (totalPoints >= stash.voteTreshold) {
+            console.log(totalPoints);
+          }
+        },
+      });
+      // CurrentRelay.Store.commitUpdate(
+      //   new VoteStashMutation({
+      //     id: props.stash.id,
+      //     isVoteUp,
+      //     stashId: props.stash.rawId || null,
+      //   }),
+      //   {
+      //     onSuccess: (resp) => {
+      //       const { voteStash: { stash } } = resp;
+      //       const acceptVotePoints = stash.acceptVotes.totalVotePoints;
+      //       const rejectVotePoints = stash.rejectVotes.totalVotePoints;
+      //       const totalPoints = acceptVotePoints + rejectVotePoints;
+      //       if (totalPoints >= stash.voteTreshold) {
+      //         props.updateIsMerging(true);
+      //         CurrentRelay.Store.commitUpdate(
+      //           new MergeStashMutation({
+      //             id: props.repository.id,
+      //             stashName: props.name,
+      //             repositoryId: props.repository.rawId,
+      //           }),
+      //           {
+      //             onSuccess: () => {
+      //               props.updateIsMerging(false);
+      //               redirect(`${getProjectPath(props.variables)}/master`);
+      //             },
+      //             onFailure: (transaction) => console.log(transaction.getError()),
+      //           }
+      //         );
+      //       }
+      //     },
+      //     onFailure: (transaction) => console.log(transaction.getError()),
+      //   }
+      // );
     },
   })
 )(StashHead)

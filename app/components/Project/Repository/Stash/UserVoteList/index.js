@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Relay from 'react-relay/classic';
+import { createFragmentContainer, graphql } from 'react-relay';
 import styled from 'styled-components';
-import { LinkUserName, LinkUserPhoto } from 'components/shared/Links'
+import { LinkUserName, LinkUserPhoto } from 'components/shared/Links';
 import Separator from 'components/shared/Separator';
 
 const DivTitle = styled.div`
@@ -35,7 +35,7 @@ const UserVoteList = ({ userVoteList, title }) => (
       userVoteList.totalCount < 1 ?
         <div>None yet</div> :
         userVoteList.edges.map(({ node }) =>
-          <DivUser key={node.id}>
+          (<DivUser key={node.id}>
             <UserPhoto
               width={20}
               height={20}
@@ -47,7 +47,7 @@ const UserVoteList = ({ userVoteList, title }) => (
             >
               {node.isVoteUp ? node.votePoint : -node.votePoint}
             </SpanPoint>
-          </DivUser>
+          </DivUser>)
         )
     }
     <Separator />
@@ -57,25 +57,23 @@ const UserVoteList = ({ userVoteList, title }) => (
 UserVoteList.propTypes = {
   title: PropTypes.string.isRequired,
   userVoteList: PropTypes.object.isRequired,
-}
+};
 
-export default Relay.createContainer(UserVoteList, {
-  fragments: {
-    userVoteList: () => Relay.QL`
-      fragment on StashVoteConnection {
-        totalCount
-        edges {
-          node {
-            id
-            votePoint
-            isVoteUp
-            owner {
-              ${LinkUserName.getFragment('user')}
-              ${LinkUserPhoto.getFragment('user')}
-            }
+export default createFragmentContainer(UserVoteList, {
+  userVoteList: graphql`
+    fragment UserVoteList_userVoteList on StashVoteConnection {
+      totalCount
+      edges {
+        node {
+          id
+          votePoint
+          isVoteUp
+          owner {
+            ...LinkUserName_user
+            ...LinkUserPhoto_user
           }
         }
       }
-    `,
-  },
+    }
+  `,
 })

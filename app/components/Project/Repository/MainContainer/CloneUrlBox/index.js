@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Relay from 'react-relay/classic';
+import { createFragmentContainer, graphql } from 'react-relay';
 import styled from 'styled-components';
 import { Button, Glyphicon, OverlayTrigger, Popover } from 'react-bootstrap';
 import CopyClipboardButton from 'components/shared/CopyClipboardButton';
@@ -65,12 +65,10 @@ CloneUrlBox.propTypes = {
   cloneUrlBox: PropTypes.object.isRequired,
 }
 
-export default Relay.createContainer(CloneUrlBox, {
-  fragments: {
-    cloneUrlBox: () => Relay.QL`
-      fragment on Repository {
-        url
-      }
-    `,
-  },
+export default createFragmentContainer(CloneUrlBox, {
+  cloneUrlBox: graphql`
+    fragment CloneUrlBox_cloneUrlBox on Repository {
+      url @include(if: $isMainContainer)
+    }
+  `,
 })

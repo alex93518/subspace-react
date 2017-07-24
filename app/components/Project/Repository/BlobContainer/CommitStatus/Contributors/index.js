@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Relay from 'react-relay/classic';
+import { graphql } from 'react-relay';
+import withRelayFragment from 'relay/withRelayFragment';
 import styled from 'styled-components';
-import { createContainer } from 'recompose-relay'
 import { compose, mapProps } from 'recompose';
 import { LinkUserPhoto } from 'components/shared/Links';
 
@@ -26,31 +26,29 @@ const Contributors = ({
     {totalContributors} contributors
     {' '}
     {contributors.map(user =>
-      <SpanPhoto key={user.userName}>
+      (<SpanPhoto key={user.userName}>
         <LinkUserPhoto user={user} width={20} height={20} />
-      </SpanPhoto>
+      </SpanPhoto>)
     )}
   </DivContributor>
-)
+);
 
 Contributors.propTypes = {
   contributors: PropTypes.array.isRequired,
   totalContributors: PropTypes.number.isRequired,
-}
+};
 
 export default compose(
-  createContainer({
-    fragments: {
-      contributors: () => Relay.QL`
-        fragment on CommitConnection {
-          totalContributors
-          contributors {
-            userName
-            ${LinkUserPhoto.getFragment('user')}
-          }
+  withRelayFragment({
+    contributors: graphql`
+      fragment Contributors_contributors on CommitConnection {
+        totalContributors
+        contributors {
+          userName
+          ...LinkUserPhoto_user
         }
-      `,
-    },
+      }
+    `,
   }),
   mapProps(({ contributors }) => ({ ...contributors }))
 )(Contributors)

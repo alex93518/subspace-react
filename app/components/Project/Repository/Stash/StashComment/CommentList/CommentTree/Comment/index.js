@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Relay from 'react-relay/classic';
+import { graphql } from 'react-relay';
+import withRelayFragment from 'relay/withRelayFragment';
 import { compose, withState, mapProps, lifecycle } from 'recompose';
-import { createContainer } from 'recompose-relay'
 import styled, { keyframes } from 'styled-components';
 import { Panel } from 'react-bootstrap';
 import FlipMove from 'react-flip-move';
@@ -79,7 +79,6 @@ const PanelComment = styled(Panel)`
 const Comment = ({
   comment, isShowReply, parentId, isShowContent, stashGlobalId,
   updateIsShowContent, comment: { content, owner, isOwnerVoteUp },
-  relay: { variables },
 }) => (
   <MainDiv>
     <DivLinkPhoto>
@@ -114,7 +113,6 @@ const Comment = ({
                 isShowReply={isShowReply}
                 commentFooter={comment}
                 stashGlobalId={stashGlobalId}
-                {...variables}
               />
             </div>
           }
@@ -148,32 +146,23 @@ Comment.propTypes = {
   isShowContent: PropTypes.bool.isRequired,
   updateIsShowContent: PropTypes.func.isRequired,
   stashGlobalId: PropTypes.string.isRequired,
-  relay: PropTypes.object.isRequired,
 }
 
 export default compose(
-  createContainer({
-    initialVariables: {
-      branchHead: 'master',
-      userName: null,
-      projectName: null,
-      sort: 'popular',
-    },
-    fragments: {
-      comment: vars => Relay.QL`
-        fragment on StashComment {
-          ${CommentHeader.getFragment('commentHeader')}
-          ${CommentFooter.getFragment('commentFooter', vars)}
-          id
-          owner {
-            ${LinkUserPhoto.getFragment('user')}
-          }
-          isOwnerVoteUp
-          content
-          createdAt
+  withRelayFragment({
+    comment: graphql`
+      fragment Comment_comment on StashComment {
+        ...CommentHeader_commentHeader
+        ...CommentFooter_commentFooter
+        id
+        owner {
+          ...LinkUserPhoto_user
         }
-      `,
-    },
+        isOwnerVoteUp
+        content
+        createdAt
+      }
+    `,
   }),
   mapProps(props => {
     let isShowCommentContent = true;

@@ -1,11 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Relay from 'react-relay/classic';
 import styled from 'styled-components';
 import { compose, mapProps } from 'recompose';
-import { createContainer } from 'recompose-relay'
-import { LinkProject, LinkUserName } from 'components/shared/Links';
 import { shortBranchName, timeFromNow } from 'utils/string';
+import { graphql } from 'react-relay';
+import withRelayFragment from 'relay/withRelayFragment';
+import { LinkProject, LinkUserName } from 'components/shared/Links';
 
 const Td = styled.td`
   padding: 18px !important;
@@ -22,9 +22,9 @@ const LabelBranch = styled.span`
   border-radius: 3px;
 `
 
-const Branch = ({ name, commitTime, user, variables }) => (
+const Branch = ({ name, commitTime, user }) => (
   <Td>
-    <LinkProject to={shortBranchName(name)} vars={variables}>
+    <LinkProject to={shortBranchName(name)}>
       <LabelBranch>
         {shortBranchName(name)}
       </LabelBranch>
@@ -41,32 +41,26 @@ Branch.propTypes = {
   name: PropTypes.string.isRequired,
   commitTime: PropTypes.number.isRequired,
   user: PropTypes.object.isRequired,
-  variables: PropTypes.object.isRequired,
 }
 
+
 export default compose(
-  createContainer({
-    initialVariables: {
-      userName: null,
-      projectName: null,
-    },
-    fragments: {
-      branch: () => Relay.QL`
-        fragment on Ref {
-          name
-          target {
-            ... on Commit {
-              commitTime
-              author {
-                user {
-                  ${LinkUserName.getFragment('user')}
-                }
+  withRelayFragment({
+    branch: graphql`
+      fragment Branch_branch on Ref {
+        name
+        target {
+          ... on Commit {
+            commitTime
+            author {
+              user {
+                ...LinkUserName_user
               }
             }
           }
         }
-      `,
-    },
+      }
+    `,
   }),
   mapProps(({
     branch,
@@ -76,6 +70,5 @@ export default compose(
         author: { user },
       },
     },
-    relay: { variables },
-  }) => ({ ...branch, ...target, user, variables })),
+  }) => ({ ...branch, ...target, user })),
 )(Branch)

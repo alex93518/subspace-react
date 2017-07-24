@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Relay from 'react-relay/classic';
+import { createFragmentContainer, graphql } from 'react-relay';
 import { Row, Col } from 'react-bootstrap';
 import styled from 'styled-components';
 import Tree from 'components/shared/Project/Repository/Tree';
@@ -16,17 +16,15 @@ const TreeContainer = ({
   treeContainer,
   treeContainer: {
     ref: {
-      target: { history: { edges } },
+      target: { treeHistory: { edges } },
     },
   },
-  relay: { variables },
 }) => (
   <MainGrid>
     <Col md={12}>
       <RowSty>
         <Col>
           <BranchSelect
-            {...variables}
             branchSelect={treeContainer}
           />
         </Col>
@@ -34,11 +32,9 @@ const TreeContainer = ({
       <RowSty>
         <Col>
           <LastCommit
-            {...variables}
             lastCommit={edges[0].node}
           />
           <Tree
-            {...variables}
             tree={treeContainer.ref.target.tree}
           />
         </Col>
@@ -48,38 +44,29 @@ const TreeContainer = ({
 )
 
 TreeContainer.propTypes = {
-  relay: PropTypes.object.isRequired,
   treeContainer: PropTypes.object.isRequired,
-}
+};
 
-export default Relay.createContainer(TreeContainer, {
-  initialVariables: {
-    branchHead: 'master',
-    userName: null,
-    projectName: null,
-    splat: null,
-  },
-  fragments: {
-    treeContainer: vars => Relay.QL`
-      fragment on Repository {
-        ${BranchSelect.getFragment('branchSelect', vars)}
-        ref(refName: $branchHead) {
-          target {
-            ... on Commit {
-              history(first: 1) {
-                edges {
-                  node {
-                    ${LastCommit.getFragment('lastCommit', vars)}
-                  }
+export default createFragmentContainer(TreeContainer, {
+  treeContainer: graphql`
+    fragment TreeContainer_treeContainer on Repository {
+      ...BranchSelect_branchSelect
+      ref(refName: $branchHead) @include(if: $isTree) {
+        target {
+          ... on Commit {
+            treeHistory: history(first: 1) {
+              edges {
+                node {
+                  ...LastCommit_lastCommit
                 }
               }
-              tree {
-                ${Tree.getFragment('tree', vars)}
-              }
+            }
+            tree {
+              ...Tree_tree
             }
           }
         }
       }
-    `,
-  },
+    }
+  `,
 })

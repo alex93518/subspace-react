@@ -36,7 +36,7 @@ const getLineNumberStyle = (nullSeq, start) => oriLineNumber => ({
 })
 
 const DiffCodeBlock = ({ content, start, addDel, bgColor, nullSeq }) =>
-  <CodeBlock
+  (<CodeBlock
     style={xcode}
     showLineNumbers
     wrapLines
@@ -51,7 +51,7 @@ const DiffCodeBlock = ({ content, start, addDel, bgColor, nullSeq }) =>
     }}
   >
     {content || ''}
-  </CodeBlock>
+  </CodeBlock>)
 
 DiffCodeBlock.propTypes = {
   content: PropTypes.string.isRequired,

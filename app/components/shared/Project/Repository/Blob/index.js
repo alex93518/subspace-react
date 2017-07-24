@@ -1,15 +1,16 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Relay from 'react-relay/classic';
+import { graphql } from 'react-relay';
+import withRelayFragment from 'relay/withRelayFragment';
 import SyntaxHighlighter from 'react-syntax-highlighter/dist/light';
 import xcode from 'react-syntax-highlighter/dist/styles/xcode';
 import { compose, mapProps, branch, renderComponent } from 'recompose';
-import { createContainer } from 'recompose-relay'
 import path from 'path';
 import styled from 'styled-components';
 import BlobMarkdown from './BlobMarkdown';
 
 const CodeBlock = styled(SyntaxHighlighter)`
+  font-size: 13px;
   & .react-syntax-highlighter-line-number {
     display: block;
     width: 100%;
@@ -31,19 +32,17 @@ Blob.propTypes = {
 }
 
 export default compose(
-  createContainer({
-    fragments: {
-      blob: () => Relay.QL`
-        fragment on TreeEntry {
-          name
-          object {
-            ... on Blob {
-              text
-            }
+  withRelayFragment({
+    blob: graphql`
+      fragment Blob_blob on TreeEntry {
+        name
+        object {
+          ... on Blob {
+            text
           }
         }
-      `,
-    },
+      }
+    `,
   }),
   mapProps(({ blob }) => ({
     text: blob.object.text,

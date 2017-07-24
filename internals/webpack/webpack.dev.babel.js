@@ -9,8 +9,6 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CircularDependencyPlugin = require('circular-dependency-plugin');
 const logger = require('../../server/logger');
 const cheerio = require('cheerio');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
-
 const pkg = require(path.resolve(process.cwd(), 'package.json'));
 const dllPlugin = pkg.dllPlugin;
 
@@ -25,7 +23,6 @@ const plugins = [
     exclude: /a\.js|node_modules/, // exclude node_modules
     failOnError: false, // show a warning when there is a circular dependency
   }),
-  new CopyWebpackPlugin([{ from: 'static' }]),
 ];
 
 module.exports = require('./webpack.base.babel')({
@@ -55,7 +52,8 @@ module.exports = require('./webpack.base.babel')({
   },
 
   // Emit a source map for easier debugging
-  devtool: 'eval',
+  // See https://webpack.js.org/configuration/devtool/#devtool
+  devtool: 'eval-source-map',
 
   performance: {
     hints: false,

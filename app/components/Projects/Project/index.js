@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment'
-import Relay from 'react-relay/classic'
+import { createFragmentContainer, graphql } from 'react-relay';
 import styled from 'styled-components'
 import { Panel, Row, Col } from 'react-bootstrap'
 import RepoLink from 'components/shared/repo/TitleLink'
@@ -62,29 +62,27 @@ Project.propTypes = {
   project: PropTypes.object.isRequired,
 }
 
-export default Relay.createContainer(Project, {
-  fragments: {
-    project: () => Relay.QL`
-      fragment on Repository {
-        id
-        name
-        isPrivate
-        createdAt
-        owner {
-          userName
-        }
-        project {
-          goals
-          description
-          topics(first: 10) {
-            edges {
-              node {
-                value
-              }
+export default createFragmentContainer(Project, {
+  project: graphql`
+    fragment Project_project on Repository {
+      id
+      name
+      isPrivate
+      createdAt
+      owner {
+        userName
+      }
+      project {
+        goals
+        description
+        topics(first: 10) {
+          edges {
+            node {
+              value
             }
           }
         }
       }
-    `,
-  },
+    }
+  `,
 })

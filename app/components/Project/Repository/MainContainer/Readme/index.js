@@ -1,11 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Relay from 'react-relay/classic';
-import { createContainer } from 'recompose-relay'
+import { graphql } from 'react-relay';
+import withRelayFragment from 'relay/withRelayFragment';
 import { compose, mapProps, branch, renderComponent } from 'recompose';
 import { Table, Alert } from 'react-bootstrap';
 import styled from 'styled-components';
-import GoBook from 'react-icons/lib/go/book'
+import GoBook from 'react-icons/lib/go/book';
 import Blob from 'components/shared/Project/Repository/Blob';
 
 const NoReadme = () => (
@@ -58,21 +58,23 @@ Readme.propTypes = {
 }
 
 export default compose(
-  createContainer({
-    fragments: {
-      readme: () => Relay.QL`
-        fragment on Tree {
-          entries(path: "README.md") {
-            oid
-            ${Blob.getFragment('blob')}
-          }
+  withRelayFragment({
+    readme: graphql`
+      fragment Readme_readme on Tree {
+        treeReadme: entries(path: "README.md") {
+          oid
+          ...Blob_blob
         }
-      `,
-    },
+      }
+    `,
   }),
   branch(
-    props => !props.readme.entries.length,
+    props => !props.readme.treeReadme.length,
     renderComponent(NoReadme)
   ),
-  mapProps(({ readme: { entries } }) => ({ entry: entries[0] })),
+  mapProps(({
+    readme: { treeReadme },
+  }) => ({
+    entry: treeReadme.entries[0],
+  })),
 )(Readme)

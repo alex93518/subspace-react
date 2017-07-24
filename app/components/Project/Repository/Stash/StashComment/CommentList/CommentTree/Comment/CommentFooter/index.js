@@ -1,18 +1,16 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Relay from 'react-relay/classic';
+import { graphql } from 'react-relay';
+import withRelayFragment from 'relay/withRelayFragment';
 import styled from 'styled-components';
 import { Button, Panel } from 'react-bootstrap';
 import { compose, withState, withHandlers } from 'recompose';
-import { createContainer } from 'recompose-relay'
 import { scroller } from 'react-scroll';
 import FaPencil from 'react-icons/lib/fa/pencil';
 import FaThumbsOUp from 'react-icons/lib/fa/thumbs-o-up';
 import FaThumbsODown from 'react-icons/lib/fa/thumbs-o-down';
 import ReactQuill from 'react-quill';
-import CurrentRelay, {
-  AddStashCommentMutation, VoteStashCommentMutation,
-} from 'relay';
+import { addStashCommentMutation, voteStashCommentMutation } from 'relay';
 
 const ButtonReply = styled(Button)`
   background: rgba(255,255,255,0) !important;
@@ -116,24 +114,16 @@ CommentFooter.propTypes = {
 }
 
 export default compose(
-  createContainer({
-    initialVariables: {
-      branchHead: 'master',
-      userName: null,
-      projectName: null,
-      sort: 'popular',
-    },
-    fragments: {
-      commentFooter: () => Relay.QL`
-        fragment on StashComment {
-          rawId
-          stashId
-          isUserVoted
-          totalUpVotePoints
-          totalDownVotePoints
-        }
-      `,
-    },
+  withRelayFragment({
+    commentFooter: graphql`
+      fragment CommentFooter_commentFooter on StashComment {
+        rawId
+        stashId
+        isUserVoted
+        totalUpVotePoints
+        totalDownVotePoints
+      }
+    `,
   }),
   withState('isReply', 'updateIsReply', false),
   withState('content', 'updateContent', ''),
@@ -178,39 +168,32 @@ export default compose(
       parentId, commentFooter: { stashId },
     }) => () => {
       if (content) {
-        CurrentRelay.Store.commitUpdate(
-          new AddStashCommentMutation({
-            id: stashGlobalId,
-            content,
-            stashId,
-            parentId,
-          }),
-          {
-            onSuccess: resp => {
+        addStashCommentMutation({
+          id: stashGlobalId,
+          content,
+          stashId,
+          parentId,
+          onCompleted: resp => {
+            if (resp.addStashComment.clientMutationId) {
               updateContent('')
               updateIsReply(false)
-              if (resp.addStashComment.clientMutationId) {
-                scroller.scrollTo(
-                  `stashComment-anchor-${resp.addStashComment.clientMutationId}`
-                )
-              }
-            },
-            onFailure: transaction => console.log(transaction.getError()),
-          }
-        )
+              scroller.scrollTo(
+                `stashComment-anchor-${resp.addStashComment.clientMutationId}`
+              )
+            }
+          },
+        });
       }
     },
     onVote: props => isVoteUp => {
-      const voteVar = typeof (isVoteUp) === 'boolean' ? isVoteUp : null
+      const voteVar = typeof (isVoteUp) === 'boolean' ? isVoteUp : null;
       props.toggleVote(voteVar)
-      CurrentRelay.Store.commitUpdate(
-        new VoteStashCommentMutation({
-          id: props.stashGlobalId,
-          isVoteUp,
-          stashCommentId: props.commentFooter.rawId || null,
-          stashId: props.commentFooter.stashId,
-        })
-      )
+      voteStashCommentMutation({
+        id: props.stashGlobalId,
+        isVoteUp,
+        stashCommentId: props.commentFooter.rawId || null,
+        stashId: props.commentFooter.stashId,
+      })
     },
   })
 )(CommentFooter)

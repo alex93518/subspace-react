@@ -1,63 +1,42 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux'
-import { Switch, Route } from 'react-router-dom'
-import { compose, withState, pure } from 'recompose'
-import { ConnectedRouter } from 'react-router-redux'
-import CurrentRelay from 'relay'
-import Header from 'components/layout/Header'
-import routes from 'components/routes'
-import Footer from 'components/layout/Footer'
-import { history } from './store'
+import { Switch, Route } from 'react-router-dom';
+import { ConnectedRouter } from 'react-router-redux';
+import HomePage from 'components/HomePage';
+import About from 'components/About';
+import HowItWorks from 'components/HowItWorks';
+import Projects from 'components/Projects';
+import Project from 'components/Project';
+import Login from 'components/Login';
+import UserProfile from 'components/UserProfile';
+import CreateProject from 'components/CreateProject';
+import Header from 'components/layout/Header';
+import Footer from 'components/layout/Footer';
+import { matchName } from 'utils/routeMatcher';
+import { history } from './store';
 
-const AuthWrapper = ({ storeLoaded, updateStoreStatus }) => {
-  if (!storeLoaded) {
-    CurrentRelay.reset(() => updateStoreStatus(true))
-    return null
-  }
-
-  return (
+const Router = () =>
+  (
     <ConnectedRouter history={history}>
       <div>
         <Header />
         <Switch>
-          {
-            routes.map(({ path, exact, component: RouteComponent, ...rest }, i) =>
-              <Route
-                key={i}
-                path={path}
-                exact={exact}
-                render={
-                  props => (
-                    <RouteComponent
-                      // rerender link to the same component with different params
-                      key={props.location.pathname}
-                      {...props}
-                      {...rest}
-                    />
-                  )
-                }
-              />
-            )
-          }
+          <Route exact path={'/'} render={() => <HomePage />} />
+          <Route exact path="/about" render={() => <About />} />
+          <Route exact path="/howitworks" render={() => <HowItWorks />} />
+          <Route exact path="/projects" render={() => <Projects />} />
+          <Route exact path={'/login'} render={() => <Login />} />
+          <Route exact path={'/profile/:userName'} render={props => <UserProfile {...props} />} />
+          <Route exact path={'/createproject'} render={() => <CreateProject />} />
+          <Route
+            path={'/:userName/:projectName'}
+            render={() =>
+              <Project childName={matchName(history.location.pathname)} />
+            }
+          />
         </Switch>
         <Footer />
       </div>
     </ConnectedRouter>
-  )
-}
+  );
 
-AuthWrapper.propTypes = {
-  storeLoaded: PropTypes.bool,
-  updateStoreStatus: PropTypes.func,
-}
-
-// Rerender Router with new Relay.Environment on auth change
-export default compose(
-  connect(state => ({
-    loggedIn: state.getIn(['auth', 'authenticated']),
-  })),
-  withState('storeLoaded', 'updateStoreStatus', () => !!CurrentRelay.Store),
-  pure,
-)(AuthWrapper)
-
+export default Router;

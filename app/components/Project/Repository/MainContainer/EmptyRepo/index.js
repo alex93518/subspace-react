@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Relay from 'react-relay/classic';
+import { createFragmentContainer, graphql } from 'react-relay';
 import styled from 'styled-components';
 import { Table } from 'react-bootstrap';
 import CopyClipboardButton from 'components/shared/CopyClipboardButton';
@@ -107,12 +107,10 @@ EmptyRepo.propTypes = {
   emptyRepo: PropTypes.object.isRequired,
 }
 
-export default Relay.createContainer(EmptyRepo, {
-  fragments: {
-    emptyRepo: () => Relay.QL`
-      fragment on Repository {
-        url
-      }
-    `,
-  },
+export default createFragmentContainer(EmptyRepo, {
+  emptyRepo: graphql`
+    fragment EmptyRepo_emptyRepo on Repository {
+      url
+    }
+  `,
 })

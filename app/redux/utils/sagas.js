@@ -13,7 +13,7 @@ const wrapRequestFn = (requestFn, statusActions) =>
 
 export function bindFetcher({ requestFn, init, ...statusActions }) {
   const fetch = wrapRequestFn(requestFn, statusActions)
-  return takeLatest(init.getType(), fetch)
+  return takeLatest(init.getType(), fetch) // eslint-disable-line
 }
 
 export function bindOnlyRequestActions(actions) {

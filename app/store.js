@@ -19,7 +19,7 @@ const middlewares = [
   () => next => reduxAction => {
     // remove synthetic events from the payload
     if (path(['payload', 'nativeEvent'], reduxAction)) {
-      reduxAction.payload = undefined
+      reduxAction.payload = undefined // eslint-disable-line no-param-reassign
     }
 
     next(reduxAction)

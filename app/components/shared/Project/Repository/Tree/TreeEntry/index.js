@@ -1,8 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Relay from 'react-relay/classic';
+import { createFragmentContainer, graphql } from 'react-relay';
 import moment from 'moment';
 import styled from 'styled-components';
+import path from 'path';
 import { LinkTreeEntry, LinkCommit } from 'components/shared/Links';
 import GoFileDirectory from 'react-icons/lib/go/file-directory';
 import GoFileText from 'react-icons/lib/go/file-text';
@@ -38,7 +39,6 @@ const iconType = type => (
 )
 
 const byteSize = obj => obj.byteSize ? bytesToSize(obj.byteSize, 2) : ''
-const shortName = (name, path) => path ? name.replace(`${path}/`, '') : name
 
 const TreeEntry = ({
   treeEntry: {
@@ -47,59 +47,47 @@ const TreeEntry = ({
     history: { edges },
     object,
   },
-  relay: {
-    variables,
-  },
 }) => (
   <tr>
     <td>
-      <LinkTree vars={{ ...variables, type, pathName: name }}>
+      <LinkTree type={type} to={name}>
         <span style={{ paddingRight: 10 }}>{iconType(type)}</span>
-        {shortName(name, variables.splat)}
+        {path.basename(name)}
       </LinkTree>
     </td>
     <TdBytes>{byteSize(object)}</TdBytes>
     <td>
-      <LinkCommitMsg vars={{ ...variables, commitId: edges[0].node.oid }}>
+      <LinkCommitMsg to={edges[0].node.oid}>
         {edges[0].node.shortMessage}
       </LinkCommitMsg>
     </td>
     <TdTime>{moment.unix(edges[0].node.commitTime).fromNow()}</TdTime>
   </tr>
-)
+);
 
 TreeEntry.propTypes = {
   treeEntry: PropTypes.object.isRequired,
-  relay: PropTypes.object.isRequired,
-}
+};
 
-export default Relay.createContainer(TreeEntry, {
-  initialVariables: {
-    branchHead: 'master',
-    userName: null,
-    projectName: null,
-    splat: null,
-  },
-  fragments: {
-    treeEntry: () => Relay.QL`
-      fragment on TreeEntry {
-        name
-        type
-        history(first: 1, refName: $branchHead) {
-          edges {
-            node {
-              shortMessage
-              oid
-              commitTime
-            }
-          }
-        }
-        object {
-          ... on Blob {
-            byteSize
+export default createFragmentContainer(TreeEntry, {
+  treeEntry: graphql`
+    fragment TreeEntry_treeEntry on TreeEntry {
+      name
+      type
+      history(first: 1, refName: $branchHead) {
+        edges {
+          node {
+            shortMessage
+            oid
+            commitTime
           }
         }
       }
-    `,
-  },
+      object {
+        ... on Blob {
+          byteSize
+        }
+      }
+    }
+  `,
 })

@@ -1,10 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Relay from 'react-relay/classic';
+import { graphql } from 'react-relay';
+import withRelayFragment from 'relay/withRelayFragment';
 import { Row, Col, Panel, Media } from 'react-bootstrap';
 import styled from 'styled-components';
 import { compose, mapProps } from 'recompose';
-import { createContainer } from 'recompose-relay';
 import CircularProgressbar from 'react-circular-progressbar';
 import { LinkUserName, LinkProject, LinkStash } from 'components/shared/Links';
 import FaCommentO from 'react-icons/lib/fa/comment-o';
@@ -77,13 +77,13 @@ const CommentIcon = styled(FaCommentO)`
 `
 
 const StashListItem = ({
-  user, variables, stashNum, totalCommit, totalComments,
+  user, stashNum, totalCommit, totalComments,
   totalVotePoints, voteTreshold, acceptVotes, rejectVotes, votePercentage,
 }) => (
   <Row>
     <Col md={12}>
       <PanelHead>
-        <LinkStash vars={{ ...variables, stashNum }}>
+        <LinkStash to={stashNum}>
           <H2Head>
             <SpanStashNum>Stash #{stashNum}</SpanStashNum>
           </H2Head>
@@ -91,7 +91,7 @@ const StashListItem = ({
         <span>
           <LinkUserName user={user} /> wants to push {totalCommit} commits into
           {' '}
-          <LinkProject to={'master'} vars={variables}>
+          <LinkProject to={'master'}>
             <StashLabel>master</StashLabel>
           </LinkProject>
         </span>
@@ -99,7 +99,7 @@ const StashListItem = ({
           <Col md={12}>
             <Media>
               <Media.Left align="middle">
-                <LinkStash vars={{ ...variables, stashNum }}>
+                <LinkStash to={stashNum}>
                   <ProgressContainer>
                     <CircularProgressbar percentage={votePercentage} />
                   </ProgressContainer>
@@ -124,7 +124,7 @@ const StashListItem = ({
               </ProgressBody>
             </Media>
             <CommentSeparator />
-            <LinkStash vars={{ ...variables, stashNum }}>
+            <LinkStash to={stashNum}>
               <CommentIcon />
               <span>{totalComments} Comments</span>
             </LinkStash>
@@ -137,7 +137,6 @@ const StashListItem = ({
 
 StashListItem.propTypes = {
   user: PropTypes.object.isRequired,
-  variables: PropTypes.object.isRequired,
   stashNum: PropTypes.string.isRequired,
   totalCommit: PropTypes.number.isRequired,
   totalVotePoints: PropTypes.number.isRequired,
@@ -149,49 +148,42 @@ StashListItem.propTypes = {
 }
 
 export default compose(
-  createContainer({
-    initialVariables: {
-      branchHead: 'master',
-      userName: null,
-      projectName: null,
-    },
-    fragments: {
-      stashListItem: () => Relay.QL`
-        fragment on Ref {
-          stash {
-            stashNum
-            voteTreshold
-            votes (first: 9999) {
-              totalVotePoints
-            }
-            isUserVoted
-            acceptVotes {
-              totalCount
-              totalVotePoints
-            }
-            rejectVotes {
-              totalCount
-              totalVotePoints
-            }
-            comments {
-              totalAllCount
-            }            
+  withRelayFragment({
+    stashListItem: graphql`
+      fragment StashListItem_stashListItem on Ref {
+        stash {
+          stashNum
+          voteTreshold
+          votes (first: 9999) {
+            totalVotePoints
           }
-          target {
-            ... on Commit {
-              history(first: 99, isStash: true) {
-                totalCount
-              }
-              author {
-                user {
-                  ${LinkUserName.getFragment('user')}
-                }
+          isUserVoted
+          acceptVotes {
+            totalCount
+            totalVotePoints
+          }
+          rejectVotes {
+            totalCount
+            totalVotePoints
+          }
+          comments {
+            totalAllCount
+          }            
+        }
+        target {
+          ... on Commit {
+            history(first: 99, isStash: true) {
+              totalCount
+            }
+            author {
+              user {
+                ...LinkUserName_user
               }
             }
           }
         }
-      `,
-    },
+      }
+    `,
   }),
   mapProps(({
     stashListItem: {
@@ -213,19 +205,17 @@ export default compose(
       },
       ...rest
     },
-    relay: { variables },
   }) => ({
     totalVotePoints,
     totalCommit: totalCount,
     stashNum: stashNum.toString(),
     user,
-    variables,
     voteTreshold,
     acceptVotes,
     rejectVotes,
     votePercentage: totalVotePoints <= 0 ? 0 :
       Math.round((totalVotePoints / voteTreshold) * 100),
-    totalComments: totalAllCount,
+    totalComments: totalAllCount || 0,
     ...rest,
   })),
 )(StashListItem)

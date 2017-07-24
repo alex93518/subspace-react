@@ -1,17 +1,17 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Relay from 'react-relay/classic';
+import { graphql } from 'react-relay';
+import withRelayFragment from 'relay/withRelayFragment';
 import styled from 'styled-components';
 import { compose, mapProps } from 'recompose';
-import { createContainer } from 'recompose-relay'
-import { parseDiff, totalHunk } from 'utils/diff'
+import { parseDiff, totalHunk } from 'utils/diff';
 import DiffHunks from './DiffHunks';
 
 const Strong = styled.span`
   font-weight: 600;
 `
 
-const CommitDiff = ({ diff, additions, deletions, variables }) => (
+const CommitDiff = ({ diff, additions, deletions }) => (
   <div>
     <div>
       Showing {diff.length} changed files with
@@ -22,11 +22,10 @@ const CommitDiff = ({ diff, additions, deletions, variables }) => (
     </div>
     {
       diff.map(file =>
-        <DiffHunks
+        (<DiffHunks
           key={`${file.oldPath}${file.newPath}`}
           hunks={file.hunks}
-          variables={variables}
-        />
+        />)
       )
     }
   </div>
@@ -36,36 +35,27 @@ CommitDiff.propTypes = {
   diff: PropTypes.array.isRequired,
   additions: PropTypes.number.isRequired,
   deletions: PropTypes.number.isRequired,
-  variables: PropTypes.object.isRequired,
 }
 
 export default compose(
-  createContainer({
-    initialVariables: {
-      branchHead: 'master',
-      projectName: null,
-      userName: null,
-    },
-    fragments: {
-      commitDiff: () => Relay.QL`
-        fragment on Commit {
-          diff {
-            changeType
-            oldPath
-            newPath
-            diff
-          }
+  withRelayFragment({
+    commitDiff: graphql`
+      fragment Diff_commitDiff on Commit {
+        diff {
+          changeType
+          oldPath
+          newPath
+          diff
         }
-      `,
-    },
+      }
+    `,
   }),
-  mapProps(({ commitDiff, relay: { variables } }) => {
-    const diff = parseDiff(commitDiff)
+  mapProps(({ commitDiff }) => {
+    const diff = parseDiff(commitDiff);
     return ({
       diff,
-      variables,
       additions: totalHunk('additions', diff),
       deletions: totalHunk('deletions', diff),
-    })
+    });
   })
 )(CommitDiff)

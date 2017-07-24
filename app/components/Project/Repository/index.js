@@ -1,74 +1,44 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Relay from 'react-relay/classic';
-import { matchRoute, matchRouteChild } from 'utils/routeMatcher';
-import MainContainer from './MainContainer';
-import TreeContainer from './TreeContainer';
-import BlobContainer from './BlobContainer';
-import Commits from './Commits';
-import Commit from './Commit';
-import Branches from './Branches';
-import Stashes from './Stashes';
-import Stash from './Stash';
+import { createFragmentContainer, graphql } from 'react-relay';
+import { Switch, Route } from 'react-router-dom';
+import { codeRoute } from './routes';
 
-const Components = {
-  MainContainer: (repository, props) =>
-    <MainContainer {...props} mainContainer={repository} />,
-  Tree: (repository, props) =>
-    <TreeContainer {...props} treeContainer={repository} />,
-  Blob: (repository, props) =>
-    <BlobContainer {...props} blobContainer={repository} />,
-  Commits: (repository, props) =>
-    <Commits {...props} commits={repository} />,
-  Commit: (repository, props) =>
-    <Commit {...props} commit={repository} />,
-  Branches: (repository, props) =>
-    <Branches {...props} branches={repository} />,
-  Stashes: (repository, props) =>
-    <Stashes {...props} stashes={repository} />,
-  Stash: (repository, props) =>
-    <Stash {...props} stash={repository} />,
-}
-
-const Repository = ({
-  repository,
-  relay,
-}) => (
-  <div>
-    {matchRouteChild(relay.route, Components, repository)}
-  </div>
-)
+const Repository = ({ repository }) => (
+  <Switch>
+    {codeRoute.map((route, index) => {
+      // eslint-disable-next-line
+      const Component = require(`./${route.name}/index`).default;
+      const variables = {
+        [route.name.charAt(0).toLowerCase() + route.name.slice(1)]: repository,
+      };
+      return (
+        <Route
+          key={`codeComponent${index}`} // eslint-disable-line
+          path={route.path}
+          render={() => <Component {...variables} />}
+        />
+      );
+    })}
+  </Switch>
+);
 
 Repository.propTypes = {
   repository: PropTypes.object.isRequired,
-  relay: PropTypes.object.isRequired,
-}
+};
 
-export default Relay.createContainer(Repository, {
-  initialVariables: {
-    branchHead: 'master',
-    userName: null,
-    projectName: null,
-    splat: null,
-    commitId: null,
-    stashNum: null,
-  },
-  fragments: {
-    repository: vars => Relay.QL`
-      fragment on Repository {
-        id
-        rawId
-        ${route => matchRoute(route, {
-          MainContainer: () => MainContainer.getFragment('mainContainer', vars),
-          Tree: () => TreeContainer.getFragment('treeContainer', vars),
-          Blob: () => BlobContainer.getFragment('blobContainer', vars),
-          Commits: () => Commits.getFragment('commits', vars),
-          Commit: () => Commit.getFragment('commit', vars),
-          Branches: () => Branches.getFragment('branches', vars),
-          Stashes: () => Stashes.getFragment('stashes', vars),
-          Stash: () => Stash.getFragment('stash', vars),
-        })}
-      }
-    `,
-  },
-})
+export default createFragmentContainer(Repository, {
+  repository: graphql`
+    fragment Repository_repository on Repository {
+      id
+      ...Stash_stash
+      ...Stashes_stashes
+      ...Commit_commit
+      ...Commits_commits
+      ...Branches_branches
+      ...BlobContainer_blobContainer
+      ...TreeContainer_treeContainer
+      ...MainContainer_mainContainer
+    }
+  `,
+});

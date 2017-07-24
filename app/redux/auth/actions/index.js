@@ -1,7 +1,8 @@
 import { call, take } from 'redux-saga/effects';
 import { firebaseApp, firebaseAuth } from 'utils/firebase';
-import { actionsGenerator, redirect } from 'redux/utils'
-import CurrentRelay, { CreateUserMutation } from 'relay';
+import { actionsGenerator, redirect } from 'redux/utils';
+import { createUserMutation } from 'relay';
+import { resetEnv } from 'relay/RelayEnvironment';
 import {
   createUserWithEmailPassword, signIn, signInWithEmailPassword,
   addFirebaseProvider,
@@ -14,21 +15,21 @@ export function* getNameAndCreateUser(user) {
   yield call(redirect, '/login')
   authActions.userNameNotAvail(user.displayName || 'Guest')
   const { payload } = yield take(authActions.addUsername.getType())
-
-  yield call(CurrentRelay.Store.commitUpdate, new CreateUserMutation({
+  const mutationVariables = {
     ...user,
     accessToken: user.accessToken || null,
     userName: payload.userName,
     password: payload.password,
-  }));
+  };
+  yield call(createUserMutation, mutationVariables);
 
-  return payload.userName
+  return payload.userName;
 }
 
 function* signOut() {
   yield call(redirect, '/login')
   yield call([firebaseAuth, firebaseAuth.signOut])
-  yield call(CurrentRelay.reset)
+  yield call(resetEnv);
 }
 
 export const authActions = actionsGenerator({

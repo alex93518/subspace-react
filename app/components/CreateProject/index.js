@@ -12,7 +12,7 @@ export const CreateProject = () => (
         content: 'Description of CreateProject',
       }]}
     />
-    <CreateProjectForm onSubmit={this.handleSubmit} />
+    <CreateProjectForm />
   </MainGrid>
 )
 

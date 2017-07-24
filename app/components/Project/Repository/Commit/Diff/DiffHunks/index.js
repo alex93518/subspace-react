@@ -46,25 +46,24 @@ const blockText = chunk => ({
 
 const FileDiff = ({
   hunk: { from, to, additions, deletions, chunks },
-  variables,
 }) => (
   <MainDiv>
     <FileStatusHunk>
       <SpanDeletion>-{deletions}</SpanDeletion>
       <SpanAddition>+{additions}</SpanAddition>
-      <LinkTreeEntry vars={{ ...variables, type: 'blob', pathName: to }}>
+      <LinkTreeEntry to={to} type={'blob'}>
         {to}
       </LinkTreeEntry>
     </FileStatusHunk>
     <div>
       {
         chunks.map(chunk =>
-          <div key={`${from}${to}${chunk.content}`}>
+          (<div key={`${from}${to}${chunk.content}`}>
             <ChunkStatus>
               {chunk.content}
             </ChunkStatus>
             <DiffChunk chunk={blockText(chunk)} />
-          </div>
+          </div>)
         )
       }
     </div>
@@ -73,24 +72,21 @@ const FileDiff = ({
 
 FileDiff.propTypes = {
   hunk: PropTypes.object.isRequired,
-  variables: PropTypes.object.isRequired,
 }
 
-const DiffHunks = ({ hunks, variables }) => (
+const DiffHunks = ({ hunks }) => (
   <div>
     {hunks.map(hunk =>
-      <FileDiff
+      (<FileDiff
         key={`${hunk.from}${hunk.to}`}
         hunk={hunk}
-        variables={variables}
-      />
+      />)
     )}
   </div>
 )
 
 DiffHunks.propTypes = {
   hunks: PropTypes.array.isRequired,
-  variables: PropTypes.object.isRequired,
 }
 
 export default DiffHunks

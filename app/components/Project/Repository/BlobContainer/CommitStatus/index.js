@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Relay from 'react-relay/classic';
-import { createContainer } from 'recompose-relay'
+import { graphql } from 'react-relay';
+import withRelayFragment from 'relay/withRelayFragment';
 import { compose, mapProps } from 'recompose';
 import styled from 'styled-components';
 import LastCommit from 'components/shared/Project/Repository/LastCommit';
@@ -11,10 +11,10 @@ const DivCommitStatus = styled.div`
   margin-top: 15px;
 `
 
-const CommitStatus = ({ commit, history, vars }) => (
+const CommitStatus = ({ commit, history }) => (
   <DivCommitStatus>
     <div>
-      <LastCommit lastCommit={commit} {...vars} />
+      <LastCommit lastCommit={commit} />
     </div>
     <Contributors contributors={history} />
   </DivCommitStatus>
@@ -23,37 +23,27 @@ const CommitStatus = ({ commit, history, vars }) => (
 CommitStatus.propTypes = {
   commit: PropTypes.object.isRequired,
   history: PropTypes.object.isRequired,
-  vars: PropTypes.object.isRequired,
 }
 
 export default compose(
-  createContainer({
-    initialVariables: {
-      branchHead: 'master',
-      userName: null,
-      projectName: null,
-    },
-    fragments: {
-      commitStatus: vars => Relay.QL`
-        fragment on TreeEntry {
-          history(first: 1, refName: $branchHead) {
-            ${Contributors.getFragment('contributors')}
-            edges {
-              node {
-                ${LastCommit.getFragment('lastCommit', vars)}
-              }
+  withRelayFragment({
+    commitStatus: graphql`
+      fragment CommitStatus_commitStatus on TreeEntry {
+        history(first: 1, refName: $branchHead) {
+          ...Contributors_contributors
+          edges {
+            node {
+              ...LastCommit_lastCommit
             }
           }
         }
-      `,
-    },
+      }
+    `,
   }),
   mapProps(({
     commitStatus: { history },
-    relay: { variables },
   }) => ({
     commit: history.edges[0].node,
-    vars: variables,
     history,
   }))
 )(CommitStatus)

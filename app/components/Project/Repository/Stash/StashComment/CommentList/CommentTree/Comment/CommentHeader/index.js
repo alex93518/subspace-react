@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Relay from 'react-relay/classic';
+import { graphql } from 'react-relay';
+import withRelayFragment from 'relay/withRelayFragment';
 import { compose, withHandlers } from 'recompose';
-import { createContainer } from 'recompose-relay'
 import moment from 'moment';
 import { DropdownButton, MenuItem } from 'react-bootstrap';
 import styled from 'styled-components';
@@ -89,27 +89,20 @@ CommentHeader.propTypes = {
   commentHeader: PropTypes.object.isRequired,
   isShowContent: PropTypes.bool.isRequired,
   handleIsShowContent: PropTypes.func.isRequired,
-}
+};
 
 export default compose(
-  createContainer({
-    initialVariables: {
-      branchHead: 'master',
-      userName: null,
-      projectName: null,
-    },
-    fragments: {
-      commentHeader: () => Relay.QL`
-        fragment on StashComment {
-          id
-          owner {
-            ${LinkUserName.getFragment('user')}
-          }
-          isOwnerVoteUp
-          createdAt        
+  withRelayFragment({
+    commentHeader: graphql`
+      fragment CommentHeader_commentHeader on StashComment {
+        id
+        owner {
+          ...LinkUserName_user
         }
-      `,
-    },
+        isOwnerVoteUp
+        createdAt        
+      }
+    `,
   }),
   withHandlers({
     handleIsShowContent: props => () => {

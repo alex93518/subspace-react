@@ -1,42 +1,44 @@
 import { call } from 'redux-saga/effects';
 import moment from 'moment';
 import { path } from 'ramda'
-import CurrentRelay, { AddUserProviderMutation } from 'relay';
+import { addUserProviderMutation } from 'relay';
 import { stackexchange, stackexchangeConfig } from 'utils/stackexchange';
-import { getUserName, getUserProvider } from './userFetch'
+import { resetEnv } from 'relay/RelayEnvironment';
+import { getUserName } from './userFetch';
+import { getUserProvider } from './userProviderFetch';
+
+const init = () => (
+  new Promise(resolve => {
+    stackexchange.init({
+      ...stackexchangeConfig,
+      channelUrl: process.env.CLIENT_HOST ?
+        `${process.env.CLIENT_HOST}/blank.html` :
+        'http://localhost/blank.html',
+      complete: resolve,
+    })
+  })
+)
+
+const auth = () => (
+  new Promise(resolve => {
+    stackexchange.authenticate({
+      networkUsers: true,
+      success: resolve,
+    })
+  })
+)
 
 export function* signInWithStackexchangeFn({
   payload: { getNameAndCreateUser },
 }) {
-  let providerId = ''
-  let accessToken = ''
-  let displayName = ''
-  let photoUrl = ''
-  let expirationDate = ''
+  let providerId = '';
+  let accessToken = '';
+  let displayName = '';
+  let photoUrl = '';
+  let expirationDate = '';
 
   // const seProviderId = localStorage.getItem('seProviderId')
   // const seExpire = localStorage.getItem('seExpire')
-
-  const init = () => (
-    new Promise(resolve => {
-      stackexchange.init({
-        ...stackexchangeConfig,
-        channelUrl: process.env.CLIENT_HOST ?
-          `${process.env.CLIENT_HOST}/blank.html` :
-          'http://subspace-react.nqfviyftp5.us-east-1.elasticbeanstalk.com/blank.html',
-        complete: resolve,
-      })
-    })
-  )
-
-  const auth = () => (
-    new Promise(resolve => {
-      stackexchange.authenticate({
-        networkUsers: true,
-        success: resolve,
-      })
-    })
-  )
 
   yield call(init)
   const seAuth = yield call(auth)
@@ -51,7 +53,7 @@ export function* signInWithStackexchangeFn({
   }
 
   yield call(
-    CurrentRelay.reset, null, 'stackexchange',
+    resetEnv, 'stackexchange',
     JSON.stringify({ token: accessToken, providerId }),
   )
   const userProvider = yield call(
@@ -106,27 +108,6 @@ export function* signInWithStackexchangeFn({
 export function* addStackexchangeProviderFn({
   payload: { id, userId, callback },
 }) {
-  const init = () => (
-    new Promise(resolve => {
-      stackexchange.init({
-        ...stackexchangeConfig,
-        channelUrl: process.env.CLIENT_HOST ?
-          `${process.env.CLIENT_HOST}/blank.html` :
-          'http://subspace-react.nqfviyftp5.us-east-1.elasticbeanstalk.com/blank.html',
-        complete: resolve,
-      })
-    })
-  )
-
-  const auth = () => (
-    new Promise(resolve => {
-      stackexchange.authenticate({
-        networkUsers: true,
-        success: resolve,
-      })
-    })
-  )
-
   yield call(init)
   const seAuth = yield call(auth)
   if (seAuth && seAuth.networkUsers.length > 0) {
@@ -134,14 +115,14 @@ export function* addStackexchangeProviderFn({
     const providerId = String(seAuth.networkUsers[0].user_id)
     const userName = String(seAuth.networkUsers[0].display_name)
     const accessToken = seAuth.accessToken
-    yield call(CurrentRelay.Store.commitUpdate, new AddUserProviderMutation({
+    yield call(addUserProviderMutation, {
       id,
       userId,
       userName,
       provider,
       providerId,
       accessToken,
-    }));
+    });
 
     if (callback) callback(providerId)
     return true;

@@ -1,13 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { path } from 'ramda'
 import { compose } from 'recompose'
 import { Button, FormGroup } from 'react-bootstrap'
-import { SubmissionError, Field, reduxForm } from 'redux-form/immutable'
-import CurrentRelay, { CreateProjectMutation } from 'relay'
+import { Field, reduxForm } from 'redux-form/immutable';
+import { commitMutation, graphql } from 'react-relay';
+import { env } from 'relay/RelayEnvironment';
 import { makeSelectAuth } from 'redux/selectors'
-import { redirect, injectSelectors } from 'redux/utils'
+import { injectSelectors } from 'redux/utils'
 import { TextInput, TextArea } from 'components/shared/form'
+import { withRouter } from 'react-router-dom';
 
 const CreateProjectForm = ({ handleSubmit, error }) => (
   <form onSubmit={handleSubmit}>
@@ -72,41 +73,40 @@ CreateProjectForm.propTypes = {
 }
 
 export default compose(
+  withRouter,
   injectSelectors({
     auth: makeSelectAuth(),
   }),
   reduxForm({
     form: 'createProject',
-    onSubmit: async (values, _, { auth }) => {
-      const { repoAccess, repoPushVote, topics, ...repository } = values
-
-      try {
-        await new Promise((resolve, reject) => CurrentRelay.Store.commitUpdate(
-          new CreateProjectMutation({
-            repository: {
-              ...repository,
-              isPushVote: repoPushVote !== 'standard',
-              isPrivate: repoAccess === 'private',
-              ownerUserName: auth.userName,
-
-              // TODO: add array input field to project form
-              topics: topics ? topics.split(' ') : undefined,
-            },
-          }),
-          {
-            onSuccess: () => resolve(redirect('/projects')),
-            onFailure: transaction => {
-              const error = transaction.getError()
-              console.warn(error) // eslint-disable-line no-console
-              reject(error)
-            },
+    onSubmit: async (values, _, { auth, history }) => {
+      const { repoAccess, repoPushVote, topics, ...repository } = values;
+      const mutation = graphql`
+        mutation CreateProjectFormMutation($input: CreateRepositoryInput!) {
+          createRepository(input: $input) {
+            clientMutationId
           }
-        ))
-      } catch (err) {
-        throw new SubmissionError({
-          _error: path(['source', 'errors', '0', 'message'])(err),
-        })
-      }
+        }
+      `;
+
+      const input = {
+        ...repository,
+        isPushVote: repoPushVote !== 'standard',
+        isPrivate: repoAccess === 'private',
+        ownerUserName: auth.userName,
+
+        // TODO: add array input field to project form
+        topics: topics ? topics.split(' ') : undefined,
+      };
+      commitMutation(
+        env,
+        {
+          mutation,
+          variables: { input },
+          onCompleted: () => history.push(`/${auth.userName}/${repository.name}`),
+          onError: err => console.error(err),
+        },
+      );
     },
   }),
 )(CreateProjectForm);

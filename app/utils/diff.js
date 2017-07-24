@@ -58,7 +58,7 @@ export const getDiffContent = chunk => {
   if (oldLength === newLength) {
     const lineNumberDiff = oldLength - newLength
 
-    lineNumberDiff < 0
+    lineNumberDiff < 0 // eslint-disable-line
       ? oldNullSeq[oldLength] = lineNumberDiff
       : newNullSeq[newLength] = lineNumberDiff
   }

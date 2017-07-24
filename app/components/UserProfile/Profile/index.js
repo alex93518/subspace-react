@@ -1,43 +1,25 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Row, Col, Tabs, Tab } from 'react-bootstrap';
-import Relay from 'react-relay/classic';
-import { createContainer } from 'recompose-relay';
-import styled from 'styled-components';
 import { compose, withState, mapProps, withHandlers } from 'recompose';
+import withRelayFragment from 'relay/withRelayFragment';
+import { graphql } from 'react-relay';
 import R from 'ramda';
-import FaPlusCircle from 'react-icons/lib/fa/plus-circle'
-import FaStackOverflow from 'react-icons/lib/fa/stack-overflow'
-import FaGithub from 'react-icons/lib/fa/github'
-import FaGoogle from 'react-icons/lib/fa/google'
-import FaAt from 'react-icons/lib/fa/at'
+import FaPlusCircle from 'react-icons/lib/fa/plus-circle';
+import FaStackOverflow from 'react-icons/lib/fa/stack-overflow';
+import FaGithub from 'react-icons/lib/fa/github';
+import FaGoogle from 'react-icons/lib/fa/google';
+import FaAt from 'react-icons/lib/fa/at';
 import {
   addGithubProvider, addStackexchangeProvider, addGoogleProvider,
 } from 'redux/auth/actions';
 import { getStackexchangeUserInfo } from 'utils/stackexchange';
 import { getGithubUserInfo } from 'utils/github';
-import StackexchangeProfile from './StackexchangeProfile'
+import LoadingIndicator from 'components/shared/LoadingIndicator';
+import StackexchangeProfile from './StackexchangeProfile';
 import GithubProfile from './GithubProfile';
 import MainAccount from './MainAccount';
-
-const DivTabContent = styled.div`
-  padding: 20px;
-  border: 1px solid #ddd;
-  border-top: 0px;
-  background: #fcfcfc;
-`
-
-const SpanIcon = styled.span`
-  vertical-align: text-bottom;
-  margin-right: 4px;
-`
-
-const SpanAddIcon = styled.span`
-  vertical-align: text-bottom;
-  margin-left: 6px;
-  color: #898989;
-  font-size: 12px;
-`
+import { DivTabContent, SpanAddIcon, SpanIcon } from './styles';
 
 const getTabTitle = (provider, providerData, isOwner) => {
   let providerAdd = null
@@ -89,7 +71,11 @@ const Profile = ({
           title={getTabTitle('Stackoverflow', stackexchangeProvider, isOwner)}
         >
           <DivTabContent>
-            <StackexchangeProfile stackexchangeData={stackexchangeData} />
+            {
+              stackexchangeData ?
+                <StackexchangeProfile stackexchangeData={stackexchangeData} /> :
+                <LoadingIndicator />
+            }
           </DivTabContent>
         </Tab>
       }
@@ -100,7 +86,11 @@ const Profile = ({
           title={getTabTitle('Github', githubProvider, isOwner)}
         >
           <DivTabContent>
-            <GithubProfile githubData={githubData} />
+            {
+              githubData ?
+                <GithubProfile githubData={githubData} /> :
+                <LoadingIndicator />
+            }
           </DivTabContent>
         </Tab>
       }
@@ -113,7 +103,7 @@ const Profile = ({
       </Row>
     )}
   </div>
-  );
+);
 
 Profile.propTypes = {
   user: PropTypes.object.isRequired,
@@ -129,27 +119,25 @@ Profile.propTypes = {
 }
 
 export default compose(
-  createContainer({
-    fragments: {
-      user: () => Relay.QL`
-        fragment on User {
-          id
-          rawId
-          userName
-          fullName
-          photoUrl
-          providerAccounts(first: 10) {
-            edges {
-              node {
-                userName
-                provider
-                providerId
-              }
+  withRelayFragment({
+    user: graphql`
+      fragment Profile_user on User {
+        id
+        rawId
+        userName
+        fullName
+        photoUrl
+        providerAccounts(first: 10) {
+          edges {
+            node {
+              userName
+              provider
+              providerId
             }
           }
         }
-      `,
-    },
+      }
+    `,
   }),
   withState('tabKey', 'updateTabKey', 1),
   withState('stackexchangeData', 'updateStackexchangeData', null),

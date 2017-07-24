@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Relay from 'react-relay/classic';
+import { createFragmentContainer, graphql } from 'react-relay';
 import styled from 'styled-components';
 import { Row, Col } from 'react-bootstrap';
 import { LinkUserName, LinkUserPhoto } from 'components/shared/Links';
@@ -46,21 +46,19 @@ const CommitStatus = ({
 
 CommitStatus.propTypes = {
   commitStatus: PropTypes.object.isRequired,
-}
+};
 
-export default Relay.createContainer(CommitStatus, {
-  fragments: {
-    commitStatus: () => Relay.QL`
-      fragment on Commit {
-        oid
-        commitTime
-        author {
-          user {
-            ${LinkUserName.getFragment('user')}
-            ${LinkUserPhoto.getFragment('user')}
-          }
+export default createFragmentContainer(CommitStatus, {
+  commitStatus: graphql`
+    fragment Status_commitStatus on Commit {
+      oid
+      commitTime
+      author {
+        user {
+          ...LinkUserName_user
+          ...LinkUserPhoto_user
         }
       }
-    `,
-  },
+    }
+  `,
 })

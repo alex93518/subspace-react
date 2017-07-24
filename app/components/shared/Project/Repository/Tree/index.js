@@ -1,11 +1,16 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Relay from 'react-relay/classic';
+import { graphql } from 'react-relay';
+import withRelayFragment from 'relay/withRelayFragment';
 import R from 'ramda';
 import styled from 'styled-components';
 import { Table } from 'react-bootstrap';
+import { compose, mapProps } from 'recompose';
+import { withRouter } from 'react-router-dom';
+import { matchRoute } from 'utils/routeMatcher';
 import TreeEntry from './TreeEntry';
 import FolderUp from './FolderUp';
+
 
 const TableWhite = styled(Table)`
   background: white;
@@ -18,22 +23,18 @@ const sortEntries = R.sortWith([
 ])
 
 const Tree = ({
-  tree: { entries },
-  relay: { variables },
+  tree: { entries }, params,
 }) => (
   <TableWhite hover>
     <tbody>
-      {variables.splat ?
-        <FolderUp
-          {...variables}
-        /> : null
+      {
+        params.splat ? <FolderUp {...params} /> : null
       }
       {sortEntries(entries).map(treeEntry =>
-        <TreeEntry
-          {...variables}
+        (<TreeEntry
           key={treeEntry.oid}
           treeEntry={treeEntry}
-        />
+        />)
       )}
     </tbody>
   </TableWhite>
@@ -41,26 +42,32 @@ const Tree = ({
 
 Tree.propTypes = {
   tree: PropTypes.object.isRequired,
-  relay: PropTypes.object.isRequired,
+  params: PropTypes.object.isRequired,
 }
 
-export default Relay.createContainer(Tree, {
-  initialVariables: {
-    branchHead: 'master',
-    userName: null,
-    projectName: null,
-    splat: null,
-  },
-  fragments: {
-    tree: vars => Relay.QL`
-      fragment on Tree {
+export default compose(
+  withRouter,
+  withRelayFragment({
+    tree: graphql`
+      fragment Tree_tree on Tree {
         entries(path: $splat) {
           oid
           type
           name
-          ${TreeEntry.getFragment('treeEntry', vars)}
+          ...TreeEntry_treeEntry
         }
       }
     `,
-  },
-})
+  }),
+  mapProps(({
+    location: { pathname },
+    ...rest
+  }) => {
+    const params = matchRoute(pathname).params;
+    const splat = params['0'] || null;
+    return ({
+      params: { splat, ...params },
+      ...rest,
+    });
+  })
+)(Tree);

@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Relay from 'react-relay/classic';
+import { createFragmentContainer, graphql } from 'react-relay';
 import styled from 'styled-components';
 import { Table } from 'react-bootstrap';
 import CommitHead from './Head';
@@ -21,42 +21,32 @@ const TableHead = styled(Table)`
 
 const Commit = ({
   commit: { ref: { commit } },
-  relay: { variables },
 }) => (
   <MainDiv>
     <TableHead>
       <tbody>
-        <CommitHead commitHead={commit} {...variables} />
-        <CommitStatus commitStatus={commit} {... variables} />
+        <CommitHead commitHead={commit} />
+        <CommitStatus commitStatus={commit} />
       </tbody>
     </TableHead>
-    <CommitDiff commitDiff={commit} {...variables} />
+    <CommitDiff commitDiff={commit} />
   </MainDiv>
 )
 
 Commit.propTypes = {
   commit: PropTypes.object.isRequired,
-  relay: PropTypes.object.isRequired,
 }
 
-export default Relay.createContainer(Commit, {
-  initialVariables: {
-    branchHead: 'master',
-    projectName: null,
-    userName: null,
-    commitId: null,
-  },
-  fragments: {
-    commit: vars => Relay.QL`
-      fragment on Repository {
-        ref(refName: $branchHead) {
-          commit(commitId: $commitId) {
-            ${CommitHead.getFragment('commitHead', vars)}
-            ${CommitStatus.getFragment('commitStatus')}
-            ${CommitDiff.getFragment('commitDiff', vars)}
-          }
+export default createFragmentContainer(Commit, {
+  commit: graphql`
+    fragment Commit_commit on Repository {
+      ref(refName: $branchHead) @include(if: $isCommit) {
+        commit(commitId: $commitId) {
+          ...Head_commitHead
+          ...Status_commitStatus
+          ...Diff_commitDiff
         }
       }
-    `,
-  },
+    }
+  `,
 })

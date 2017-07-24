@@ -1,9 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Relay from 'react-relay/classic';
+import { graphql } from 'react-relay';
+import withRelayFragment from 'relay/withRelayFragment';
+import { compose, mapProps } from 'recompose';
+import { withRouter } from 'react-router-dom';
 import styled from 'styled-components';
 import BranchSelect from 'components/shared/Project/Repository/BranchSelect';
 import MainGrid from 'components/shared/MainGrid';
+import { matchRoute } from 'utils/routeMatcher';
 import CommitList from './CommitList';
 
 const DivCommits = styled.div`
@@ -16,47 +20,45 @@ const Commits = ({
       target,
     },
   },
-  commits,
-  relay: {
-    variables,
-  },
+  commits, splat,
 }) => (
   <MainGrid>
     <DivCommits>
       <BranchSelect
-        {...variables}
         branchSelect={commits}
-        suffix={`commits${variables.splat ? `/${variables.splat}` : ''}`}
+        suffix={`commits${splat ? `/${splat}` : ''}`}
       />
-      <CommitList {...variables} commitList={target} />
+      <CommitList commitList={target} />
     </DivCommits>
   </MainGrid>
 )
 
 Commits.propTypes = {
   commits: PropTypes.object.isRequired,
-  relay: PropTypes.object.isRequired,
-}
+  splat: PropTypes.string,
+};
 
-export default Relay.createContainer(Commits, {
-  initialVariables: {
-    branchHead: 'master',
-    userName: null,
-    projectName: null,
-    splat: null,
-  },
-  fragments: {
-    commits: vars => Relay.QL`
-      fragment on Repository {
-        ${BranchSelect.getFragment('branchSelect', vars)}
-        ref(refName: $branchHead) {
+export default compose(
+  withRouter,
+  withRelayFragment({
+    commits: graphql`
+      fragment Commits_commits on Repository {
+        ...BranchSelect_branchSelect
+        ref(refName: $branchHead) @include(if: $isCommits){
           target {
             ... on Commit {
-              ${CommitList.getFragment('commitList', vars)}
+              ...CommitList_commitList
             }
           }
         }
       }
     `,
-  },
-})
+  }),
+  mapProps(({
+    location: { pathname },
+    ...rest
+  }) => ({
+    splat: matchRoute(pathname).params['0'] || null,
+    ...rest,
+  }))
+)(Commits);
