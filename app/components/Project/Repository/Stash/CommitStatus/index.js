@@ -1,20 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { createFragmentContainer, graphql } from 'react-relay';
-import { Table } from 'react-bootstrap';
-import styled from 'styled-components';
 import Commit from 'components/Project/Repository/Commits/CommitList/Commit';
-
-const TableCommit = styled(Table)`
-  margin-bottom: 0px !important;
-  background-color: #fff;
-  border: 1px solid #ddd;
-  color: #777;
-`
-
-const CommitsHead = styled.h4`
-  margin-top: 30px;
-`
+import { CommitsHead, TableCommit } from './styles';
 
 const StashCommitStatus = ({
   stashCommitStatus: { history },

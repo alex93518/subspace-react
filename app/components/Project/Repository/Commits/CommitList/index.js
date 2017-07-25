@@ -3,25 +3,8 @@ import PropTypes from 'prop-types';
 import { createFragmentContainer, graphql } from 'react-relay';
 import R from 'ramda';
 import moment from 'moment';
-import styled from 'styled-components';
-import { Table } from 'react-bootstrap';
-import { Timeline, TimelineEvent } from 'react-event-timeline';
 import Commit from './Commit';
-
-const TimelineMain = styled(Timeline)`
-  padding: 0px !important;
-  margin: 30px 0px !important;
-  font-size: 100% !important;
-`
-
-const TimelineCommits = styled(TimelineEvent)`
-  padding: 0px;
-`
-
-const TableWhite = styled(Table)`
-  border: 1px solid #ddd;
-  margin-top: 10px;
-`
+import { TimelineMain, TimelineCommits, TableWhite } from './styles';
 
 const commitsByDate = R.groupBy(commit =>
   moment.unix(commit.node.commitTime).startOf('day').format()

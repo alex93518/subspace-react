@@ -1,21 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import styled from 'styled-components';
-import SyntaxHighlighter from 'react-syntax-highlighter/dist/light';
 import xcode from 'react-syntax-highlighter/dist/styles/xcode';
-
-const CodeBlock = styled(SyntaxHighlighter)`
-  font-size: 13px;
-  & .react-syntax-highlighter-line-number {
-    display: block;
-    height: 20px;
-    width: 100%;
-    color: #ccc;
-    padding-right: 15px;
-    padding-left: 10px;
-    text-align: right;
-  }
-`
+import { CodeBlock } from './styles';
 
 const lineHeight = 20
 const styleHeight = seqLength =>

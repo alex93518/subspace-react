@@ -1,27 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Row, Col, Panel } from 'react-bootstrap';
-import styled from 'styled-components';
+import { Row, Col } from 'react-bootstrap';
 import { compose, branch, renderNothing } from 'recompose';
 import GithubStats from './GithubStats';
-
-const UserPanel = styled(Panel)`
-  text-align: center;
-`
-
-const RowInfoPanel = styled(Row)`
-  margin-top: 10px;
-`
-
-const HeadUserName = styled.h2`
-  margin-top: 0px;
-`
-
-const BioDiv = styled.div`
-  font-size: 15px;
-  line-height: 20px;
-  padding-right: 20px;
-`
+import { UserPanel, RowInfoPanel, HeadUserName, BioDiv } from './styles';
 
 const GithubProfile = ({ githubData }) => (
   <Row>

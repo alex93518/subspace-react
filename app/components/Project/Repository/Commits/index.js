@@ -4,15 +4,11 @@ import { graphql } from 'react-relay';
 import withRelayFragment from 'relay/withRelayFragment';
 import { compose, mapProps } from 'recompose';
 import { withRouter } from 'react-router-dom';
-import styled from 'styled-components';
 import BranchSelect from 'components/shared/Project/Repository/BranchSelect';
 import MainGrid from 'components/shared/MainGrid';
 import { matchRoute } from 'utils/routeMatcher';
 import CommitList from './CommitList';
-
-const DivCommits = styled.div`
-  margin-top: 15px;
-`
+import { DivCommits } from './styles';
 
 const Commits = ({
   commits: {

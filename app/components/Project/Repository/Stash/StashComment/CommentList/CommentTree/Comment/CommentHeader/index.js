@@ -3,46 +3,10 @@ import PropTypes from 'prop-types';
 import { graphql } from 'react-relay';
 import withRelayFragment from 'relay/withRelayFragment';
 import { compose, withHandlers } from 'recompose';
+import { MenuItem } from 'react-bootstrap';
 import moment from 'moment';
-import { DropdownButton, MenuItem } from 'react-bootstrap';
-import styled from 'styled-components';
 import { LinkUserName } from 'components/shared/Links';
-import FaCaretUp from 'react-icons/lib/fa/caret-up';
-import FaCaretDown from 'react-icons/lib/fa/caret-down';
-import MdMoreVert from 'react-icons/lib/md/more-vert';
-
-const SpanVoterStat = styled.span`
-  display: inline-block;
-  float: right;
-`
-
-const IconUp = styled(FaCaretUp)`
-  font-size: 16px;
-  margin-right: 3px;
-  vertical-align: sub !important;
-  color: #2cbe4e;
-`
-
-const IconDown = styled(FaCaretDown)`
-  font-size: 16px;
-  margin-right: 3px;
-  vertical-align: sub !important;
-  color: #cb2431;
-`
-
-const DropdownHead = styled(DropdownButton)`
-  margin-left: 10px !important;
-  background: transparent !important;
-  padding: 0px !important;
-  border: 0px !important;
-`
-
-const IconMore = styled(MdMoreVert)`
-  color: #777;
-  cursor: pointer;
-  font-size: 16px;
-  vertical-align: text-bottom !important;
-`
+import { SpanVoterStat, IconUp, IconDown, DropdownHead, IconMore } from './styles';
 
 const CommentHeader = ({
   handleIsShowContent, isShowContent,

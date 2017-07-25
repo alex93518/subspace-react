@@ -3,18 +3,9 @@ import PropTypes from 'prop-types';
 import { graphql } from 'react-relay';
 import withRelayFragment from 'relay/withRelayFragment';
 import { compose, mapProps } from 'recompose';
-import styled from 'styled-components';
-import { Table } from 'react-bootstrap';
 import MainGrid from 'components/shared/MainGrid';
 import Branch from './Branch';
-
-const TableBranches = styled(Table)`
-  margin-top: 20px;
-  border: 1px solid rgba(27,31,35,0.15);
-  padding: 8px 8px 0;
-  border-radius: 3px;
-  background-color: #fff;
-`
+import { TableBranches } from './styles';
 
 const Branches = ({ edges }) => (
   <MainGrid>

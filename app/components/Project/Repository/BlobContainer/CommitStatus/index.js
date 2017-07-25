@@ -3,13 +3,9 @@ import PropTypes from 'prop-types';
 import { graphql } from 'react-relay';
 import withRelayFragment from 'relay/withRelayFragment';
 import { compose, mapProps } from 'recompose';
-import styled from 'styled-components';
 import LastCommit from 'components/shared/Project/Repository/LastCommit';
 import Contributors from './Contributors';
-
-const DivCommitStatus = styled.div`
-  margin-top: 15px;
-`
+import { DivCommitStatus } from './styles';
 
 const CommitStatus = ({ commit, history }) => (
   <DivCommitStatus>

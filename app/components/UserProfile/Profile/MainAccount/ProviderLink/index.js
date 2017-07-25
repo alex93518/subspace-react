@@ -1,12 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import styled from 'styled-components';
 import { compose, branch, renderNothing } from 'recompose';
 import ProviderInfo from './ProviderInfo';
-
-const MainSpan = styled.span`
-  margin-right: 20px;
-`
+import { MainSpan } from './styles';
 
 const ProviderLink = ({
   isOwner, providerName, providerData, handleClick, tabKey,

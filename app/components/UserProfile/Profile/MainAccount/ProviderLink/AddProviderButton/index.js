@@ -1,19 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import styled from 'styled-components';
 import { compose, branch, renderNothing } from 'recompose';
-import { ButtonGit } from 'components/shared/ButtonGit';
 import ProviderIcon from '../ProviderIcon';
-
-const ProviderButton = styled(ButtonGit)`
-  padding: 10px;
-`
-
-const SpanIcon = styled.span`
-  vertical-align: text-bottom;
-  margin-right: 8px;
-  font-size: 24px;
-`
+import { ProviderButton, SpanIcon } from './styles';
 
 const AddProviderButton = ({
   providerName, handleClick, tabKey,

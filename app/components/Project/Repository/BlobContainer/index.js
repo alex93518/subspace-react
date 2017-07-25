@@ -3,8 +3,7 @@ import PropTypes from 'prop-types';
 import { graphql } from 'react-relay';
 import withRelayFragment from 'relay/withRelayFragment';
 import { withRouter } from 'react-router-dom';
-import { Row, Col } from 'react-bootstrap';
-import styled from 'styled-components';
+import { Col } from 'react-bootstrap';
 import { compose, branch, mapProps, renderComponent } from 'recompose';
 import Blob from 'components/shared/Project/Repository/Blob';
 import BranchSelect from 'components/shared/Project/Repository/BranchSelect';
@@ -12,10 +11,7 @@ import MainGrid from 'components/shared/MainGrid';
 import { matchRoute } from 'utils/routeMatcher';
 import CommitStatus from './CommitStatus';
 import FileStatus from './FileStatus';
-
-const RowSty = styled(Row)`
-  padding-top: 15px;
-`;
+import { RowSty } from './styles';
 
 const BlobContiner = ({ blobContainer, treeEntry, splat }) => (
   <MainGrid>

@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { graphql } from 'react-relay';
 import withRelayFragment from 'relay/withRelayFragment';
 import { Row, Col } from 'react-bootstrap';
-import styled from 'styled-components';
 import moment from 'moment';
 import { compose, mapProps, branch, renderComponent } from 'recompose';
 import MainGrid from 'components/shared/MainGrid';
@@ -14,21 +13,7 @@ import Readme from './Readme';
 import StatusBar from './StatusBar';
 import EmptyRepo from './EmptyRepo';
 import CloneUrlBox from './CloneUrlBox';
-
-const RowSty = styled(Row)`
-  padding-top: 15px;
-`
-
-const CloneCol = styled(Col)`
-  text-align: right;
-  padding-right: 0px;
-`
-
-const DescriptionCol = styled(Col)`
-  font-size: 16px;
-  margin-top: 5px;
-  padding-left: 0px;
-`
+import { DescriptionCol, RowSty, CloneCol } from './styles';
 
 const MainContainer = ({
   mainContainer, target, tree,

@@ -2,41 +2,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { graphql } from 'react-relay';
 import withRelayFragment from 'relay/withRelayFragment';
-import { Navbar, Nav, NavDropdown, MenuItem } from 'react-bootstrap';
+import { Navbar, Nav, MenuItem } from 'react-bootstrap';
 import { compose, withState, withHandlers, mapProps } from 'recompose';
 import { Element } from 'react-scroll';
 import FlipMove from 'react-flip-move';
-import styled from 'styled-components';
 import CommentTree from './CommentTree';
-
-const DivComment = styled.div`
-  margin-bottom: 20px;
-  text-align: center;
-`
-
-const NavDropdownButton = styled(NavDropdown)`
-  border: 1px solid rgba(27,31,35,0.2);
-  border-radius: 4px;
-  background-color: #eff3f6;
-  background-image: -webkit-linear-gradient(270deg, #fafbfc 0%, #eff3f6 90%);
-  background-image: linear-gradient(-180deg, #fafbfc 0%, #eff3f6 90%);
-  margin-top: 4px;
-  margin-right: 5px;
-  color: #777;
-  font-size: 13px;
-  & a {
-    padding: 5px 10px !important;
-  }
-`
-
-const SpanSort = styled.span`
-  color: #999;
-  margin-right: 5px;
-`
-
-const SpanSortContent = styled.span`
-  font-weight: 700;
-`
+import { SpanSort, SpanSortContent, DivComment, NavDropdownButton } from './styles';
 
 const DropdownButton = ({ title, content }) => (
   <span>

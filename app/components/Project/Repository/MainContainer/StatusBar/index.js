@@ -1,31 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { createFragmentContainer, graphql } from 'react-relay';
-import { Row, Col } from 'react-bootstrap';
-import styled from 'styled-components';
 import { LinkBranch, LinkProject } from 'components/shared/Links';
 import GoHistory from 'react-icons/lib/go/history';
 import GoRepoPush from 'react-icons/lib/go/repo-push';
 import GoGitBranch from 'react-icons/lib/go/git-branch';
 import GoOrganization from 'react-icons/lib/go/organization';
-
-const RowSty = styled(Row)`
-  background-color: white;
-  border: 1px solid #DDD;
-  padding: 10px;
-  & a {
-    color: #444 !important;
-  }
-`
-
-const ColSty = styled(Col)`
-  text-align: center;
-`
-
-const Icon = styled.span`
-  font-size: 18px;
-  color: #777;
-`
+import { RowSty, ColSty, Icon } from './styles';
 
 const StatusBar = ({
   statusBar: {

@@ -1,22 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { createFragmentContainer, graphql } from 'react-relay';
-import styled from 'styled-components';
 import { Row, Col } from 'react-bootstrap';
-import { LinkUserName, LinkUserPhoto } from 'components/shared/Links';
+import { LinkUserPhoto } from 'components/shared/Links';
 import { timeFromNow } from 'utils/string';
-
-const Td = styled.td`
-  padding: 15px !important;
-`
-
-const ColCommitId = styled(Col)`
-  text-align: right;
-`
-
-const UserName = styled(LinkUserName)`
-  margin-left: 10px;
-`
+import { Td, UserName, ColCommitId } from './styles';
 
 const CommitStatus = ({
   commitStatus: {

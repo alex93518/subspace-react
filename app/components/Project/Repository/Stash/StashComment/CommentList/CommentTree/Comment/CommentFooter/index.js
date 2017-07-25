@@ -2,71 +2,15 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { graphql } from 'react-relay';
 import withRelayFragment from 'relay/withRelayFragment';
-import styled from 'styled-components';
-import { Button, Panel } from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
 import { compose, withState, withHandlers } from 'recompose';
 import { scroller } from 'react-scroll';
-import FaPencil from 'react-icons/lib/fa/pencil';
-import FaThumbsOUp from 'react-icons/lib/fa/thumbs-o-up';
-import FaThumbsODown from 'react-icons/lib/fa/thumbs-o-down';
 import ReactQuill from 'react-quill';
 import { addStashCommentMutation, voteStashCommentMutation } from 'relay';
-
-const ButtonReply = styled(Button)`
-  background: rgba(255,255,255,0) !important;
-  border: 0px !important;
-  color: #aaa !important;
-  padding: 0px !important;
-  margin-right: 15px;
-`
-
-const PanelReply = styled(Panel)`
-  margin-bottom: 0px;
-  background-color: transparent;
-  border: 0px;
-  box-shadow: none;
-  -webkit-box-shadow: none;
-  & div > .panel-body {
-    padding: 0px !important;
-    margin-top: 20px;
-    margin-bottom: 5px;
-    border: 0px !important;
-    animation: none !important;
-  }
-`
-
-const ReplyIcon = styled(FaPencil)`
-  vertical-align: sub !important;
-  font-size: 15px;
-  color: #999;
-  margin-right: 1px;
-`
-
-const VoteUpIcon = styled(FaThumbsOUp)`
-  cursor: pointer;
-  vertical-align: sub !important;
-  margin-right: 5px;
-  font-size: 15px;
-  color: ${props => props['data-isVotedUp'] ? '#2cbe4e' : '#aaa'};  
-`
-
-const VoteDownIcon = styled(FaThumbsODown)`
-  cursor: pointer;
-  margin-right: 5px;
-  vertical-align: sub !important;
-  font-size: 15px;
-  color: ${props => props['data-isVotedDown'] ? '#cb2431' : '#aaa'};
-`
-
-const SpanVotePoint = styled.span`
-  color: #999;
-  margin-right: 15px;
-`
-
-const DivSubmitReply = styled.div`
-  text-align: right;
-  margin-top: 5px;
-`
+import {
+  ButtonReply, ReplyIcon, PanelReply, DivSubmitReply,
+  VoteUpIcon, VoteDownIcon, SpanVotePoint,
+} from './styles'
 
 const CommentFooter = ({
   isShowReply, isReply, handleReplyClick,

@@ -2,19 +2,15 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { graphql } from 'react-relay';
 import withRelayFragment from 'relay/withRelayFragment';
-import styled from 'styled-components';
 import { compose } from 'recompose';
 import TreeView from 'react-treeview';
 import FlipMove from 'react-flip-move';
 import Comment from './Comment';
+import { CommentBox } from './styles';
 
 // Relay not allowed recursive nested object
 // https://github.com/facebook/graphql/issues/91
 // Set to 4 deep level comments
-
-const CommentBox = styled.div`
-  margin-left: 30px;
-`
 
 const TreeContent = ({
   node, lvlDeep, children, stashGlobalId, parentId, showContent,

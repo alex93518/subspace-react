@@ -2,109 +2,18 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { graphql } from 'react-relay';
 import withRelayFragment from 'relay/withRelayFragment';
-import { Row, Col, Modal, Image, Media } from 'react-bootstrap';
+import { Col, Modal, Image, Media } from 'react-bootstrap';
 import { voteStashMutation } from 'relay';
 // import { mergeStashMutation } from 'relay';
 import { compose, withState, mapProps, withHandlers } from 'recompose';
 // import { redirect } from 'redux/utils';
-import styled from 'styled-components';
-import FaCaretUp from 'react-icons/lib/fa/caret-up';
-import FaCaretDown from 'react-icons/lib/fa/caret-down';
 import { LinkUserName, LinkProject } from 'components/shared/Links';
 // import { getProjectPath } from 'utils/path';
-
-const MainRow = styled(Row)`
-  margin-bottom: 20px;
-  border: 0px;
-`
-
-const StashLabel = styled.span`
-  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
-  font-weight: 600;
-  background-color: #eaf5ff;
-  color: #0366d6;
-  border-radius: 3px;
-  font-size: 13px;
-  padding: 4px 8px;
-  margin-right: 10px;
-`
-
-const H2Head = styled.h2`
-  margin-top: 0px;
-`
-
-const SpanStashNum = styled.span`
-  margin-right: 20px;
-`
-
-const IconUp = styled(FaCaretUp)`
-  font-size: 48px;
-  cursor: pointer;
-  margin-top: -10px;
-  color: ${props => props['data-isVotedUp'] ? '#2cbe4e' : '#aaa'};
-`
-
-const IconDown = styled(FaCaretDown)`
-  font-size: 48px;
-  cursor: pointer;
-  color: ${props => props['data-isVotedDown'] ? '#cb2431' : '#aaa'};
-`
-
-const NumberDiv = styled.div`
-  font-size: 16px;
-  font-weight: 700;
-  color: #777;
-`
-
-const IconCol = styled(Col)`
-  padding-left: 15px;
-  padding-right: 0px;
-  text-align: center;
-`
-
-const RowVoteStats = styled(Row)`
-  margin-top: 10px;
-`
-
-const SpanAcceptPoint = styled.span`
-  font-weight: 700;
-  color: #2cbe4e;
-`
-
-const SpanRejectPoint = styled.span`
-  font-weight: 700;
-  color: #cb2431;
-`
-
-const ColStatus = styled(Col)`
-  padding-left: 30px;
-`
-
-const AcceptModal = styled(Modal)`
-  position: fixed;
-  top: 50% !important;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 250px;
-  .modal-dialog {
-    width: 250px;
-  }
-  .modal-body {
-    width: 250px;
-  }
-`
-
-const MediaBody = styled(Media.Body)`
-  padding-left: 13px;
-`
-
-const MediaLeft = styled(Media.Left)`
-  padding-top: 5px;
-`
-
-const AcceptHead = styled.h4`
-  margin-top: 5px;
-`
+import {
+  MainRow, AcceptModal, MediaLeft, MediaBody, AcceptHead,
+  IconCol, IconUp, NumberDiv, IconDown, ColStatus, H2Head,
+  SpanStashNum, StashLabel, RowVoteStats, SpanAcceptPoint, SpanRejectPoint,
+} from './styles';
 
 const StashHead = ({
   user, stashNum, totalCommit, onVote,

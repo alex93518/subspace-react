@@ -1,29 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Row, Col, Panel } from 'react-bootstrap';
-import styled from 'styled-components';
+import { Row, Col } from 'react-bootstrap';
 import { compose, branch, renderNothing } from 'recompose';
 import StackexchangeRepBadge from './StackexchangeRepBadge';
 import StackexchangeInfo from './StackexchangeInfo';
-
-const UserPanel = styled(Panel)`
-  box-shadow: inset 0 90px 0 #e7e8ea;
-  text-align: center;
-`
-
-const RowInfoPanel = styled(Row)`
-  margin-top: 10px;
-`
-
-const HeadUserName = styled.h2`
-  margin-top: 0px;
-`
-
-const BioDiv = styled.div`
-  font-size: 15px;
-  line-height: 20px;
-  padding-right: 20px;
-`
+import { UserPanel, RowInfoPanel, HeadUserName, BioDiv } from './styles';
 
 const StackexchangeProfile = ({ stackexchangeData }) => (
   <Row>

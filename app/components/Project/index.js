@@ -4,7 +4,6 @@ import { QueryRenderer, graphql } from 'react-relay';
 import { env } from 'relay/RelayEnvironment';
 import LoadingIndicator from 'components/shared/LoadingIndicator';
 import { compose, mapProps } from 'recompose';
-import styled from 'styled-components'
 import { withRouter } from 'react-router-dom';
 import { Grid } from 'react-bootstrap';
 import GoCode from 'react-icons/lib/go/code'
@@ -14,10 +13,7 @@ import NavTabs from 'components/shared/NavTabs';
 import RepoLink from 'components/shared/repo/TitleLink'
 import { matchRoute } from 'utils/routeMatcher';
 import Repository from './Repository'
-
-const NavLabel = styled.span`
-  color: #777;
-`
+import { NavLabel, TopContainer, RepoTitle, MainContainer } from './styles'
 
 const getNavConfig = (owner, name) => [
   {
@@ -33,18 +29,6 @@ const getNavConfig = (owner, name) => [
     label: (<NavLabel><GoQuestion /> Q&amp;A</NavLabel>),
   },
 ]
-
-const RepoTitle = styled.h3`
-  margin-bottom: 25px;
-`
-const TopContainer = styled.div`
-  background-color: #fafbfc;
-  border-bottom: 1px solid #dddddd;
-`
-const MainContainer = styled.div`
-  background-color: #fff;
-  padding-bottom: 30px;
-`
 
 const getConfigActiveKey = (owner, name) => {
   const config = getNavConfig(owner, name)

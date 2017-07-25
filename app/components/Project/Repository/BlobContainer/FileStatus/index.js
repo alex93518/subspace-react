@@ -2,52 +2,16 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { graphql } from 'react-relay';
 import withRelayFragment from 'relay/withRelayFragment';
-import styled from 'styled-components';
 import { compose, mapProps } from 'recompose';
-import { Table, ButtonGroup } from 'react-bootstrap';
+import { ButtonGroup } from 'react-bootstrap';
 import { lineCount, bytesToSize } from 'utils/string';
 import { ButtonGit } from 'components/shared/ButtonGit';
-import { LinkCommitsFile } from 'components/shared/Links';
 import { withRouter } from 'react-router-dom';
 import { matchRoute } from 'utils/routeMatcher';
-
-const FileStatusTable = styled(Table)`
-  margin-top: 15px;
-  margin-bottom: -1px;
-  background-color: #fafbfc;
-  border:1px solid #ccc;
-  border-bottom: 0px;
-  border-radius:3px;
-  border-bottom-right-radius:0;
-  border-bottom-left-radius:0;
-`
-
-const FileInfoDivider = styled.span`
-  display: inline-block;
-  width: 1px;
-  height: 18px;
-  margin-right: 10px;
-  margin-left: 10px;
-  background-color: #ddd;
-  vertical-align: middle;
-`
-
-const TdFileAction = styled.td`
-  vertical-align: middle !important;
-  text-align: right;
-`
-
-const TdFileInfo = styled.td`
-  vertical-align: middle !important;
-  padding-left: 10px;
-`
-
-const LinkHistoryFile = styled(LinkCommitsFile)`
-  color: #777;
-  &:focus,:hover {
-    color: #999 !important;
-  }
-`
+import {
+  FileStatusTable, TdFileInfo, FileInfoDivider,
+  TdFileAction, LinkHistoryFile,
+} from './styles';
 
 const FileStatus = ({ text, byteSize, splat }) => (
   <FileStatusTable>

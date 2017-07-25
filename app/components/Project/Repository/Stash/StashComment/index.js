@@ -5,25 +5,10 @@ import withRelayFragment from 'relay/withRelayFragment';
 import { compose, withState, withHandlers } from 'recompose';
 import { Button } from 'react-bootstrap';
 import Editor from 'react-quill';
-import styled from 'styled-components';
 import { Element, scroller } from 'react-scroll';
-import Separator from 'components/shared/Separator';
 import { addStashCommentMutation } from 'relay';
 import CommentList from './CommentList';
-
-const MainDiv = styled.div`
-  margin-top: 35px;
-`
-
-const HeadSeparator = styled(Separator)`
-  background: #ddd;
-  margin-top: 0px;
-`
-
-const DivAddComment = styled.div`
-  text-align: right;
-  margin-top: 10px;
-`
+import { MainDiv, HeadSeparator, DivAddComment } from './styles';
 
 const StashComment = ({
   stashComment, stashComment: { totalComments: { totalAllCount } },

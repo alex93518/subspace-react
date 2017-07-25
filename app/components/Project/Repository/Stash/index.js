@@ -1,20 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { createFragmentContainer, graphql } from 'react-relay';
-import { Row, Col, Panel } from 'react-bootstrap';
-import styled from 'styled-components';
+import { Row, Col } from 'react-bootstrap';
 import MainGrid from 'components/shared/MainGrid';
 import StashHead from './Head';
 import StashCommitStatus from './CommitStatus';
 import StashComment from './StashComment';
 import UserVoteList from './UserVoteList';
-
-const PanelHead = styled(Panel)`
-  padding: 15px;
-  background: #f9f9f9;
-  color: #777;
-  border-color: #ddd;
-`
+import { PanelHead } from './styles';
 
 const Stash = ({ stash }) => (
   <MainGrid>

@@ -2,14 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { graphql } from 'react-relay';
 import withRelayFragment from 'relay/withRelayFragment';
-import styled from 'styled-components';
 import { compose, mapProps } from 'recompose';
 import { parseDiff, totalHunk } from 'utils/diff';
 import DiffHunks from './DiffHunks';
-
-const Strong = styled.span`
-  font-weight: 600;
-`
+import { Strong } from './styles';
 
 const CommitDiff = ({ diff, additions, deletions }) => (
   <div>

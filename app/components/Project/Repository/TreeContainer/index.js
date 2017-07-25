@@ -1,16 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { createFragmentContainer, graphql } from 'react-relay';
-import { Row, Col } from 'react-bootstrap';
-import styled from 'styled-components';
+import { Col } from 'react-bootstrap';
 import Tree from 'components/shared/Project/Repository/Tree';
 import BranchSelect from 'components/shared/Project/Repository/BranchSelect';
 import LastCommit from 'components/shared/Project/Repository/LastCommit';
 import MainGrid from 'components/shared/MainGrid';
-
-const RowSty = styled(Row)`
-  padding-top: 15px;
-`
+import { RowSty } from './styles';
 
 const TreeContainer = ({
   treeContainer,

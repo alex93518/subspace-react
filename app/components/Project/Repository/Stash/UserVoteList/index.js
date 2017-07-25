@@ -1,30 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { createFragmentContainer, graphql } from 'react-relay';
-import styled from 'styled-components';
-import { LinkUserName, LinkUserPhoto } from 'components/shared/Links';
+import { LinkUserName } from 'components/shared/Links';
 import Separator from 'components/shared/Separator';
-
-const DivTitle = styled.div`
-  color: #586069;
-  line-height: 16px;
-  font-weight: 600;
-  padding: 5px 0;
-  margin-bottom: 10px;
-`
-
-const UserPhoto = styled(LinkUserPhoto)`
-  margin-right: 7px;
-`
-
-const SpanPoint = styled.span`
-  margin-left: 5px;
-  color: ${props => props['data-votePoint'] > 0 ? '#2cbe4e' : '#cb2431'};
-`
-
-const DivUser = styled.div`
-  margin: 10px 0;
-`
+import { DivTitle, DivUser, UserPhoto, SpanPoint } from './styles';
 
 const UserVoteList = ({ userVoteList, title }) => (
   <div>
