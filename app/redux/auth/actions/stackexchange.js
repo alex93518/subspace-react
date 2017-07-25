@@ -23,7 +23,7 @@ export function* signInWithStackexchangeFn({
         ...stackexchangeConfig,
         channelUrl: process.env.CLIENT_HOST ?
           `${process.env.CLIENT_HOST}/blank.html` :
-          'http://subspace-react.nqfviyftp5.us-east-1.elasticbeanstalk.com/blank.html',
+          'http://subspace64.net/blank.html',
         complete: resolve,
       })
     })
@@ -112,7 +112,7 @@ export function* addStackexchangeProviderFn({
         ...stackexchangeConfig,
         channelUrl: process.env.CLIENT_HOST ?
           `${process.env.CLIENT_HOST}/blank.html` :
-          'http://subspace-react.nqfviyftp5.us-east-1.elasticbeanstalk.com/blank.html',
+          'http://subspace64.net/blank.html',
         complete: resolve,
       })
     })

@@ -14,7 +14,7 @@ const getCustomNetworkLayer = (token, provider) => new RelayNetworkLayer(
     urlMiddleware({
       url: () => (
         process.env.GRAPHQL_ENDPOINT ||
-        'http://subspace-api.nqfviyftp5.us-east-1.elasticbeanstalk.com/graphql'
+        'http://api.subspace64.net/graphql'
       ),
     }),
     // loggerMiddleware(),

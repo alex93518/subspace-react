@@ -22,7 +22,7 @@
     "build": "./node_modules/.bin/webpack --config internals/webpack/webpack.prod.babel.js --color -p --progress",
     "build:clean": "npm run test:clean && rimraf ./build",
     "build:dll": "node ./internals/scripts/dependencies.js",
-    "start:dev": "cross-env NODE_ENV=development GRAPHQL_ENDPOINT=http://localhost:9000/graphql node server",
+    "start:dev": "cross-env NODE_ENV=development GRAPHQL_ENDPOINT=http://api.subspace64.net/graphql node server",
     "start:docker": "node server",
     "start": "npm run start:prod",
     "start:prod": "cross-env NODE_ENV=production node server",
