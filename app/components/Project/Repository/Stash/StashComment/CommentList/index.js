@@ -74,7 +74,6 @@ const CommentList = ({
       easing="ease"
       staggerDurationBy={15}
       staggerDelayBy={20}
-      appearAnimation={'accordionVertical'}
       enterAnimation={'accordionVertical'}
       leaveAnimation={'accordionVertical'}
     >

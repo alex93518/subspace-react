@@ -23,7 +23,7 @@ const TreeContent = ({
         nodeLabel={(
           <Comment
             comment={node}
-            isShowReply={lvlDeep < 4}
+            isShowReply={lvlDeep < 3}
             stashGlobalId={stashGlobalId}
             parentId={parentId}
             showContent={showContent}
@@ -38,7 +38,7 @@ const TreeContent = ({
           comment={node}
           stashGlobalId={stashGlobalId}
           parentId={parentId}
-          isShowReply={lvlDeep < 4}
+          isShowReply={lvlDeep < 3}
           showContent={showContent}
         />
       </CommentBox>
@@ -71,13 +71,12 @@ const CommentTree = ({
       easing="ease"
       staggerDurationBy={15}
       staggerDelayBy={20}
-      appearAnimation={'accordionVertical'}
       enterAnimation={'accordionVertical'}
       leaveAnimation={'accordionVertical'}
     >
       {commentTree.comments.edges.map(edge2 => (
         <div key={`commentLvl2-${edge2.node.id}`}>
-          <div id={`stashComment-anchor-${edge2.node.id}`} />
+          <div id={`stashComment-anchor-${edge2.node.rawId}`} />
           <TreeContent
             parentId={edge2.node.rawId}
             node={edge2.node}
@@ -90,44 +89,19 @@ const CommentTree = ({
               easing="ease"
               staggerDurationBy={15}
               staggerDelayBy={20}
-              appearAnimation={'accordionVertical'}
               enterAnimation={'accordionVertical'}
               leaveAnimation={'accordionVertical'}
             >
               {edge2.node.comments.edges.map(edge3 => (
-                <div key={`commentLvl3-${edge3.node.id}`}>
-                  <div id={`stashComment-anchor-${edge3.node.id}`} />
+                <div key={`commentLvl3-${edge3.node.rawId}`}>
+                  <div id={`stashComment-anchor-${edge3.node.rawId}`} />
                   <TreeContent
                     parentId={edge3.node.rawId}
                     node={edge3.node}
                     lvlDeep={3}
                     showContent={showContent}
                     stashGlobalId={stashGlobalId}
-                  >
-                    <FlipMove
-                      duration={400}
-                      easing="ease"
-                      staggerDurationBy={15}
-                      staggerDelayBy={20}
-                      appearAnimation={'accordionVertical'}
-                      enterAnimation={'accordionVertical'}
-                      leaveAnimation={'accordionVertical'}
-                    >
-                      {edge3.node.comments.edges.map(edge4 => (
-                        <div key={`commentLvl4-${edge4.node.id}`}>
-                          <div id={`stashComment-anchor-${edge4.node.id}`} />
-                          <TreeContent
-                            parentId={edge4.node.rawId}
-                            node={edge4.node}
-                            lvlDeep={4}
-                            showContent={showContent}
-                            stashGlobalId={stashGlobalId}
-                          >
-                          </TreeContent>
-                        </div>
-                      ))}
-                    </FlipMove>
-                  </TreeContent>
+                  />
                 </div>
               ))}
             </FlipMove>

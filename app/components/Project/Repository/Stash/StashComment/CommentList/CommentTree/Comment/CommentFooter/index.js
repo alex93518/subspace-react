@@ -117,10 +117,11 @@ export default compose(
           content,
           stashId,
           parentId,
+          sort: 'popular',
           onCompleted: resp => {
             if (resp.addStashComment.clientMutationId) {
-              updateContent('')
               updateIsReply(false)
+              updateContent('')
               scroller.scrollTo(
                 `stashComment-anchor-${resp.addStashComment.clientMutationId}`
               )

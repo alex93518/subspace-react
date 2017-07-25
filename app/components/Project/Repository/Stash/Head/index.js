@@ -3,12 +3,11 @@ import PropTypes from 'prop-types';
 import { graphql } from 'react-relay';
 import withRelayFragment from 'relay/withRelayFragment';
 import { Col, Modal, Image, Media } from 'react-bootstrap';
-import { voteStashMutation } from 'relay';
-// import { mergeStashMutation } from 'relay';
+import { voteStashMutation, mergeStashMutation } from 'relay';
 import { compose, withState, mapProps, withHandlers } from 'recompose';
-// import { redirect } from 'redux/utils';
+import { redirect } from 'redux/utils';
 import { LinkUserName, LinkProject } from 'components/shared/Links';
-// import { getProjectPath } from 'utils/path';
+import { getProjectPath } from 'utils/path';
 import {
   MainRow, AcceptModal, MediaLeft, MediaBody, AcceptHead,
   IconCol, IconUp, NumberDiv, IconDown, ColStatus, H2Head,
@@ -214,43 +213,19 @@ export default compose(
           const rejectVotePoints = stash.rejectVotes.totalVotePoints;
           const totalPoints = acceptVotePoints + rejectVotePoints;
           if (totalPoints >= stash.voteTreshold) {
-            console.log(totalPoints);
+            props.updateIsMerging(true);
+            mergeStashMutation({
+              id: props.repository.id,
+              stashName: props.name,
+              repositoryId: props.repository.rawId,
+              onCompleted: () => {
+                props.updateIsMerging(false);
+                redirect(`${getProjectPath(props.variables)}/master`);
+              },
+            })
           }
         },
       });
-      // CurrentRelay.Store.commitUpdate(
-      //   new VoteStashMutation({
-      //     id: props.stash.id,
-      //     isVoteUp,
-      //     stashId: props.stash.rawId || null,
-      //   }),
-      //   {
-      //     onSuccess: (resp) => {
-      //       const { voteStash: { stash } } = resp;
-      //       const acceptVotePoints = stash.acceptVotes.totalVotePoints;
-      //       const rejectVotePoints = stash.rejectVotes.totalVotePoints;
-      //       const totalPoints = acceptVotePoints + rejectVotePoints;
-      //       if (totalPoints >= stash.voteTreshold) {
-      //         props.updateIsMerging(true);
-      //         CurrentRelay.Store.commitUpdate(
-      //           new MergeStashMutation({
-      //             id: props.repository.id,
-      //             stashName: props.name,
-      //             repositoryId: props.repository.rawId,
-      //           }),
-      //           {
-      //             onSuccess: () => {
-      //               props.updateIsMerging(false);
-      //               redirect(`${getProjectPath(props.variables)}/master`);
-      //             },
-      //             onFailure: (transaction) => console.log(transaction.getError()),
-      //           }
-      //         );
-      //       }
-      //     },
-      //     onFailure: (transaction) => console.log(transaction.getError()),
-      //   }
-      // );
     },
   })
 )(StashHead)

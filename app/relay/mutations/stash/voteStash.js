@@ -2,7 +2,7 @@ import { commitMutation, graphql } from 'react-relay';
 import { env } from 'relay/RelayEnvironment';
 
 const mutation = graphql`
-  mutation voteStashMutation($input: voteStashInput!) {
+  mutation voteStashMutation($input: voteStashInput! $sort: String!) {
     voteStash(input: $input) {
       clientMutationId
       stash {
@@ -15,6 +15,7 @@ const mutation = graphql`
         rejectVotes {
           totalVotePoints
         }
+        ...StashComment_stashComment
       }
     }
   }
@@ -26,7 +27,7 @@ export const voteStashMutation = ({
   env,
   {
     mutation,
-    variables: { input: { isVoteUp, stashId } },
+    variables: { input: { isVoteUp, stashId }, sort: 'popular' },
     onCompleted: rest.onCompleted || (() => null),
     onError: rest.onError || (err => console.error(err)),
   },

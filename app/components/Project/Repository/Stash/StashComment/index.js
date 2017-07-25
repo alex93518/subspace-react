@@ -67,6 +67,7 @@ export default compose(
           content,
           stashId: rawId || null,
           parentId: null,
+          sort: 'popular',
           onCompleted: resp => {
             if (resp.addStashComment.clientMutationId) {
               updateContent('');

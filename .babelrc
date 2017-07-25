@@ -3,7 +3,8 @@
     [
       "relay", { "schema": "./schema.json" }
     ],
-    "styled-components"
+    "styled-components",
+    "transform-es2015-classes"
   ],
   "presets": [
     [
