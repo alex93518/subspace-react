@@ -7,6 +7,7 @@ import createSagaMiddleware from 'redux-saga'
 import { dispatchRef } from 'redux/utils'
 import createReducer from 'redux/reducer'
 import rootSaga from 'redux/sagas'
+import { autoRehydrate } from 'redux-persist-immutable'
 
 export const history = createHistory()
 const sagaMiddleware = createSagaMiddleware()
@@ -40,6 +41,7 @@ const store = createStore(
   fromJS(initialState),
   composeEnhancers(
     applyMiddleware(...middlewares),
+    autoRehydrate()
   )
 )
 

@@ -1,5 +1,6 @@
 import { fromJS } from 'immutable';
 import { createReducer } from 'redux-act';
+import { authSignout } from 'relay/RelayEnvironment';
 import { authActions } from './actions';
 
 const initAuthState = fromJS({
@@ -30,7 +31,7 @@ export default createReducer({
   [authActions.signIn.failure]: logoutCurrentUser,
   [authActions.signInWithEmailPassword.failure]: logoutCurrentUser,
   [authActions.signInWithStackexchangeFn.failure]: logoutCurrentUser,
-  [authActions.signOut.success]: logoutCurrentUser,
+  [authSignout.signOut.success]: logoutCurrentUser,
 
   [authActions.userNameNotAvail]: (state, payload) => state
     .set('showLoginStep', payload),

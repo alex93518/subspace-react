@@ -16,7 +16,10 @@ export const firebaseApp = firebase;
 export const firebaseAuth = firebase.auth();
 
 export const getToken = async () => {
-  const auth = await firebaseAuth.getToken()
-  console.log('Resolved new token:', auth) // eslint-disable-line
-  return auth ? auth.accessToken : undefined
+  if (firebaseAuth.currentUser) {
+    const auth = await firebaseAuth.currentUser.getIdToken()
+    return auth || undefined
+  }
+
+  return undefined
 }

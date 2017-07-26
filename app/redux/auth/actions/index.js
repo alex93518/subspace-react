@@ -1,8 +1,7 @@
 import { call, take } from 'redux-saga/effects';
-import { firebaseApp, firebaseAuth } from 'utils/firebase';
+import { firebaseApp } from 'utils/firebase';
 import { actionsGenerator, redirect } from 'redux/utils';
 import { createUserMutation } from 'relay';
-import { resetEnv } from 'relay/RelayEnvironment';
 import {
   createUserWithEmailPassword, signIn, signInWithEmailPassword,
   addFirebaseProvider,
@@ -26,17 +25,10 @@ export function* getNameAndCreateUser(user) {
   return payload.userName;
 }
 
-function* signOut() {
-  yield call(redirect, '/login')
-  yield call([firebaseAuth, firebaseAuth.signOut])
-  yield call(resetEnv);
-}
-
 export const authActions = actionsGenerator({
   createUserWithEmailPassword,
   signIn,
   signInWithEmailPassword,
-  signOut,
   addUsername: null,
   userNameNotAvail: null,
   signInWithStackexchangeFn,
