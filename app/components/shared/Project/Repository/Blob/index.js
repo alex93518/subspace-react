@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { graphql } from 'react-relay';
 import withRelayFragment from 'relay/withRelayFragment';
-import SyntaxHighlighter from 'react-syntax-highlighter/dist/light';
+import SyntaxHighlighter from 'react-syntax-highlighter';
 import xcode from 'react-syntax-highlighter/dist/styles/xcode';
 import { compose, mapProps, branch, renderComponent } from 'recompose';
 import path from 'path';
