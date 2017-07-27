@@ -1,17 +1,8 @@
 import React from 'react';
 import { Switch, Route } from 'react-router-dom';
 import { ConnectedRouter } from 'react-router-redux';
-import HomePage from 'components/HomePage';
-import About from 'components/About';
-import HowItWorks from 'components/HowItWorks';
-import Projects from 'components/Projects';
-import Project from 'components/Project';
-import Login from 'components/Login';
-import UserProfile from 'components/UserProfile';
-import CreateProject from 'components/CreateProject';
-import Header from 'components/layout/Header';
-import Footer from 'components/layout/Footer';
 import { matchName } from 'utils/routeMatcher';
+import asyncComponent from 'utils/asyncComponent';
 import styled from 'styled-components';
 import { history } from './store';
 
@@ -21,6 +12,17 @@ const FlexContainer = styled.div`
   height: 100%;
   min-height: 100%;
 `
+
+const HomePage = asyncComponent(() => import('components/HomePage'));
+const About = asyncComponent(() => import('components/About'));
+const HowItWorks = asyncComponent(() => import('components/HowItWorks'));
+const Projects = asyncComponent(() => import('components/Projects'));
+const Project = asyncComponent(() => import('components/Project'));
+const Login = asyncComponent(() => import('components/Login'));
+const UserProfile = asyncComponent(() => import('components/UserProfile'));
+const CreateProject = asyncComponent(() => import('components/CreateProject'));
+const Header = asyncComponent(() => import('components/layout/Header'));
+const Footer = asyncComponent(() => import('components/layout/Footer'));
 
 const Router = () =>
   (

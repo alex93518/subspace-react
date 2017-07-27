@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { createFragmentContainer, graphql } from 'react-relay';
+import asyncComponent from 'utils/asyncComponent';
 import { Switch, Route } from 'react-router-dom';
 import { codeRoute } from './routes';
 
@@ -8,7 +9,7 @@ const Repository = ({ repository }) => (
   <Switch>
     {codeRoute.map((route, index) => {
       // eslint-disable-next-line
-      const Component = require(`./${route.name}/index`).default;
+      const Component = asyncComponent(() => import(`./${route.name}/index`));
       const variables = {
         [route.name.charAt(0).toLowerCase() + route.name.slice(1)]: repository,
       };

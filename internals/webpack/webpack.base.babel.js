@@ -1,6 +1,7 @@
 const path = require('path');
 const webpack = require('webpack');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 // Remove this line once the following warning goes away (it was meant for webpack loader authors not users):
 // 'DeprecationWarning: loaderUtils.parseQuery() received a non-string value which can be problematic,
@@ -91,10 +92,24 @@ module.exports = options => ({
     new webpack.DefinePlugin({
       'process.env': {
         NODE_ENV: JSON.stringify(process.env.NODE_ENV),
+        GRAPHQL_ENDPOINT: JSON.stringify(process.env.GRAPHQL_ENDPOINT),
+        __DEV__: process.env.NODE_ENV === 'development',
       },
     }),
     new webpack.NamedModulesPlugin(),
     new CopyWebpackPlugin([{ from: 'static' }]),
+    new BundleAnalyzerPlugin({
+      analyzerMode: 'disabled',
+      analyzerHost: '127.0.0.1',
+      analyzerPort: 8888,
+      reportFilename: 'report.html',
+      defaultSizes: 'parsed',
+      openAnalyzer: true,
+      generateStatsFile: false,
+      statsFilename: 'stats.json',
+      statsOptions: null,
+      logLevel: 'info',
+    }),
   ]),
   resolve: {
     modules: ['app', 'node_modules'],
