@@ -17,6 +17,7 @@ export function* createUserWithEmailPassword({ payload }) {
 
   const provider = 'firebase-email';
   const userPayload = fireBaseUserToPayload(user, provider);
+  yield call(resetEnv, 'firebase', userPayload.token);
 
   yield call(createUserMutation, {
     userName,
@@ -26,8 +27,7 @@ export function* createUserWithEmailPassword({ payload }) {
     provider,
   });
 
-  yield call(resetEnv, 'firebase', userPayload.token);
-  return { user: userPayload };
+  return { user: userPayload, userName };
 }
 
 export function* signIn({ payload: { authProvider, getNameAndCreateUser } }) {

@@ -5,6 +5,7 @@ import { call } from 'redux-saga/effects';
 
 // Move signOut outside authActions to prevent circular dependency
 function* signOut() {
+  yield call(redirect, '/login')
   yield call([firebaseAuth, firebaseAuth.signOut])
   yield call(resetEnv, null, null)
 }
@@ -54,7 +55,7 @@ function baseFetchQuery(
   }).then(
     response => {
       if (response.status === 401) {
-        alert('Unauthorized. Login first. TODO: Change to modal');
+        alert('Unauthorized access. Login first. TODO: Change this alert to modal');
         redirect('/login');
       }
 
