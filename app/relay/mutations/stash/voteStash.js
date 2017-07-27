@@ -15,6 +15,12 @@ const mutation = graphql`
         rejectVotes {
           totalVotePoints
         }
+        stashAcc: acceptVotes (first: 9999) {
+          ...UserVoteList_userVoteList
+        }
+        stashReject: rejectVotes (first: 9999) {
+          ...UserVoteList_userVoteList
+        }        
         ...StashComment_stashComment
       }
     }
