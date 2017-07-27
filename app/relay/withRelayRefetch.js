@@ -1,5 +1,5 @@
 import { createRefetchContainer } from 'react-relay';
 
-export default refetchOptions => Component => (
-  createRefetchContainer(Component, refetchOptions)
-);
+const withRelayRefetch = (refetchOptions, refetchQuery) => Component => createRefetchContainer(Component, refetchOptions, refetchQuery)
+
+export default withRelayRefetch

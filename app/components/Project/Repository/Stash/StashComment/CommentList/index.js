@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { graphql } from 'react-relay';
-import withRelayFragment from 'relay/withRelayFragment';
+import withRelayRefetch from 'relay/withRelayRefetch';
 import { Navbar, Nav, MenuItem } from 'react-bootstrap';
 import { compose, withState, withHandlers, mapProps } from 'recompose';
 import { Element } from 'react-scroll';
@@ -104,7 +104,7 @@ CommentList.propTypes = {
 }
 
 export default compose(
-  withRelayFragment({
+  withRelayRefetch({
     commentList: graphql`
       fragment CommentList_commentList on Stash {
         id
@@ -121,21 +121,38 @@ export default compose(
         }
       }
     `,
-  }),
+  },
+  graphql`
+    query CommentListQuery(
+      $userName: String!, $projectName: String!, $sort: String!,
+      $stashNum: String!, $isStash: Boolean!
+    ) {
+      viewer {
+        repository(owner: $userName, name: $projectName) {
+          refStash: ref(refName: $stashNum) @include(if: $isStash)  {
+            stash {
+              ...CommentList_commentList
+            }
+          }
+        }
+      }
+    }
+  `
+  ),
   mapProps(props => ({
     ...props,
     SORT: [
-      { idx: 0, key: 'popular', text: 'Most popular' },
-      { idx: 1, key: 'vote', text: 'Most vote points' },
-      { idx: 2, key: 'newest', text: 'Newest first' },
-      { idx: 3, key: 'oldest', text: 'Oldest first' },
+        { idx: 0, key: 'popular', text: 'Most popular' },
+        { idx: 1, key: 'vote', text: 'Most vote points' },
+        { idx: 2, key: 'newest', text: 'Newest first' },
+        { idx: 3, key: 'oldest', text: 'Oldest first' },
     ],
     SHOWCONTENT: [
-      { idx: 0, key: 'all', text: 'All' },
-      { idx: 1, key: 'upVoters', text: 'Upvoters' },
-      { idx: 2, key: 'downVoters', text: 'Downvoters' },
-      { idx: 3, key: 'nonVoters', text: 'Nonvoters' },
-      { idx: 4, key: 'none', text: 'None' },
+        { idx: 0, key: 'all', text: 'All' },
+        { idx: 1, key: 'upVoters', text: 'Upvoters' },
+        { idx: 2, key: 'downVoters', text: 'Downvoters' },
+        { idx: 3, key: 'nonVoters', text: 'Nonvoters' },
+        { idx: 4, key: 'none', text: 'None' },
     ],
   })),
   withState('showContent', 'updateShowContent', props => props.SHOWCONTENT[0]),
@@ -146,9 +163,10 @@ export default compose(
     },
     handleSelectSort: props => selectedKey => {
       props.updateSortBy(props.SORT[selectedKey]);
-      props.relay.setVariables({
+      const refetchVariables = () => ({
         sort: props.SORT[selectedKey].key,
       });
+      props.relay.refetch(refetchVariables, null);
     },
   }),
 )(CommentList)
