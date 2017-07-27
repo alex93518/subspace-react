@@ -16,3 +16,7 @@ export const MainContainer = styled.div`
   padding-bottom: 30px;
 `
 
+export const HeightDiv = styled.div`
+  height: ${props => props.vars.isStash ? 'auto' : '100%'};
+  background-color: #fff;
+`

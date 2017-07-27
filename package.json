@@ -144,6 +144,7 @@
     "react-router-dom": "4.1.1",
     "react-router-redux": "5.0.0-alpha.6",
     "react-scroll": "^1.5.4",
+    "react-spinkit": "^3.0.0",
     "react-syntax-highlighter": "^5.6.2",
     "react-treeview": "^0.4.7",
     "recompose": "^0.24.0",

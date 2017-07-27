@@ -13,7 +13,10 @@ import NavTabs from 'components/shared/NavTabs';
 import RepoLink from 'components/shared/repo/TitleLink'
 import { matchRoute } from 'utils/routeMatcher';
 import Repository from './Repository'
-import { NavLabel, TopContainer, RepoTitle, MainContainer } from './styles'
+import {
+  NavLabel, TopContainer, RepoTitle, MainContainer,
+  HeightDiv,
+} from './styles'
 
 const getNavConfig = (owner, name) => [
   {
@@ -58,7 +61,7 @@ const Project = ({ vars }) => (
           },
         } = props;
         return (
-          <div>
+          <HeightDiv vars={vars}>
             <TopContainer>
               <Grid>
                 <RepoTitle>
@@ -76,7 +79,7 @@ const Project = ({ vars }) => (
             <MainContainer>
               <Repository repository={repository} />
             </MainContainer>
-          </div>
+          </HeightDiv>
         );
       }
       return <LoadingIndicator />;

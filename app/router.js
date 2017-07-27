@@ -12,12 +12,20 @@ import CreateProject from 'components/CreateProject';
 import Header from 'components/layout/Header';
 import Footer from 'components/layout/Footer';
 import { matchName } from 'utils/routeMatcher';
+import styled from 'styled-components';
 import { history } from './store';
+
+const FlexContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 100%;
+`
 
 const Router = () =>
   (
     <ConnectedRouter history={history}>
-      <div>
+      <FlexContainer>
         <Header />
         <Switch>
           <Route exact path={'/'} render={() => <HomePage />} />
@@ -35,7 +43,7 @@ const Router = () =>
           />
         </Switch>
         <Footer />
-      </div>
+      </FlexContainer>
     </ConnectedRouter>
   );
 
