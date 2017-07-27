@@ -54,6 +54,6 @@ export default compose(
   mapProps(({
     readme: { treeReadme },
   }) => ({
-    entry: treeReadme.entries[0],
+    entry: treeReadme[0],
   })),
 )(Readme)
