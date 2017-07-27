@@ -6,6 +6,7 @@ const mutation = graphql`
     voteStash(input: $input) {
       clientMutationId
       stash {
+        voteTreshold
         votes (first: 9999) {
           totalVotePoints
         }

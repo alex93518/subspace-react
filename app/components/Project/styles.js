@@ -17,6 +17,7 @@ export const MainContainer = styled.div`
 `
 
 export const HeightDiv = styled.div`
-  height: ${props => props.vars.isStash ? 'auto' : '100%'};
+  height: auto;
+  flex: 1;
   background-color: #fff;
 `

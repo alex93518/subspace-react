@@ -61,7 +61,7 @@ const Project = ({ vars }) => (
           },
         } = props;
         return (
-          <HeightDiv vars={vars}>
+          <HeightDiv>
             <TopContainer>
               <Grid>
                 <RepoTitle>

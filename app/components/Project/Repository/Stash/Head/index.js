@@ -5,8 +5,10 @@ import withRelayFragment from 'relay/withRelayFragment';
 import { Col, Modal, Image, Media } from 'react-bootstrap';
 import { voteStashMutation, mergeStashMutation } from 'relay';
 import { compose, withState, mapProps, withHandlers } from 'recompose';
+import { withRouter } from 'react-router';
 import { redirect } from 'redux/utils';
 import { LinkUserName, LinkProject } from 'components/shared/Links';
+import { matchRoute } from 'utils/routeMatcher';
 import { getProjectPath } from 'utils/path';
 import {
   MainRow, AcceptModal, MediaLeft, MediaBody, AcceptHead,
@@ -128,6 +130,7 @@ export default compose(
       }
     `,
   }),
+  withRouter,
   mapProps(({
     repository,
     stashHead: {
@@ -147,6 +150,7 @@ export default compose(
       },
       ...rest
     },
+    location: { pathname },
   }) => ({
     totalVotePoints,
     totalCommit: totalCount,
@@ -157,6 +161,7 @@ export default compose(
     acceptVotes,
     rejectVotes,
     repository,
+    variables: matchRoute(pathname).params,
     ...rest,
   })),
   withState(
@@ -220,7 +225,7 @@ export default compose(
               repositoryId: props.repository.rawId,
               onCompleted: () => {
                 props.updateIsMerging(false);
-                redirect(`${getProjectPath(props.variables)}/master`);
+                redirect(`${getProjectPath(props.variables)}`);
               },
             })
           }
