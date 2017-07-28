@@ -1,37 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Relay from 'react-relay/classic';
-import styled from 'styled-components';
-import { Button, Glyphicon, OverlayTrigger, Popover } from 'react-bootstrap';
+import { createFragmentContainer, graphql } from 'react-relay';
+import { Glyphicon, OverlayTrigger } from 'react-bootstrap';
 import CopyClipboardButton from 'components/shared/CopyClipboardButton';
-
-const PopoverBox = styled(Popover)`
-  max-width: 375px;
-`
-
-const CloneButton = styled(Button)`
-  font-size: 12px;
-  color: #fff;
-  background-color: #28a745;
-  background-image: linear-gradient(-180deg, #34d058 0%, #28a745 90%);
-  1px solid rgba(27,31,35,0.2);
-  padding: 5px 10px;
-  margin-top: 5px;
-  border: 1px solid #28a745;
-`
-
-const InputUrl = styled.input`
-  background-color: #fff;
-  line-height: 20px;
-  padding: 3px 10px;
-  border: 1px solid #d1d5da;
-  width: 80%;
-`
-
-const CopyBox = styled.div`
-  margin-top: 10px;
-  margin-bottom: 10px;
-`
+import { PopoverBox, CopyBox, InputUrl, CloneButton } from './styles';
 
 const popoverBottom = url => (
   <PopoverBox id="popover-positioned-bottom" title="Clone with Http">
@@ -65,12 +37,10 @@ CloneUrlBox.propTypes = {
   cloneUrlBox: PropTypes.object.isRequired,
 }
 
-export default Relay.createContainer(CloneUrlBox, {
-  fragments: {
-    cloneUrlBox: () => Relay.QL`
-      fragment on Repository {
-        url
-      }
-    `,
-  },
+export default createFragmentContainer(CloneUrlBox, {
+  cloneUrlBox: graphql`
+    fragment CloneUrlBox_cloneUrlBox on Repository {
+      url @include(if: $isMainContainer)
+    }
+  `,
 })

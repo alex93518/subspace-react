@@ -1,11 +1,18 @@
-import CurrentRelay, { userProviderQuery, userNameQuery } from 'relay';
+import { graphql } from 'react-relay';
+import { network } from 'relay/RelayEnvironment';
 
-export const getUserName = userId => CurrentRelay.fetch({
-  query: userNameQuery(userId),
-})
-
-export const getUserProvider = (
-  providerId, provider, firebaseId
-) => CurrentRelay.fetch({
-  query: userProviderQuery(providerId, provider, firebaseId),
-})
+export const getUserName = userId => {
+  const query = graphql`
+    query userFetchQuery($userId: String!) {
+      viewer {
+        user(id: $userId) {
+          id
+          userName
+          fullName
+          photoUrl
+        }
+      }
+    }
+  `;
+  return network.fetch(query(), { userId });
+};

@@ -1,12 +1,18 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
+import { compose } from 'recompose';
+import { withRouter, Link } from 'react-router-dom';
 import * as links from 'utils/path';
 import path from 'path';
+import { matchRoute } from 'utils/routeMatcher';
 
-const LinkBase = ({ pathFunc, to, vars, children, ...props }) => (
+const LinkBase = ({
+  location: { pathname }, pathFunc, to, children, vars,
+  match, history, staticContext, // eslint-disable-line
+  ...props
+}) => (
   <Link
-    to={path.join(pathFunc(vars), to || '')}
+    to={path.join(pathFunc(matchRoute(pathname).params, vars), to || '')}
     {...props}
   >
     {children}
@@ -14,32 +20,41 @@ const LinkBase = ({ pathFunc, to, vars, children, ...props }) => (
 )
 
 LinkBase.propTypes = {
+  location: PropTypes.object.isRequired,
   pathFunc: PropTypes.func.isRequired,
   to: PropTypes.string,
-  vars: PropTypes.object.isRequired,
+  vars: PropTypes.object,
   children: PropTypes.node,
 };
 
+const LinkBaseWithRouter = compose(
+  withRouter
+)(LinkBase);
+
 export const LinkBranch = ({ ...props }) =>
-  <LinkBase pathFunc={links.getBranchPath} {...props} />
+  <LinkBaseWithRouter pathFunc={links.getBranchPath} {...props} />;
 
 export const LinkProject = ({ ...props }) =>
-  <LinkBase pathFunc={links.getProjectPath} {...props} />
+  <LinkBaseWithRouter pathFunc={links.getProjectPath} {...props} />;
 
-export const LinkTreeEntry = ({ ...props }) =>
-  <LinkBase pathFunc={links.getTreeEntryPath} {...props} />
+export const LinkTreeEntry = ({ type, ...props }) =>
+  <LinkBaseWithRouter pathFunc={links.getTreeEntryPath} vars={{ type }} {...props} />;
+
+LinkTreeEntry.propTypes = {
+  type: PropTypes.string,
+};
 
 export const LinkBlob = ({ ...props }) =>
-  <LinkBase pathFunc={links.getBlobPath} {...props} />
+  <LinkBaseWithRouter pathFunc={links.getBlobPath} {...props} />;
 
 export const LinkCommit = ({ ...props }) =>
-  <LinkBase pathFunc={links.getCommitPath} {...props} />
+  <LinkBaseWithRouter pathFunc={links.getCommitPath} {...props} />;
 
 export const LinkCommitsFile = ({ ...props }) =>
-  <LinkBase pathFunc={links.getCommitsFilePath} {...props} />
+  <LinkBaseWithRouter pathFunc={links.getCommitsFilePath} {...props} />;
 
 export const LinkStash = ({ ...props }) =>
-  <LinkBase pathFunc={links.getStashPath} {...props} />
+  <LinkBaseWithRouter pathFunc={links.getStashPath} {...props} />;
 
 export * from './LinkUserName';
 export * from './LinkUserPhoto';

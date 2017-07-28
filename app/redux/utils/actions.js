@@ -24,7 +24,7 @@ export const createRequestActions = (
   }
 
   return [SUCCESS, FAILURE].reduce((reqs, type) => {
-    reqs[type] = createRequestStatusAction(actionName, type)
+    reqs[type] = createRequestStatusAction(actionName, type) // eslint-disable-line
     return reqs
   }, res)
 }

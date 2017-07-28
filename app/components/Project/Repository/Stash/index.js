@@ -1,38 +1,31 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Relay from 'react-relay/classic';
-import { Row, Col, Panel } from 'react-bootstrap';
-import styled from 'styled-components';
+import { createFragmentContainer, graphql } from 'react-relay';
+import { Row, Col } from 'react-bootstrap';
 import MainGrid from 'components/shared/MainGrid';
 import StashHead from './Head';
 import StashCommitStatus from './CommitStatus';
 import StashComment from './StashComment';
 import UserVoteList from './UserVoteList';
+import { PanelHead } from './styles';
 
-const PanelHead = styled(Panel)`
-  padding: 15px;
-  background: #f9f9f9;
-  color: #777;
-  border-color: #ddd;
-`
-
-const Stash = ({ stash, relay: { variables } }) => (
+const Stash = ({ stash }) => (
   <MainGrid>
     <Row>
       <Col md={9}>
         <PanelHead>
-          <StashHead stashHead={stash.ref} {...variables} />
-          <StashCommitStatus stashCommitStatus={stash.ref.target} {...variables} />
+          <StashHead stashHead={stash.refStash} />
+          <StashCommitStatus stashCommitStatus={stash.refStash.target} />
         </PanelHead>
-        <StashComment stashComment={stash.ref.stash} {...variables} />
+        <StashComment stashComment={stash.refStash.stash} />
       </Col>
       <Col md={3}>
         <UserVoteList
-          userVoteList={stash.ref.stash.acceptVotes}
+          userVoteList={stash.refStash.stash.stashAcc}
           title={'Accepted by'}
         />
         <UserVoteList
-          userVoteList={stash.ref.stash.rejectVotes}
+          userVoteList={stash.refStash.stash.stashReject}
           title={'Rejected by'}
         />
       </Col>
@@ -42,41 +35,28 @@ const Stash = ({ stash, relay: { variables } }) => (
 
 Stash.propTypes = {
   stash: PropTypes.object.isRequired,
-  relay: PropTypes.object.isRequired,
 }
 
-export default Relay.createContainer(Stash, {
-  initialVariables: {
-    branchHead: 'master',
-    userName: null,
-    projectName: null,
-    stashNum: null,
-  },
-  prepareVariables: prevVariables => ({
-    ...prevVariables,
-    stashNum: `stash-${prevVariables.stashNum}`,
-  }),
-  fragments: {
-    stash: vars => Relay.QL`
-      fragment on Repository {
-        ref(refName: $stashNum) {
-          ${StashHead.getFragment('stashHead', vars)}
-          stash {
-            ${StashComment.getFragment('stashComment', vars)}
-            acceptVotes (first: 9999) {
-              ${UserVoteList.getFragment('userVoteList')}
-            }
-            rejectVotes (first: 9999) {
-              ${UserVoteList.getFragment('userVoteList')}
-            }
+export default createFragmentContainer(Stash, {
+  stash: graphql`
+    fragment Stash_stash on Repository {
+      refStash: ref(refName: $stashNum) @include(if: $isStash)  {
+        ...Head_stashHead
+        stash {
+          ...StashComment_stashComment
+          stashAcc: acceptVotes (first: 9999) {
+            ...UserVoteList_userVoteList
           }
-          target {
-            ... on Commit {
-              ${StashCommitStatus.getFragment('stashCommitStatus', vars)}
-            }
+          stashReject: rejectVotes (first: 9999) {
+            ...UserVoteList_userVoteList
+          }
+        }
+        target {
+          ... on Commit {
+            ...CommitStatus_stashCommitStatus
           }
         }
       }
-    `,
-  },
+    }
+  `,
 })

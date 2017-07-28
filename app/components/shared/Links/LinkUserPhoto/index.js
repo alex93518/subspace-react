@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Relay from 'react-relay/classic';
 import { Image } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
@@ -10,13 +9,12 @@ import { getUserProfilePath } from 'utils/path';
 const UserIcon = styled(FaUser)`
   font-size: 140px;
   color: rgba(3, 102, 214, 0.54);
-`
+`;
 
-const LinkUserPhotoBase = ({
+export const LinkUserPhoto = ({
   user: { userName, photoUrl },
-  relay, // eslint-disable-line no-unused-vars
   ...props
-}) => (
+}) => (userName && photoUrl &&
   <Link to={getUserProfilePath(userName)}>
     {
       photoUrl ?
@@ -31,20 +29,6 @@ const LinkUserPhotoBase = ({
   </Link>
 )
 
-LinkUserPhotoBase.propTypes = {
+LinkUserPhoto.propTypes = {
   user: PropTypes.object.isRequired,
-  relay: PropTypes.object.isRequired,
 }
-
-const LinkUserPhoto = Relay.createContainer(LinkUserPhotoBase, {
-  fragments: {
-    user: () => Relay.QL`
-      fragment on User {
-        userName
-        photoUrl
-      }
-    `,
-  },
-})
-
-export { LinkUserPhoto }

@@ -1,44 +1,38 @@
 {
   "plugins": [
-    ["relay", {"compat": true, "schema": "./schema.json"}],
-    ["styled-components", {
-      "ssr": true
-    }],
-    "syntax-dynamic-import",
-    // 'transform-es2015-spread',
-    // ['transform-object-rest-spread', {
-    //   useBuiltIns: true,
-    // }],
-    // ['transform-class-properties', {
-    //   spec: true,
-    // }],
-    // "react-relay",
+    [
+      "relay", { "schema": "./schema.json" }
+    ],
+    "styled-components"
   ],
   "presets": [
     [
-      "latest",
+      "env",
       {
-        "es2015": { "modules": false },
+        "es2015": {
+          "modules": false
+        }
       }
     ],
-    "stage-0",
     "react",
-    "./server/babelRelayPlugin",
+    "stage-0"
   ],
   "env": {
     "production": {
       "only": [
-        "app",
+        "app"
       ],
       "plugins": [
         "transform-react-remove-prop-types",
-      ],
+        "transform-react-constant-elements",
+        "transform-react-inline-elements"        
+      ]
     },
     "test": {
       "plugins": [
         "transform-es2015-modules-commonjs",
-        "dynamic-import-node",
-      ],
-    },
+        "dynamic-import-node"
+      ]
+    }
   }
 }

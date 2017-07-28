@@ -1,27 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Relay from 'react-relay/classic';
+import { createFragmentContainer, graphql } from 'react-relay';
 import R from 'ramda';
 import moment from 'moment';
-import styled from 'styled-components';
-import { Table } from 'react-bootstrap';
-import { Timeline, TimelineEvent } from 'react-event-timeline';
 import Commit from './Commit';
-
-const TimelineMain = styled(Timeline)`
-  padding: 0px !important;
-  margin: 30px 0px !important;
-  font-size: 100% !important;
-`
-
-const TimelineCommits = styled(TimelineEvent)`
-  padding: 0px;
-`
-
-const TableWhite = styled(Table)`
-  border: 1px solid #ddd;
-  margin-top: 10px;
-`
+import { TimelineMain, TimelineCommits, TableWhite } from './styles';
 
 const commitsByDate = R.groupBy(commit =>
   moment.unix(commit.node.commitTime).startOf('day').format()
@@ -29,18 +12,15 @@ const commitsByDate = R.groupBy(commit =>
 
 const CommitList = ({
   commitList: {
-    history: {
+    commitListHistory: {
       edges,
     },
-  },
-  relay: {
-    variables,
   },
 }) => (
   <TimelineMain>
     {
       R.toPairs(commitsByDate(edges)).map(timeEdge =>
-        <TimelineCommits
+        (<TimelineCommits
           key={timeEdge[0]}
           title={`Commits on ${moment(timeEdge[0]).format('MMMM DD, YYYY')}`}
           createdAt={moment(timeEdge[0]).format('MMMM DD, YYYY')}
@@ -49,15 +29,14 @@ const CommitList = ({
           <TableWhite striped>
             <tbody>
               {timeEdge[1].map(({ node }) =>
-                <Commit
-                  {...variables}
+                (<Commit
                   key={node.id}
-                  commit={node}
-                />
+                  commitItem={node}
+                />)
               )}
             </tbody>
           </TableWhite>
-        </TimelineCommits>
+        </TimelineCommits>)
       )
     }
   </TimelineMain>
@@ -65,29 +44,20 @@ const CommitList = ({
 
 CommitList.propTypes = {
   commitList: PropTypes.object.isRequired,
-  relay: PropTypes.object.isRequired,
 }
 
-export default Relay.createContainer(CommitList, {
-  initialVariables: {
-    branchHead: 'master',
-    userName: null,
-    projectName: null,
-    splat: null,
-  },
-  fragments: {
-    commitList: vars => Relay.QL`
-      fragment on Commit {
-        history(first: 20, path: $splat) {
-          edges {
-            node {
-              id,
-              commitTime,
-              ${Commit.getFragment('commit', vars)}
-            }
+export default createFragmentContainer(CommitList, {
+  commitList: graphql`
+    fragment CommitList_commitList on Commit {
+      commitListHistory: history(first: 20, path: $splat) {
+        edges {
+          node {
+            id,
+            commitTime,
+            ...Commit_commitItem
           }
         }
       }
-    `,
-  },
+    }
+  `,
 })

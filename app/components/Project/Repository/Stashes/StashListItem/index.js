@@ -1,97 +1,33 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Relay from 'react-relay/classic';
-import { Row, Col, Panel, Media } from 'react-bootstrap';
-import styled from 'styled-components';
+import { graphql } from 'react-relay';
+import withRelayFragment from 'relay/withRelayFragment';
+import { Row, Col, Media } from 'react-bootstrap';
 import { compose, mapProps } from 'recompose';
-import { createContainer } from 'recompose-relay';
 import CircularProgressbar from 'react-circular-progressbar';
 import { LinkUserName, LinkProject, LinkStash } from 'components/shared/Links';
-import FaCommentO from 'react-icons/lib/fa/comment-o';
-import Separator from 'components/shared/Separator';
-
-const PanelHead = styled(Panel)`
-  padding: 15px;
-  background: #f9f9f9;
-  color: #777;
-  border-color: #ddd;
-`
-
-const H2Head = styled.h2`
-  display: inline;
-  margin-top: 0px;
-  margin-right: -10px;
-`
-
-const SpanStashNum = styled.span`
-  margin-right: 20px;
-`
-
-const StashLabel = styled.span`
-  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
-  font-weight: 600;
-  background-color: #eaf5ff;
-  color: #0366d6;
-  border-radius: 3px;
-  font-size: 13px;
-  padding: 4px 8px;
-  margin-right: 10px;
-`
-
-const RowVoteStats = styled(Row)`
-  margin-top: 10px;
-`
-
-const NumberDiv = styled.div`
-  font-size: 16px;
-  font-weight: 700;
-  color: #777;
-`
-
-const SpanAcceptPoint = styled.span`
-  font-weight: 700;
-  color: #2cbe4e;
-`
-
-const SpanRejectPoint = styled.span`
-  font-weight: 700;
-  color: #cb2431;
-`
-
-const ProgressContainer = styled.div`
-  height: 50px;
-  width: 50px;
-`
-
-const ProgressBody = styled(Media.Body)`
-  padding-left: 10px;
-`
-
-const CommentSeparator = styled(Separator)`
-  margin-bottom: 10px;
-`
-
-const CommentIcon = styled(FaCommentO)`
-  vertical-align: text-top !important;
-  margin-right: 7px;
-`
+import {
+  PanelHead, H2Head, SpanStashNum, StashLabel, RowVoteStats,
+  ProgressContainer, ProgressBody, NumberDiv, SpanAcceptPoint,
+  SpanRejectPoint, CommentSeparator, CommentIcon,
+} from './styles'
 
 const StashListItem = ({
-  user, variables, stashNum, totalCommit, totalComments,
+  user, stashNum, totalCommit, totalComments,
   totalVotePoints, voteTreshold, acceptVotes, rejectVotes, votePercentage,
 }) => (
   <Row>
     <Col md={12}>
       <PanelHead>
-        <LinkStash vars={{ ...variables, stashNum }}>
+        <LinkStash to={stashNum}>
           <H2Head>
             <SpanStashNum>Stash #{stashNum}</SpanStashNum>
           </H2Head>
         </LinkStash>
         <span>
-          <LinkUserName user={user} /> wants to push {totalCommit} commits into
+          <LinkUserName userName={user.userName} /> wants to push {totalCommit} commits into
           {' '}
-          <LinkProject to={'master'} vars={variables}>
+          <LinkProject to={'master'}>
             <StashLabel>master</StashLabel>
           </LinkProject>
         </span>
@@ -99,7 +35,7 @@ const StashListItem = ({
           <Col md={12}>
             <Media>
               <Media.Left align="middle">
-                <LinkStash vars={{ ...variables, stashNum }}>
+                <LinkStash to={stashNum}>
                   <ProgressContainer>
                     <CircularProgressbar percentage={votePercentage} />
                   </ProgressContainer>
@@ -124,7 +60,7 @@ const StashListItem = ({
               </ProgressBody>
             </Media>
             <CommentSeparator />
-            <LinkStash vars={{ ...variables, stashNum }}>
+            <LinkStash to={stashNum}>
               <CommentIcon />
               <span>{totalComments} Comments</span>
             </LinkStash>
@@ -137,7 +73,6 @@ const StashListItem = ({
 
 StashListItem.propTypes = {
   user: PropTypes.object.isRequired,
-  variables: PropTypes.object.isRequired,
   stashNum: PropTypes.string.isRequired,
   totalCommit: PropTypes.number.isRequired,
   totalVotePoints: PropTypes.number.isRequired,
@@ -149,49 +84,42 @@ StashListItem.propTypes = {
 }
 
 export default compose(
-  createContainer({
-    initialVariables: {
-      branchHead: 'master',
-      userName: null,
-      projectName: null,
-    },
-    fragments: {
-      stashListItem: () => Relay.QL`
-        fragment on Ref {
-          stash {
-            stashNum
-            voteTreshold
-            votes (first: 9999) {
-              totalVotePoints
-            }
-            isUserVoted
-            acceptVotes {
-              totalCount
-              totalVotePoints
-            }
-            rejectVotes {
-              totalCount
-              totalVotePoints
-            }
-            comments {
-              totalAllCount
-            }            
+  withRelayFragment({
+    stashListItem: graphql`
+      fragment StashListItem_stashListItem on Ref {
+        stash {
+          stashNum
+          voteTreshold
+          votes (first: 9999) {
+            totalVotePoints
           }
-          target {
-            ... on Commit {
-              history(first: 99, isStash: true) {
-                totalCount
-              }
-              author {
-                user {
-                  ${LinkUserName.getFragment('user')}
-                }
+          isUserVoted
+          acceptVotes {
+            totalCount
+            totalVotePoints
+          }
+          rejectVotes {
+            totalCount
+            totalVotePoints
+          }
+          comments {
+            totalAllCount
+          }            
+        }
+        target {
+          ... on Commit {
+            history(first: 99, isStash: true) {
+              totalCount
+            }
+            author {
+              user {
+                userName
               }
             }
           }
         }
-      `,
-    },
+      }
+    `,
   }),
   mapProps(({
     stashListItem: {
@@ -213,19 +141,17 @@ export default compose(
       },
       ...rest
     },
-    relay: { variables },
   }) => ({
     totalVotePoints,
     totalCommit: totalCount,
     stashNum: stashNum.toString(),
     user,
-    variables,
     voteTreshold,
     acceptVotes,
     rejectVotes,
     votePercentage: totalVotePoints <= 0 ? 0 :
       Math.round((totalVotePoints / voteTreshold) * 100),
-    totalComments: totalAllCount,
+    totalComments: totalAllCount || 0,
     ...rest,
   })),
 )(StashListItem)

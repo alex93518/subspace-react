@@ -1,23 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Relay from 'react-relay/classic';
-import styled from 'styled-components';
-import { createContainer } from 'recompose-relay'
+import { graphql } from 'react-relay';
+import withRelayFragment from 'relay/withRelayFragment';
 import { compose, mapProps } from 'recompose';
 import { LinkUserPhoto } from 'components/shared/Links';
-
-const DivContributor = styled.div`
-  padding: 10px;
-  border-top: 0px;
-  border:1px solid #c8e1ff;
-  border-radius:3px;
-  border-top-right-radius:0;
-  border-top-left-radius:0;
-`
-
-const SpanPhoto = styled.span`
-  margin-left: 5px;
-`
+import { DivContributor, SpanPhoto } from './styles';
 
 const Contributors = ({
   contributors, totalContributors,
@@ -26,31 +13,29 @@ const Contributors = ({
     {totalContributors} contributors
     {' '}
     {contributors.map(user =>
-      <SpanPhoto key={user.userName}>
+      (<SpanPhoto key={user.userName}>
         <LinkUserPhoto user={user} width={20} height={20} />
-      </SpanPhoto>
+      </SpanPhoto>)
     )}
   </DivContributor>
-)
+);
 
 Contributors.propTypes = {
   contributors: PropTypes.array.isRequired,
   totalContributors: PropTypes.number.isRequired,
-}
+};
 
 export default compose(
-  createContainer({
-    fragments: {
-      contributors: () => Relay.QL`
-        fragment on CommitConnection {
-          totalContributors
-          contributors {
-            userName
-            ${LinkUserPhoto.getFragment('user')}
-          }
+  withRelayFragment({
+    contributors: graphql`
+      fragment Contributors_contributors on CommitConnection {
+        totalContributors
+        contributors {
+          userName
+          photoUrl
         }
-      `,
-    },
+      }
+    `,
   }),
   mapProps(({ contributors }) => ({ ...contributors }))
 )(Contributors)

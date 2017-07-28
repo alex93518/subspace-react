@@ -1,74 +1,16 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Relay from 'react-relay/classic';
-import styled from 'styled-components';
-import { Button, Panel } from 'react-bootstrap';
+import { graphql } from 'react-relay';
+import withRelayFragment from 'relay/withRelayFragment';
+import { Button } from 'react-bootstrap';
 import { compose, withState, withHandlers } from 'recompose';
-import { createContainer } from 'recompose-relay'
 import { scroller } from 'react-scroll';
-import FaPencil from 'react-icons/lib/fa/pencil';
-import FaThumbsOUp from 'react-icons/lib/fa/thumbs-o-up';
-import FaThumbsODown from 'react-icons/lib/fa/thumbs-o-down';
 import ReactQuill from 'react-quill';
-import CurrentRelay, {
-  AddStashCommentMutation, VoteStashCommentMutation,
-} from 'relay';
-
-const ButtonReply = styled(Button)`
-  background: rgba(255,255,255,0) !important;
-  border: 0px !important;
-  color: #aaa !important;
-  padding: 0px !important;
-  margin-right: 15px;
-`
-
-const PanelReply = styled(Panel)`
-  margin-bottom: 0px;
-  background-color: transparent;
-  border: 0px;
-  box-shadow: none;
-  -webkit-box-shadow: none;
-  & div > .panel-body {
-    padding: 0px !important;
-    margin-top: 20px;
-    margin-bottom: 5px;
-    border: 0px !important;
-    animation: none !important;
-  }
-`
-
-const ReplyIcon = styled(FaPencil)`
-  vertical-align: sub !important;
-  font-size: 15px;
-  color: #999;
-  margin-right: 1px;
-`
-
-const VoteUpIcon = styled(FaThumbsOUp)`
-  cursor: pointer;
-  vertical-align: sub !important;
-  margin-right: 5px;
-  font-size: 15px;
-  color: ${props => props['data-isVotedUp'] ? '#2cbe4e' : '#aaa'};  
-`
-
-const VoteDownIcon = styled(FaThumbsODown)`
-  cursor: pointer;
-  margin-right: 5px;
-  vertical-align: sub !important;
-  font-size: 15px;
-  color: ${props => props['data-isVotedDown'] ? '#cb2431' : '#aaa'};
-`
-
-const SpanVotePoint = styled.span`
-  color: #999;
-  margin-right: 15px;
-`
-
-const DivSubmitReply = styled.div`
-  text-align: right;
-  margin-top: 5px;
-`
+import { addStashCommentMutation, voteStashCommentMutation } from 'relay';
+import {
+  ButtonReply, ReplyIcon, PanelReply, DivSubmitReply,
+  VoteUpIcon, VoteDownIcon, SpanVotePoint,
+} from './styles'
 
 const CommentFooter = ({
   isShowReply, isReply, handleReplyClick,
@@ -116,24 +58,16 @@ CommentFooter.propTypes = {
 }
 
 export default compose(
-  createContainer({
-    initialVariables: {
-      branchHead: 'master',
-      userName: null,
-      projectName: null,
-      sort: 'popular',
-    },
-    fragments: {
-      commentFooter: () => Relay.QL`
-        fragment on StashComment {
-          rawId
-          stashId
-          isUserVoted
-          totalUpVotePoints
-          totalDownVotePoints
-        }
-      `,
-    },
+  withRelayFragment({
+    commentFooter: graphql`
+      fragment CommentFooter_commentFooter on StashComment {
+        rawId
+        stashId
+        isUserVoted
+        totalUpVotePoints
+        totalDownVotePoints
+      }
+    `,
   }),
   withState('isReply', 'updateIsReply', false),
   withState('content', 'updateContent', ''),
@@ -178,39 +112,33 @@ export default compose(
       parentId, commentFooter: { stashId },
     }) => () => {
       if (content) {
-        CurrentRelay.Store.commitUpdate(
-          new AddStashCommentMutation({
-            id: stashGlobalId,
-            content,
-            stashId,
-            parentId,
-          }),
-          {
-            onSuccess: resp => {
-              updateContent('')
+        addStashCommentMutation({
+          id: stashGlobalId,
+          content,
+          stashId,
+          parentId,
+          sort: 'popular',
+          onCompleted: resp => {
+            if (resp.addStashComment.clientMutationId) {
               updateIsReply(false)
-              if (resp.addStashComment.clientMutationId) {
-                scroller.scrollTo(
-                  `stashComment-anchor-${resp.addStashComment.clientMutationId}`
-                )
-              }
-            },
-            onFailure: transaction => console.log(transaction.getError()),
-          }
-        )
+              updateContent('')
+              scroller.scrollTo(
+                `stashComment-anchor-${resp.addStashComment.clientMutationId}`
+              )
+            }
+          },
+        });
       }
     },
     onVote: props => isVoteUp => {
-      const voteVar = typeof (isVoteUp) === 'boolean' ? isVoteUp : null
+      const voteVar = typeof (isVoteUp) === 'boolean' ? isVoteUp : null;
       props.toggleVote(voteVar)
-      CurrentRelay.Store.commitUpdate(
-        new VoteStashCommentMutation({
-          id: props.stashGlobalId,
-          isVoteUp,
-          stashCommentId: props.commentFooter.rawId || null,
-          stashId: props.commentFooter.stashId,
-        })
-      )
+      voteStashCommentMutation({
+        id: props.stashGlobalId,
+        isVoteUp,
+        stashCommentId: props.commentFooter.rawId || null,
+        stashId: props.commentFooter.stashId,
+      })
     },
   })
 )(CommentFooter)

@@ -27,9 +27,12 @@ injectGlobal`
 
   #app {
     background-color: #fafafa;
+    height: 100%;
     min-height: 100%;
     min-width: 100%;
   }
+
+  #app > [data-reactroot] { height: 100%; }
 
   p,
   label {
@@ -39,6 +42,18 @@ injectGlobal`
 
   strong {
     font-weight: bold;
+  }
+
+  .container {
+    height: 100%;
+  }
+
+  .inline-block {
+    display: inline-block;
+  }
+
+  .error {
+    color: red;
   }
 
   /* the tree node's style */

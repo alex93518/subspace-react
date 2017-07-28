@@ -7,6 +7,7 @@ import createSagaMiddleware from 'redux-saga'
 import { dispatchRef } from 'redux/utils'
 import createReducer from 'redux/reducer'
 import rootSaga from 'redux/sagas'
+import { autoRehydrate } from 'redux-persist-immutable'
 
 export const history = createHistory()
 const sagaMiddleware = createSagaMiddleware()
@@ -19,7 +20,7 @@ const middlewares = [
   () => next => reduxAction => {
     // remove synthetic events from the payload
     if (path(['payload', 'nativeEvent'], reduxAction)) {
-      reduxAction.payload = undefined
+      reduxAction.payload = undefined // eslint-disable-line no-param-reassign
     }
 
     next(reduxAction)
@@ -40,6 +41,7 @@ const store = createStore(
   fromJS(initialState),
   composeEnhancers(
     applyMiddleware(...middlewares),
+    autoRehydrate()
   )
 )
 

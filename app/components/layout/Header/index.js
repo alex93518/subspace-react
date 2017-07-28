@@ -6,7 +6,7 @@ import styled from 'styled-components'
 import { Navbar, Nav, NavItem, Button } from 'react-bootstrap'
 import { makeSelectAuth } from 'redux/selectors'
 import { injectSelectors } from 'redux/utils'
-import { authActions } from 'redux/auth/actions'
+import { authSignout } from 'relay/RelayEnvironment'
 
 const TopNavbar = styled(Navbar)`
   margin-bottom: 0px;
@@ -45,7 +45,7 @@ const ProtectedNav = ({ user: { displayName }, userName }) => (
       </LinkWhite>
     }
     <NavItem>
-      <SignoutButton onClick={authActions.signOut.init}>
+      <SignoutButton onClick={authSignout.signOut.init}>
         Sign out
       </SignoutButton>
     </NavItem>

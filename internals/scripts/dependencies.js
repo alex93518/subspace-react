@@ -5,16 +5,14 @@ if (process.env.NODE_ENV === 'production') {
 
 require('shelljs/global');
 
-const fs = require('fs');
 const path = require('path');
-const defaults = require('lodash/defaultsDeep');
-const config = require('../config');
-
-const pkg = require(path.join(process.cwd(), 'package.json'));
-
+const fs = require('fs');
 const exists = fs.existsSync;
 const writeFile = fs.writeFileSync;
 
+const defaults = require('lodash/defaultsDeep');
+const pkg = require(path.join(process.cwd(), 'package.json'));
+const config = require('../config');
 const dllConfig = defaults(pkg.dllPlugin, config.dllPlugin.defaults);
 const outputPath = path.join(process.cwd(), dllConfig.path);
 const dllManifestPath = path.join(outputPath, 'package.json');
@@ -45,4 +43,4 @@ if (!exists(dllManifestPath)) {
 }
 
 // the BUILDING_DLL env var is set to avoid confusing the development environment
-exec('cross-env BUILDING_DLL=true webpack --display-chunks --color --config internals/webpack/webpack.dll.babel.js');
+exec('cross-env BUILDING_DLL=true webpack --display-chunks --color --config internals/webpack/webpack.dll.babel.js --hide-modules');

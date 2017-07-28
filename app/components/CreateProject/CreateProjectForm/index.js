@@ -1,112 +1,245 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { path } from 'ramda'
-import { compose } from 'recompose'
+import { compose } from 'recompose';
+import { connect } from 'react-redux';
 import { Button, FormGroup } from 'react-bootstrap'
-import { SubmissionError, Field, reduxForm } from 'redux-form/immutable'
-import CurrentRelay, { CreateProjectMutation } from 'relay'
+import { Field, reduxForm, SubmissionError } from 'redux-form/immutable';
+import { commitMutation, graphql } from 'react-relay';
+import { env } from 'relay/RelayEnvironment';
 import { makeSelectAuth } from 'redux/selectors'
-import { redirect, injectSelectors } from 'redux/utils'
-import { TextInput, TextArea } from 'components/shared/form'
+import { injectSelectors } from 'redux/utils'
+import { TextInput } from 'components/shared/form'
+import Separator from 'components/shared/Separator';
+import { withRouter } from 'react-router-dom';
+import { LinkUserPhoto } from 'components/shared/Links';
+import {
+  SpanSeparator, Dt, UserName, DivOptHead, SpanOpt,
+  FloatDiv, AccessDesc, DlNoMargin, RadioField,
+  VotePush, StandardPush, RepoPublic, RepoPrivate,
+} from './styles'
 
-const CreateProjectForm = ({ handleSubmit, error }) => (
+const CreateProjectForm = ({ handleSubmit, auth, change, createProject }) => (
   <form onSubmit={handleSubmit}>
-    <h3>Create Project:</h3>
+    <h3>Create a new project</h3>
+    <div>This will create a repository contains all the files for your project, including the revision history.</div>
+    <hr />
+    <table>
+      <thead>
+        <tr>
+          <th><strong>Owner</strong></th>
+          <th />
+          <th><strong>Project name</strong></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <LinkUserPhoto
+              width={36}
+              height={36}
+              user={{
+                userName: auth.userName,
+                photoUrl: auth.user.photoUrl,
+              }}
+            /><UserName userName={auth.userName} />
+          </td>
+          <td><SpanSeparator>/</SpanSeparator></td>
+          <td>
+            <Field
+              name="name"
+              component={TextInput}
+              type="text"
+              width="300px"
+            />
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <Separator />
+    <FormGroup>
+      <DivOptHead className="clearfix">
+        <FloatDiv>
+          <RadioField
+            name="repoAccess"
+            component="input"
+            type="radio"
+            value="public"
+          />
+          <RepoPublic
+            width={30}
+            height={30}
+            data-repoAccess={createProject.repoAccess}
+            onClick={() => change('repoAccess', 'public')}
+          />
+        </FloatDiv>
+        <AccessDesc onClick={() => change('repoAccess', 'public')}>
+          <DlNoMargin>
+            <dt>Public</dt>
+            <dd>Anyone can see this repository.</dd>
+          </DlNoMargin>
+        </AccessDesc>
+      </DivOptHead>
+      <div className="clearfix">
+        <FloatDiv>
+          <RadioField
+            name="repoAccess"
+            component="input"
+            type="radio"
+            value="private"
+          />
+          <RepoPrivate
+            width={30}
+            height={30}
+            data-repoAccess={createProject.repoAccess}
+            onClick={() => change('repoAccess', 'private')}
+          />
+        </FloatDiv>
+        <AccessDesc onClick={() => change('repoAccess', 'private')}>
+          <DlNoMargin>
+            <dt>Private</dt>
+            <dd>You choose who can see and commit to this repository.</dd>
+          </DlNoMargin>
+        </AccessDesc>
+      </div>
+    </FormGroup>
+    <Separator />
+    <FormGroup>
+      <DivOptHead className="clearfix">
+        <FloatDiv>
+          <RadioField
+            name="repoPushVote"
+            component="input"
+            type="radio"
+            value="pushVote"
+          />
+          <VotePush
+            width={30}
+            height={30}
+            data-repoPushVote={createProject.repoPushVote}
+            onClick={() => change('repoPushVote', 'pushVote')}
+          />
+        </FloatDiv>
+        <AccessDesc onClick={() => change('repoPushVote', 'pushVote')}>
+          <DlNoMargin>
+            <dt>Vote Pushes</dt>
+            <dd>Pushes should meet certain vote threshold before added to the repository.</dd>
+          </DlNoMargin>
+        </AccessDesc>
+      </DivOptHead>
+      <div className="clearfix">
+        <FloatDiv>
+          <RadioField
+            name="repoPushVote"
+            component="input"
+            type="radio"
+            value="standard"
+          />
+          <StandardPush
+            width={30}
+            height={30}
+            data-repoPushVote={createProject.repoPushVote}
+            onClick={() => change('repoPushVote', 'standard')}
+          />
+        </FloatDiv>
+        <AccessDesc onClick={() => change('repoPushVote', 'standard')}>
+          <DlNoMargin>
+            <dt>Standard Pushes</dt>
+            <dd>Use standard git push feature.</dd>
+          </DlNoMargin>
+        </AccessDesc>
+      </div>
+    </FormGroup>
+    <Separator />
     <div>
-      {error && <strong>{error}</strong>}
-      <hr />
+      <DivOptHead>
+        Help people to understand your project better by providing a description, goals or topics. <SpanOpt>(Optional)</SpanOpt>
+      </DivOptHead>
     </div>
-    <Field
-      name="name"
-      component={TextInput}
-      type="text"
-      placeholder="Project Name"
-    />
-    <div>Goals</div>
-    <Field name="goals" component={TextArea} rows="5" />
-    <div>Description</div>
-    <Field name="description" component={TextArea} rows="5" />
-    <Field
-      name="topics"
-      component={TextInput}
-      type="text"
-      placeholder="Topics"
-    />
-    <FormGroup>
-      <Field
-        name="repoAccess"
-        component="input"
-        type="radio"
-        value="public"
-      /> Public
-      <div></div>
-      <Field
-        name="repoAccess"
-        component="input"
-        type="radio"
-        value="private"
-      /> Private
-    </FormGroup>
-    <FormGroup>
-      <Field
-        name="repoPushVote"
-        component="input"
-        type="radio"
-        value="pushVote"
-      /> Vote For Push
-      <div></div>
-      <Field
-        name="repoPushVote"
-        component="input"
-        type="radio"
-        value="standard"
-      /> Standard
-    </FormGroup>
-    <Button type="submit">Create Repository</Button>
+    <div>
+      <Dt>Description</Dt>
+      <dd>
+        <Field name="description" component={TextInput} type="text" />
+      </dd>
+    </div>
+    <div>
+      <Dt>Topics</Dt>
+      <dd>
+        <Field
+          name="topics"
+          component={TextInput}
+          type="text"
+        />
+      </dd>
+    </div>
+    <div>
+      <Dt>Goals</Dt>
+      <dd>
+        <Field
+          name="goals"
+          component={TextInput}
+          type="text"
+        />
+      </dd>
+    </div>
+    <Separator />
+    <Button type="submit">Create Project</Button>
   </form>
 )
 
 CreateProjectForm.propTypes = {
   handleSubmit: PropTypes.func,
-  error: PropTypes.string,
+  auth: PropTypes.object,
+  change: PropTypes.func,
+  createProject: PropTypes.object,
 }
 
 export default compose(
+  withRouter,
   injectSelectors({
     auth: makeSelectAuth(),
   }),
   reduxForm({
     form: 'createProject',
-    onSubmit: async (values, _, { auth }) => {
-      const { repoAccess, repoPushVote, topics, ...repository } = values
-
-      try {
-        await new Promise((resolve, reject) => CurrentRelay.Store.commitUpdate(
-          new CreateProjectMutation({
-            repository: {
-              ...repository,
-              isPushVote: repoPushVote !== 'standard',
-              isPrivate: repoAccess === 'private',
-              ownerUserName: auth.userName,
-
-              // TODO: add array input field to project form
-              topics: topics ? topics.split(' ') : undefined,
-            },
-          }),
-          {
-            onSuccess: () => resolve(redirect('/projects')),
-            onFailure: transaction => {
-              const error = transaction.getError()
-              console.warn(error) // eslint-disable-line no-console
-              reject(error)
-            },
-          }
-        ))
-      } catch (err) {
-        throw new SubmissionError({
-          _error: path(['source', 'errors', '0', 'message'])(err),
-        })
+    initialValues: {
+      repoAccess: 'public',
+      repoPushVote: 'pushVote',
+    },
+    enableReinitialize: true,
+    onSubmit: async (values, _, { auth, history }) => {
+      const { repoAccess, repoPushVote, topics, ...repository } = values;
+      if (!repository.name) {
+        throw new SubmissionError({ name: 'Project name cannot be empty', _error: 'Empty project name' })
       }
+
+      const mutation = graphql`
+        mutation CreateProjectFormMutation($input: CreateRepositoryInput!) {
+          createRepository(input: $input) {
+            clientMutationId
+          }
+        }
+      `;
+
+      const input = {
+        ...repository,
+        isPushVote: repoPushVote !== 'standard',
+        isPrivate: repoAccess === 'private',
+        ownerUserName: auth.userName,
+
+        // TODO: add array input field to project form
+        topics: topics ? topics.split(' ') : undefined,
+      };
+      commitMutation(
+        env,
+        {
+          mutation,
+          variables: { input },
+          onCompleted: () => history.push(`/${auth.userName}/${repository.name}`),
+          onError: err => console.error(err),
+        },
+      );
     },
   }),
+  connect(state => ({
+    createProject: state.get('form').createProject.values,
+  }))
 )(CreateProjectForm);

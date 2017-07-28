@@ -1,47 +1,28 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Relay from 'react-relay/classic';
-import { createContainer } from 'recompose-relay';
-import CurrentRelay, { AddStashCommentMutation } from 'relay';
+import { graphql } from 'react-relay';
+import withRelayFragment from 'relay/withRelayFragment';
 import { compose, withState, withHandlers } from 'recompose';
 import { Button } from 'react-bootstrap';
-import styled from 'styled-components';
-import ReactQuill from 'react-quill';
+import Editor from 'react-quill';
 import { Element, scroller } from 'react-scroll';
-import Separator from 'components/shared/Separator';
+import { addStashCommentMutation } from 'relay';
 import CommentList from './CommentList';
-
-const MainDiv = styled.div`
-  margin-top: 35px;
-`
-
-const HeadSeparator = styled(Separator)`
-  background: #ddd;
-  margin-top: 0px;
-`
-
-const DivAddComment = styled.div`
-  text-align: right;
-  margin-top: 10px;
-`
+import { MainDiv, HeadSeparator, DivAddComment } from './styles';
 
 const StashComment = ({
-  stashComment, stashComment: { comments: { totalAllCount } },
+  stashComment, stashComment: { totalComments: { totalAllCount } },
   submitComment, content, handleContentChange,
-  relay: { variables },
 }) => (
   <MainDiv>
     <Element name={'commentTop'}>
       <h4>Comments ({totalAllCount || 0})</h4>
     </Element>
     <HeadSeparator />
-    <CommentList
-      commentList={stashComment}
-      {...variables}
-    />
+    <CommentList commentList={stashComment} />
     <HeadSeparator />
     <h4>Leave a comment</h4>
-    <ReactQuill
+    <Editor
       value={content}
       onChange={handleContentChange}
     />
@@ -56,28 +37,20 @@ StashComment.propTypes = {
   content: PropTypes.string.isRequired,
   handleContentChange: PropTypes.func.isRequired,
   submitComment: PropTypes.func.isRequired,
-  relay: PropTypes.object.isRequired,
 }
 
 export default compose(
-  createContainer({
-    initialVariables: {
-      branchHead: 'master',
-      userName: null,
-      projectName: null,
-    },
-    fragments: {
-      stashComment: vars => Relay.QL`
-        fragment on Stash {
-          ${CommentList.getFragment('commentList', vars)}
-          id
-          rawId
-          comments {
-            totalAllCount
-          }
+  withRelayFragment({
+    stashComment: graphql`
+      fragment StashComment_stashComment on Stash {
+        id
+        rawId
+        totalComments: comments {
+          totalAllCount
         }
-      `,
-    },
+        ...CommentList_commentList
+      }
+    `,
   }),
   withState('content', 'updateContent', ''),
   withHandlers({
@@ -89,25 +62,21 @@ export default compose(
       content, updateContent,
     }) => () => {
       if (content) {
-        CurrentRelay.Store.commitUpdate(
-          new AddStashCommentMutation({
-            id,
-            content,
-            stashId: rawId || null,
-            parentId: null,
-          }),
-          {
-            onSuccess: resp => {
-              updateContent('')
-              if (resp.addStashComment.clientMutationId) {
-                scroller.scrollTo(
-                  `stashComment-anchor-${resp.addStashComment.clientMutationId}`
-                )
-              }
-            },
-            onFailure: transaction => console.log(transaction.getError()),
-          }
-        )
+        addStashCommentMutation({
+          id,
+          content,
+          stashId: rawId || null,
+          parentId: null,
+          sort: 'popular',
+          onCompleted: resp => {
+            if (resp.addStashComment.clientMutationId) {
+              updateContent('');
+              scroller.scrollTo(
+                `stashComment-anchor-${resp.addStashComment.clientMutationId}`
+              );
+            }
+          },
+        });
       }
     },
   })

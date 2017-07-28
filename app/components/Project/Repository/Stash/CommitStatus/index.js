@@ -1,20 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Relay from 'react-relay/classic';
-import { Table } from 'react-bootstrap';
-import styled from 'styled-components';
-import Commit from 'components/Project/Repository/Commits/CommitList/Commit'
-
-const TableCommit = styled(Table)`
-  margin-bottom: 0px !important;
-  background-color: #fff;
-  border: 1px solid #ddd;
-  color: #777;
-`
-
-const CommitsHead = styled.h4`
-  margin-top: 30px;
-`
+import { createFragmentContainer, graphql } from 'react-relay';
+import Commit from 'components/Project/Repository/Commits/CommitList/Commit';
+import { CommitsHead, TableCommit } from './styles';
 
 const StashCommitStatus = ({
   stashCommitStatus: { history },
@@ -26,7 +14,7 @@ const StashCommitStatus = ({
       <tbody>
         {
           history.edges.map(({ node }) =>
-            <Commit commit={node} {...variables} key={node.id} />
+            <Commit commitItem={node} {...variables} key={node.id} />
           )
         }
       </tbody>
@@ -39,24 +27,17 @@ StashCommitStatus.propTypes = {
   relay: PropTypes.object.isRequired,
 }
 
-export default Relay.createContainer(StashCommitStatus, {
-  initialVariables: {
-    branchHead: 'master',
-    userName: null,
-    projectName: null,
-  },
-  fragments: {
-    stashCommitStatus: vars => Relay.QL`
-      fragment on Commit {
-        history(first: 99, isStash: true) {
-          edges {
-            node {
-              id
-              ${Commit.getFragment('commit', vars)}
-            }
+export default createFragmentContainer(StashCommitStatus, {
+  stashCommitStatus: graphql`
+    fragment CommitStatus_stashCommitStatus on Commit {
+      history(first: 99, isStash: true) {
+        edges {
+          node {
+            id
+            ...Commit_commitItem
           }
         }
       }
-    `,
-  },
+    }
+  `,
 })

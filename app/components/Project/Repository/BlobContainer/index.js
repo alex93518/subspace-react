@@ -1,81 +1,71 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Relay from 'react-relay/classic';
-import { Row, Col } from 'react-bootstrap';
-import styled from 'styled-components';
-import { createContainer } from 'recompose-relay'
+import { graphql } from 'react-relay';
+import withRelayFragment from 'relay/withRelayFragment';
+import { withRouter } from 'react-router-dom';
+import { Col } from 'react-bootstrap';
 import { compose, branch, mapProps, renderComponent } from 'recompose';
 import Blob from 'components/shared/Project/Repository/Blob';
 import BranchSelect from 'components/shared/Project/Repository/BranchSelect';
 import MainGrid from 'components/shared/MainGrid';
+import { matchRoute } from 'utils/routeMatcher';
 import CommitStatus from './CommitStatus';
 import FileStatus from './FileStatus';
+import { RowSty } from './styles';
 
-const RowSty = styled(Row)`
-  padding-top: 15px;
-`
-
-const BlobContiner = ({ blobContainer, treeEntry, vars }) => (
+const BlobContiner = ({ blobContainer, treeEntry, splat }) => (
   <MainGrid>
     <Col md={12}>
       <RowSty>
         <Col>
           <BranchSelect
-            {...vars}
             branchSelect={blobContainer}
-            suffix={`blob/${vars.splat}`}
+            suffix={splat ? `blob/${splat}` : null}
           />
-          <CommitStatus commitStatus={treeEntry} {...vars} />
-          <FileStatus fileStatus={treeEntry} {...vars} />
+          <CommitStatus commitStatus={treeEntry} />
+          <FileStatus fileStatus={treeEntry} />
           <Blob blob={treeEntry} />
         </Col>
       </RowSty>
     </Col>
   </MainGrid>
-)
+);
 
 BlobContiner.propTypes = {
   blobContainer: PropTypes.object.isRequired,
   treeEntry: PropTypes.object.isRequired,
-  vars: PropTypes.object.isRequired,
-}
+  splat: PropTypes.string,
+};
 
 export default compose(
-  createContainer({
-    initialVariables: {
-      branchHead: 'master',
-      userName: null,
-      projectName: null,
-      splat: null,
-    },
-    fragments: {
-      blobContainer: vars => Relay.QL`
-        fragment on Repository {
-          ${BranchSelect.getFragment('branchSelect', vars)}
-          ref(refName: $branchHead) {
-            target {
-              ... on Commit {
-                tree {
-                  entries(path: $splat) {
-                    ${CommitStatus.getFragment('commitStatus', vars)}
-                    ${FileStatus.getFragment('fileStatus', vars)}
-                    ${Blob.getFragment('blob')}
-                  }
+  withRouter,
+  withRelayFragment({
+    blobContainer: graphql`
+      fragment BlobContainer_blobContainer on Repository {
+        ...BranchSelect_branchSelect
+        ref(refName: $branchHead) @include(if: $isBlob) {
+          target {
+            ... on Commit {
+              tree {
+                entries(path: $splat) {
+                  ...CommitStatus_commitStatus
+                  ...FileStatus_fileStatus
+                  ...Blob_blob
                 }
               }
             }
           }
         }
-      `,
-    },
+      }
+    `,
   }),
   branch(
     props => props.blobContainer.ref.target.tree.entries.length === 0,
     renderComponent(() => <div>File Not Found</div>)
   ),
-  mapProps(({ blobContainer, relay }) => ({
+  mapProps(({ blobContainer, location: { pathname } }) => ({
     blobContainer,
     treeEntry: blobContainer.ref.target.tree.entries[0],
-    vars: relay.variables,
+    splat: matchRoute(pathname).params['0'] || null,
   }))
-)(BlobContiner)
+)(BlobContiner);

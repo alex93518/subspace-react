@@ -1,63 +1,52 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux'
-import { Switch, Route } from 'react-router-dom'
-import { compose, withState, pure } from 'recompose'
-import { ConnectedRouter } from 'react-router-redux'
-import CurrentRelay from 'relay'
-import Header from 'components/layout/Header'
-import routes from 'components/routes'
-import Footer from 'components/layout/Footer'
-import { history } from './store'
+import { Switch, Route } from 'react-router-dom';
+import { ConnectedRouter } from 'react-router-redux';
+import { matchName } from 'utils/routeMatcher';
+import asyncComponent from 'utils/asyncComponent';
+import styled from 'styled-components';
+import { history } from './store';
 
-const AuthWrapper = ({ storeLoaded, updateStoreStatus }) => {
-  if (!storeLoaded) {
-    CurrentRelay.reset(() => updateStoreStatus(true))
-    return null
-  }
+const FlexContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 100%;
+`
 
-  return (
+const HomePage = asyncComponent(() => import('components/HomePage'));
+const About = asyncComponent(() => import('components/About'));
+const HowItWorks = asyncComponent(() => import('components/HowItWorks'));
+const Projects = asyncComponent(() => import('components/Projects'));
+const Project = asyncComponent(() => import('components/Project'));
+const Login = asyncComponent(() => import('components/Login'));
+const UserProfile = asyncComponent(() => import('components/UserProfile'));
+const CreateProject = asyncComponent(() => import('components/CreateProject'));
+const Header = asyncComponent(() => import('components/layout/Header'));
+const Footer = asyncComponent(() => import('components/layout/Footer'));
+
+const Router = () =>
+  (
     <ConnectedRouter history={history}>
-      <div>
+      <FlexContainer>
         <Header />
         <Switch>
-          {
-            routes.map(({ path, exact, component: RouteComponent, ...rest }, i) =>
-              <Route
-                key={i}
-                path={path}
-                exact={exact}
-                render={
-                  props => (
-                    <RouteComponent
-                      // rerender link to the same component with different params
-                      key={props.location.pathname}
-                      {...props}
-                      {...rest}
-                    />
-                  )
-                }
-              />
-            )
-          }
+          <Route exact path={'/'} render={() => <HomePage />} />
+          <Route exact path="/about" render={() => <About />} />
+          <Route exact path="/howitworks" render={() => <HowItWorks />} />
+          <Route exact path="/projects" render={() => <Projects />} />
+          <Route exact path={'/login'} render={() => <Login />} />
+          <Route exact path={'/profile/:userName'} render={props => <UserProfile {...props} />} />
+          <Route exact path={'/createproject'} render={() => <CreateProject />} />
+          <Route
+            path={'/:userName/:projectName'}
+            render={() =>
+              <Project childName={matchName(history.location.pathname)} />
+            }
+          />
         </Switch>
         <Footer />
-      </div>
+      </FlexContainer>
     </ConnectedRouter>
-  )
-}
+  );
 
-AuthWrapper.propTypes = {
-  storeLoaded: PropTypes.bool,
-  updateStoreStatus: PropTypes.func,
-}
-
-// Rerender Router with new Relay.Environment on auth change
-export default compose(
-  connect(state => ({
-    loggedIn: state.getIn(['auth', 'authenticated']),
-  })),
-  withState('storeLoaded', 'updateStoreStatus', () => !!CurrentRelay.Store),
-  pure,
-)(AuthWrapper)
-
+export default Router;

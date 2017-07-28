@@ -1,36 +1,17 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Relay from 'react-relay/classic';
-import { Row, Col } from 'react-bootstrap';
-import styled from 'styled-components';
+import { createFragmentContainer, graphql } from 'react-relay';
 import { LinkBranch, LinkProject } from 'components/shared/Links';
-import GoHistory from 'react-icons/lib/go/history'
-import GoRepoPush from 'react-icons/lib/go/repo-push'
-import GoGitBranch from 'react-icons/lib/go/git-branch'
-import GoOrganization from 'react-icons/lib/go/organization'
-
-const RowSty = styled(Row)`
-  background-color: white;
-  border: 1px solid #DDD;
-  padding: 10px;
-  & a {
-    color: #444 !important;
-  }
-`
-
-const ColSty = styled(Col)`
-  text-align: center;
-`
-
-const Icon = styled.span`
-  font-size: 18px;
-  color: #777;
-`
+import GoHistory from 'react-icons/lib/go/history';
+import GoRepoPush from 'react-icons/lib/go/repo-push';
+import GoGitBranch from 'react-icons/lib/go/git-branch';
+import GoOrganization from 'react-icons/lib/go/organization';
+import { RowSty, ColSty, Icon } from './styles';
 
 const StatusBar = ({
   statusBar: {
     refs: { branchTotal },
-    stashes: { stashesTotal },
+    stashesTotalCount: { stashesTotal },
     ref: {
       target: {
         history: {
@@ -39,25 +20,24 @@ const StatusBar = ({
       },
     },
   },
-  relay: { variables },
 }) => (
   <RowSty>
     <ColSty md={3}>
-      <LinkBranch to={'commits'} vars={variables}>
+      <LinkBranch to={'commits'}>
         <Icon><GoHistory /></Icon>
         {' '}
         {commitTotal} Commits
       </LinkBranch>
     </ColSty>
     <ColSty md={3}>
-      <LinkBranch to={'stashes'} vars={variables}>
+      <LinkBranch to={'stashes'}>
         <Icon><GoRepoPush /></Icon>
         {' '}
         {stashesTotal} Pending Pushes
       </LinkBranch>
     </ColSty>
     <ColSty md={3}>
-      <LinkProject to={'branches'} vars={variables}>
+      <LinkProject to={'branches'}>
         <Icon><GoGitBranch /></Icon>
         {' '}
         {branchTotal} Branches
@@ -73,34 +53,26 @@ const StatusBar = ({
 
 StatusBar.propTypes = {
   statusBar: PropTypes.object.isRequired,
-  relay: PropTypes.object.isRequired,
 }
 
-export default Relay.createContainer(StatusBar, {
-  initialVariables: {
-    branchHead: 'master',
-    userName: null,
-    projectName: null,
-  },
-  fragments: {
-    statusBar: () => Relay.QL`
-      fragment on Repository {
-        refs {
-          branchTotal: totalCount
-        }
-        stashes {
-          stashesTotal: totalCount
-        }
-        ref(refName: $branchHead) {
-          target {
-            ... on Commit {
-              history {
-                commitTotal: totalCount
-              }
+export default createFragmentContainer(StatusBar, {
+  statusBar: graphql`
+    fragment StatusBar_statusBar on Repository {
+      refs(first: 99) @include(if: $isMainContainer){
+        branchTotal: totalCount
+      }
+      stashesTotalCount: stashes @include(if: $isMainContainer){
+        stashesTotal: totalCount
+      }
+      ref(refName: $branchHead) @include(if: $isMainContainer){
+        target {
+          ... on Commit {
+            history {
+              commitTotal: totalCount
             }
           }
         }
       }
-    `,
-  },
+    }
+  `,
 })

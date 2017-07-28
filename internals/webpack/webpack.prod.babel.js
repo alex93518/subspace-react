@@ -3,7 +3,6 @@ const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const OfflinePlugin = require('offline-plugin');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = require('./webpack.base.babel')({
   // In production, we skip all hot-reloading stuff
@@ -11,8 +10,7 @@ module.exports = require('./webpack.base.babel')({
     path.join(process.cwd(), 'app/index.js'),
   ],
 
-  // Utilize long-term caching by adding content
-  // hashes (not compilation hashes) to compiled assets
+  // Utilize long-term caching by adding content hashes (not compilation hashes) to compiled assets
   output: {
     filename: '[name].[chunkhash].js',
     chunkFilename: '[name].[chunkhash].chunk.js',
@@ -65,8 +63,7 @@ module.exports = require('./webpack.base.babel')({
 
         // All chunks marked as `additional`, loaded after main section
         // and do not prevent SW to install. Change to `optional` if
-        // do not want them to be preloaded at all
-        // (cached only when first loaded)
+        // do not want them to be preloaded at all (cached only when first loaded)
         additional: ['*.chunk.js'],
       },
 
@@ -75,11 +72,9 @@ module.exports = require('./webpack.base.babel')({
 
       AppCache: false,
     }),
-    new CopyWebpackPlugin([{ from: 'static' }]),
   ],
 
   performance: {
-    assetFilter: assetFilename =>
-      !(/(\.map$)|(^(main\.|favicon\.))/.test(assetFilename)),
+    assetFilter: assetFilename => !(/(\.map$)|(^(main\.|favicon\.))/.test(assetFilename)),
   },
 });

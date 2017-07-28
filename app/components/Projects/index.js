@@ -1,11 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Relay from 'react-relay/classic'
 import Helmet from 'react-helmet'
+import { QueryRenderer, graphql } from 'react-relay';
 import MainGrid from 'components/shared/MainGrid';
+import { env } from 'relay/RelayEnvironment';
+import LoadingIndicator from 'components/shared/LoadingIndicator';
 import ProjectList from './ProjectList'
 
-export const Projects = ({ viewer }) => (
+const Projects = () => (
   <MainGrid>
     <Helmet
       title="Projects"
@@ -13,23 +15,28 @@ export const Projects = ({ viewer }) => (
         { name: 'description', content: 'Description of Projects' },
       ]}
     />
-    <ProjectList viewer={viewer} />
+    <QueryRenderer
+      environment={env}
+      variables={{ owner: null }}
+      query={graphql`
+        query ProjectsQuery($owner: String) {
+          viewer {
+            ...ProjectList_viewer
+          }
+        }
+      `}
+      render={({ props }) => {
+        if (props) {
+          return <ProjectList viewer={props.viewer} />;
+        }
+        return <LoadingIndicator />;
+      }}
+    />
   </MainGrid>
-)
+);
 
 Projects.propTypes = {
   viewer: PropTypes.object,
-}
+};
 
-export default Relay.createContainer(Projects, {
-  initialVariables: {
-    owner: null,
-  },
-  fragments: {
-    viewer: () => Relay.QL`
-      fragment on Viewer {
-        ${ProjectList.getFragment('viewer')}
-      }
-    `,
-  },
-})
+export default Projects;

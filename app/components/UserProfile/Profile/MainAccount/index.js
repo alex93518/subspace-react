@@ -1,36 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Row, Col, Panel } from 'react-bootstrap';
-import styled from 'styled-components';
-import Separator from 'components/shared/Separator';
-import FaUser from 'react-icons/lib/fa/user';
+import { Row, Col } from 'react-bootstrap';
 import ProviderLink from './ProviderLink';
-
-const UserPanel = styled(Panel)`
-  text-align: center;
-`
-
-const RowInfoPanel = styled(Row)`
-  margin-top: 10px;
-`
-
-const HeadUserName = styled.h2`
-  margin-top: 0px;
-`
-
-const SubHead = styled.h4`
-  margin-top: 0px;
-  margin-bottom: 15px;
-`
-
-const NameSeparator = styled(Separator)`
-  margin-top: 0px;
-`
-
-const UserIcon = styled(FaUser)`
-  font-size: 140px;
-  color: rgba(3, 102, 214, 0.54);
-`
+import {
+  UserPanel, UserIcon, RowInfoPanel, HeadUserName,
+  SubHead, NameSeparator,
+} from './styles';
 
 const MainAccount = ({
   user, isOwner, onProviderClick,

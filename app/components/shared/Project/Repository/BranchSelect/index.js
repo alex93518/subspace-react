@@ -1,26 +1,21 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Relay from 'react-relay/classic';
-import styled from 'styled-components'
-import { createContainer } from 'recompose-relay'
-import { compose, withHandlers } from 'recompose'
+import { graphql } from 'react-relay';
+import withRelayFragment from 'relay/withRelayFragment';
+import styled from 'styled-components';
+import { compose, withHandlers, mapProps } from 'recompose';
+import { withRouter } from 'react-router-dom';
 import { redirect } from 'redux/utils'
 import { Form, FormGroup, ControlLabel, FormControl } from 'react-bootstrap';
 import { getProjectPath } from 'utils/path';
+import { matchRoute, matchName } from 'utils/routeMatcher';
 
 const ControlLabelSty = styled(ControlLabel)`
   padding-right: 10px;
 `
 
 const BranchSelect = ({
-  branchSelect: { branches },
-  handleBranchChange,
-  relay: {
-    variables: {
-      branchHead,
-      isStashes,
-    },
-  },
+  branches, handleBranchChange, isStashes, branchHead,
 }) => (
   <Form inline>
     <FormGroup controlId="formInlineName">
@@ -46,54 +41,54 @@ const BranchSelect = ({
 
 BranchSelect.propTypes = {
   handleBranchChange: PropTypes.func.isRequired,
-  branchSelect: PropTypes.object.isRequired,
-  relay: PropTypes.object.isRequired,
-}
+  branches: PropTypes.object.isRequired,
+  isStashes: PropTypes.bool,
+  branchHead: PropTypes.string,
+};
 
 export default compose(
-  createContainer({
-    initialVariables: {
-      branchHead: 'master',
-      userName: null,
-      projectName: null,
-      isStashes: false,
-    },
-    prepareVariables: vars => {
-      if (vars.branchHead.indexOf('stash-') !== -1) {
-        return {
-          ...vars,
-          isStashes: true,
+  withRouter,
+  withRelayFragment({
+    branchSelect: graphql`
+      fragment BranchSelect_branchSelect on Repository {
+        refBranches: refs(first: 99) @skip(if: $isStashes) {
+          edges {
+            node {
+              name
+            }
+          }
+        }
+        stashBranches: stashes(first: 99) @include(if: $isStashes) {
+          edges {
+            node {
+              name
+            }
+          }
         }
       }
-      return vars
+    `,
+  }),
+  mapProps(({
+    location: { pathname },
+    branchSelect: {
+      refBranches, stashBranches,
     },
-    fragments: {
-      /*eslint-disable */
-      branchSelect: () => Relay.QL`
-        fragment on Repository {
-          branches: refs(first: 99) @skip(if: $isStashes) {
-            edges {
-              node {
-                name
-              }
-            }
-          }
-          branches: stashes(first: 99) @include(if: $isStashes) {
-            edges {
-              node {
-                name
-              }
-            }
-          }
-        }
-      `,
-      /*eslint-disable */
-    },
+    ...rest
+  }) => {
+    const params = matchRoute(pathname).params;
+    return ({
+      branches: refBranches || stashBranches,
+      isStashes: matchName(pathname) === 'Stashes',
+      branchHead: params.branchHead || 'master',
+      params,
+      ...rest,
+    })
+;
   }),
   withHandlers({
-    handleBranchChange: ({ suffix, relay: { variables } }) => event => {
+    handleBranchChange: ({ suffix, params }) => event => {
       const suffixPath = suffix ? `/${suffix}` : ''
-      redirect(`${getProjectPath(variables)}/${event.target.value}${suffixPath}`)
+      redirect(`${getProjectPath(params)}/${event.target.value}${suffixPath}`);
     },
   }),
 )(BranchSelect)

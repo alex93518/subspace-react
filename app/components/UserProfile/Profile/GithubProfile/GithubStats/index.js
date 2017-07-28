@@ -1,43 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import styled from 'styled-components';
 import MdLocationOn from 'react-icons/lib/md/location-on'
 import MdInsertLink from 'react-icons/lib/md/insert-link'
 import MdHistory from 'react-icons/lib/md/history'
 import MdAccessTime from 'react-icons/lib/md/access-time'
-import FaGithub from 'react-icons/lib/fa/github';
-import { Row, Col } from 'react-bootstrap';
+import { Col } from 'react-bootstrap';
 import moment from 'moment';
-
-const Icon = styled.span`
-  vertical-align: bottom !important;
-  font-size: 18px;
-  margin-right: 6px;
-`
-
-const NumStatRow = styled(Row)`
-  margin-bottom: 10px;
-  text-align: center;
-`
-
-const NumStat = styled.div`
-  color: #0C0D0E;
-  font-weight: 700;
-  font-size: 17px;
-`
-
-const InfoHead = styled.div`
-  color: #808080;
-  font-size: 14px;  
-  border-bottom: 1px solid #999;
-  margin-bottom: 10px;
-  padding-bottom: 5px;
-`
-
-const FaIcon = styled(FaGithub)`
-  margin-bottom: 3px;
-  margin-right: 8px;
-`
+import { InfoHead, FaIcon, NumStatRow, NumStat, Icon } from './styles';
 
 const GithubStats = ({ githubUser }) => (
   <div>

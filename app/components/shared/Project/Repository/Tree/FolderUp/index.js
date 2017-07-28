@@ -14,7 +14,7 @@ const LinkTree = styled(LinkTreeEntry)`
 `
 
 const FolderUp = ({ userName, projectName, branchHead, splat }) =>
-  <tr>
+  (<tr>
     <td colSpan="4">
       <LinkTree
         vars={{
@@ -31,7 +31,7 @@ const FolderUp = ({ userName, projectName, branchHead, splat }) =>
         ..
       </LinkTree>
     </td>
-  </tr>
+  </tr>)
 
 FolderUp.propTypes = {
   branchHead: PropTypes.string.isRequired,

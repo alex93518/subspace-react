@@ -1,9 +1,23 @@
-export const routeName = route =>
-  route.name.replace('_aggregated__', '').replace('__default_viewer', '')
+import { matchPath } from 'react-router';
+import { codeRoute } from 'components/Project/Repository/routes';
 
-export const matchRoute = (route, map) =>
-  map[routeName(route)] ? map[routeName(route)]() : null;
+export const matchRouteBase = (path, baseRoute) => {
+  const paths = baseRoute.map(route =>
+    matchPath(path, route)
+  ).filter(matchingPath => matchingPath !== null);
+  if (paths.length > 0) {
+    return paths[0];
+  }
+  return null;
+};
 
-export const matchRouteChild = (route, map, repository) =>
-  map[routeName(route)] ?
-    map[routeName(route)](repository, route.params) : null;
+export const matchNameBase = (path, baseRoute) => {
+  const getPath = matchRouteBase(path, baseRoute);
+  if (getPath != null) {
+    return baseRoute.filter(route => route.path === getPath.path)[0].name;
+  }
+  return null;
+};
+
+export const matchRoute = path => matchRouteBase(path, codeRoute);
+export const matchName = path => matchNameBase(path, codeRoute);

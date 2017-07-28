@@ -1,75 +1,20 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Relay from 'react-relay/classic';
-import styled from 'styled-components';
+import { graphql } from 'react-relay';
+import withRelayFragment from 'relay/withRelayFragment';
 import { ButtonGroup } from 'react-bootstrap';
 import { timeFromNow } from 'utils/string';
-import { ButtonGit } from 'components/shared/ButtonGit'
-import CopyClipboardButton from 'components/shared/CopyClipboardButton'
 import { compose, mapProps } from 'recompose';
-import { createContainer } from 'recompose-relay'
 import { parseDiff, totalHunk } from 'utils/diff'
+import { LinkUserName, LinkUserPhoto } from 'components/shared/Links';
 import {
-  LinkUserName,
-  LinkUserPhoto,
-  LinkCommit,
-} from 'components/shared/Links';
-
-const Tr = styled.tr`
-  border-top: 1px solid #ddd;
-`
-
-const Td = styled.td`
-  vertical-align: middle !important;
-  border-top: none !important;
-`
-
-const TdThumb = styled(Td)`
-  padding: 15px !important;
-  width: 52px;
-`
-
-const TdCommitLink = styled(Td)`
-  padding: 15px !important;
-  text-align: right;
-`
-
-const CommitMessage = styled.div`
-  font-size: 14px;
-  font-weight: 600;
-  margin-top: 0px;
-`
-
-const LinkCommitTitle = styled(LinkCommit)`
-  color: #444;
-`
-
-const LinkCommitGit = styled(LinkCommit)`
-  color: #777;
-  &:focus,:hover {
-    color: #999 !important;
-  }
-`
-
-const ButtonCommit = styled(ButtonGit)`
-  height: 28px;
-`
-
-const CopyClipboard = styled(CopyClipboardButton)`
-  height: 28px;
-`
-const SpanAdditions = styled.span`
-  font-weight: 600;
-  color: #2cbe4e;
-`
-
-const SpanDeletions = styled.span`
-  font-weight: 600;
-  color: #cb2431;
-`
+  Tr, TdThumb, Td, CommitMessage, LinkCommitTitle,
+  SpanAdditions, SpanDeletions, TdCommitLink,
+  CopyClipboard, ButtonCommit, LinkCommitGit,
+} from './styles';
 
 const Commit = ({
-  commit: {
+  commitItem: {
     oid,
     shortId,
     shortMessage,
@@ -77,9 +22,6 @@ const Commit = ({
     author: {
       user,
     },
-  },
-  relay: {
-    variables,
   },
   additions,
   deletions,
@@ -90,12 +32,12 @@ const Commit = ({
     </TdThumb>
     <Td>
       <CommitMessage>
-        <LinkCommitTitle vars={{ ...variables, commitId: oid }}>
+        <LinkCommitTitle to={oid}>
           {shortMessage}
         </LinkCommitTitle>
       </CommitMessage>
       <span>
-        <LinkUserName user={user} />
+        <LinkUserName userName={user.userName} />
         {' '}
         committed {timeFromNow(commitTime)} with
         {' '}
@@ -108,56 +50,45 @@ const Commit = ({
       <ButtonGroup>
         <CopyClipboard text={oid} />
         <ButtonCommit>
-          <LinkCommitGit
-            vars={{ ...variables, commitId: oid }}
-          >
+          <LinkCommitGit to={oid}>
             {shortId}
           </LinkCommitGit>
         </ButtonCommit>
       </ButtonGroup>
     </TdCommitLink>
   </Tr>
-)
+);
 
 Commit.propTypes = {
-  commit: PropTypes.object.isRequired,
-  relay: PropTypes.object.isRequired,
+  commitItem: PropTypes.object.isRequired,
   additions: PropTypes.number.isRequired,
   deletions: PropTypes.number.isRequired,
-}
+};
 
 export default compose(
-  createContainer({
-    initialVariables: {
-      branchHead: 'master',
-      userName: null,
-      projectName: null,
-    },
-    fragments: {
-      commit: () => Relay.QL`
-        fragment on Commit {
-          oid
-          shortId
-          shortMessage
-          commitTime
-          author {
-            user {
-              ${LinkUserName.getFragment('user')}
-              ${LinkUserPhoto.getFragment('user')}
-            }
-          }
-          diff {
-            diff
+  withRelayFragment({
+    commitItem: graphql`
+      fragment Commit_commitItem on Commit {
+        oid
+        shortId
+        shortMessage
+        commitTime
+        author {
+          user {
+            userName
+            photoUrl
           }
         }
-      `,
-    },
+        diff {
+          diff
+        }
+      }
+    `,
   }),
-  mapProps(({ commit, relay }) => {
-    const diff = parseDiff(commit)
+  mapProps(({ commitItem }) => {
+    const diff = parseDiff(commitItem);
     return ({
-      commit,
-      relay,
+      commitItem,
       additions: totalHunk('additions', diff),
       deletions: totalHunk('deletions', diff),
     })
