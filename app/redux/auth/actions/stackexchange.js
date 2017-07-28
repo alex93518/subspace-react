@@ -13,7 +13,7 @@ const init = () => (
       ...stackexchangeConfig,
       channelUrl: process.env.CLIENT_HOST ?
         `${process.env.CLIENT_HOST}/blank.html` :
-        'http://localhost/blank.html',
+        'http://subspace64.net/blank.html',
       complete: resolve,
     })
   })

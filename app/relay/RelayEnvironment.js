@@ -45,7 +45,8 @@ function baseFetchQuery(
   operation,
   variables,
 ) {
-  return fetch('http://localhost:9000/graphql', {
+  const graphqlEndpoint = process.env.GRAPHQL_ENDPOINT || 'http://api.subspace64.net/graphql';
+  return fetch(graphqlEndpoint, {
     method: 'POST',
     headers,
     body: JSON.stringify({
