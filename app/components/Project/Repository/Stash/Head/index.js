@@ -47,7 +47,7 @@ const StashHead = ({
         <SpanStashNum>Stash #{stashNum}</SpanStashNum>
       </H2Head>
       <div>
-        <LinkUserName user={user} /> wants to push {totalCommit} commits into
+        <LinkUserName userName={user.userName} /> wants to push {totalCommit} commits into
         {' '}
         <LinkProject to={'master'}>
           <StashLabel>master</StashLabel>
@@ -122,7 +122,7 @@ export default compose(
             }
             author {
               user {
-                ...LinkUserName_user
+                userName
               }
             }
           }

@@ -20,7 +20,7 @@ const UserVoteList = ({ userVoteList, title }) => (
               height={20}
               user={node.owner}
             />
-            <LinkUserName user={node.owner} />
+            <LinkUserName userName={node.owner.userName} />
             <SpanPoint
               data-votePoint={node.isVoteUp ? node.votePoint : -node.votePoint}
             >
@@ -48,8 +48,8 @@ export default createFragmentContainer(UserVoteList, {
           votePoint
           isVoteUp
           owner {
-            ...LinkUserName_user
-            ...LinkUserPhoto_user
+            userName
+            photoUrl
           }
         }
       }

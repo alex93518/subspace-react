@@ -17,7 +17,7 @@ const Branch = ({ name, commitTime, user }) => (
     <span>
       Updated {timeFromNow(commitTime)} by
       {' '}
-      <LinkUserName user={user} />
+      <LinkUserName userName={user.userName} />
     </span>
   </Td>
 )
@@ -39,7 +39,7 @@ export default compose(
             commitTime
             author {
               user {
-                ...LinkUserName_user
+                userName
               }
             }
           }

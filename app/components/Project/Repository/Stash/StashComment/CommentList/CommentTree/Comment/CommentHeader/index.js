@@ -14,7 +14,7 @@ const CommentHeader = ({
 }) => (
   <div>
     <span>
-      <LinkUserName user={owner} /> commented
+      <LinkUserName userName={owner.userName} /> commented
       {` ${moment(createdAt).fromNow()}`}
     </span>
     <SpanVoterStat>
@@ -61,7 +61,7 @@ export default compose(
       fragment CommentHeader_commentHeader on StashComment {
         id
         owner {
-          ...LinkUserName_user
+          userName
         }
         isOwnerVoteUp
         createdAt        

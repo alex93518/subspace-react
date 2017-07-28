@@ -32,7 +32,7 @@ export default compose(
         totalContributors
         contributors {
           userName
-          ...LinkUserPhoto_user
+          photoUrl
         }
       }
     `,

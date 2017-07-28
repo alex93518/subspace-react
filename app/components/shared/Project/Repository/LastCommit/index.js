@@ -61,7 +61,7 @@ const LastCommit = ({
   <DivCommit>
     <DivUser>
       <LinkUserPhoto user={user} width={20} height={20} />
-      <LinkUser user={user} />
+      <LinkUser userName={user.userName} />
       <LinkShortMsg to={oid}>
         {shortMessage}
       </LinkShortMsg>
@@ -89,8 +89,8 @@ export default createFragmentContainer(LastCommit, {
       oid
       author {
         user {
-          ...LinkUserName_user
-          ...LinkUserPhoto_user
+          userName
+          photoUrl
         }
       }
     }

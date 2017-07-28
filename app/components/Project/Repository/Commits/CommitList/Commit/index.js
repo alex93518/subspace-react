@@ -37,7 +37,7 @@ const Commit = ({
         </LinkCommitTitle>
       </CommitMessage>
       <span>
-        <LinkUserName user={user} />
+        <LinkUserName userName={user.userName} />
         {' '}
         committed {timeFromNow(commitTime)} with
         {' '}
@@ -75,8 +75,8 @@ export default compose(
         commitTime
         author {
           user {
-            ...LinkUserName_user
-            ...LinkUserPhoto_user
+            userName
+            photoUrl
           }
         }
         diff {

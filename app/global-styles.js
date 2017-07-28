@@ -48,6 +48,14 @@ injectGlobal`
     height: 100%;
   }
 
+  .inline-block {
+    display: inline-block;
+  }
+
+  .error {
+    color: red;
+  }
+
   /* the tree node's style */
   .tree-view_item {
     display: -webkit-flex;

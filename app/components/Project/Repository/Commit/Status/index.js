@@ -20,7 +20,7 @@ const CommitStatus = ({
       <Row>
         <Col md={6}>
           <LinkUserPhoto user={user} width={24} height={24} />
-          <UserName user={user} />
+          <UserName userName={user.userName} />
           {' '}
           committed {timeFromNow(commitTime)}
         </Col>
@@ -43,8 +43,8 @@ export default createFragmentContainer(CommitStatus, {
       commitTime
       author {
         user {
-          ...LinkUserName_user
-          ...LinkUserPhoto_user
+          userName
+          photoUrl
         }
       }
     }

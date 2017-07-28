@@ -1,8 +1,9 @@
 import React from 'react';
+import { FieldContainer, FieldInput } from './styles';
 
 export const TextInput = field => (
-  <div>
-    <input
+  <FieldContainer width={field.width}>
+    <FieldInput
       {...field.input}
       type={field.type}
       placeholder={field.placeholder}
@@ -12,5 +13,5 @@ export const TextInput = field => (
     {field.meta.touched &&
       field.meta.error &&
       <span className="error">{field.meta.error}</span>}
-  </div>
+  </FieldContainer>
 );

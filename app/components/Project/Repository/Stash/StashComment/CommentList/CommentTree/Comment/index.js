@@ -87,7 +87,8 @@ export default compose(
         ...CommentFooter_commentFooter
         id
         owner {
-          ...LinkUserPhoto_user
+          userName
+          photoUrl
         }
         isOwnerVoteUp
         content

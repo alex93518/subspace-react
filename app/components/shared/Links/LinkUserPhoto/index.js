@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { createFragmentContainer, graphql } from 'react-relay';
 import { Image } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
@@ -12,11 +11,10 @@ const UserIcon = styled(FaUser)`
   color: rgba(3, 102, 214, 0.54);
 `;
 
-const LinkUserPhotoBase = ({
-  relay, // eslint-disable-line
+export const LinkUserPhoto = ({
   user: { userName, photoUrl },
   ...props
-}) => (
+}) => (userName && photoUrl &&
   <Link to={getUserProfilePath(userName)}>
     {
       photoUrl ?
@@ -31,17 +29,6 @@ const LinkUserPhotoBase = ({
   </Link>
 )
 
-LinkUserPhotoBase.propTypes = {
+LinkUserPhoto.propTypes = {
   user: PropTypes.object.isRequired,
 }
-
-const LinkUserPhoto = createFragmentContainer(LinkUserPhotoBase, {
-  user: graphql`
-    fragment LinkUserPhoto_user on User {
-      userName
-      photoUrl
-    }
-  `,
-})
-
-export { LinkUserPhoto }
