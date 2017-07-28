@@ -3,4 +3,12 @@ version: 0.2
 phases:
   install:
     commands:
+      - npm install rimraf webpack cross-env relay-compiler -g
       - sudo bash .ebextensions/setup_watchman.sh
+  build:
+    commands:
+      - npm install --production && npm run build
+
+artifacts:
+  files:
+    - '**/*'
