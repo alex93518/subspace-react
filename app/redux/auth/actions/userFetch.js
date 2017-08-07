@@ -1,18 +1,21 @@
 import { graphql } from 'react-relay';
 import { network } from 'relay/RelayEnvironment';
 
-export const getUserName = userId => {
+export const getUser = firebaseId => {
   const query = graphql`
-    query userFetchQuery($userId: String!) {
+    query userFetchQuery($firebaseId: String!) {
       viewer {
-        user(id: $userId) {
+        user(firebaseId: $firebaseId) {
           id
           userName
           fullName
           photoUrl
+          isInvisible
         }
+        accessToken,
+        firebaseToken,
       }
     }
   `;
-  return network.fetch(query(), { userId });
+  return network.fetch(query(), { firebaseId });
 };

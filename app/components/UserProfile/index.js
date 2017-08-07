@@ -6,6 +6,8 @@ import MainGrid from 'components/shared/MainGrid';
 import ProjectList from 'components/Projects/ProjectList';
 import { env } from 'relay/RelayEnvironment';
 import LoadingIndicator from 'components/shared/LoadingIndicator';
+import Separator from 'components/shared/Separator';
+import PendingStashList from './PendingStashList';
 import Profile from './Profile';
 
 export const UserProfile = ({ match: { params: { userName } } }) => (
@@ -31,6 +33,8 @@ export const UserProfile = ({ match: { params: { userName } } }) => (
                 accessToken={viewer.accessToken}
                 isOwner={viewer.me ? viewer.me.userName === viewer.user.userName : false}
               >
+                <PendingStashList viewer={viewer} />
+                <Separator />
                 <ProjectList viewer={viewer} owner={viewer.user.userName} />
               </Profile>
             </div>
@@ -61,6 +65,7 @@ const query = graphql`
       }
       accessToken
       ...ProjectList_viewer
+      ...PendingStashList_viewer
     }
   }
 `;

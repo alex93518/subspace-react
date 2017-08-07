@@ -2,9 +2,9 @@ import { call } from 'redux-saga/effects';
 import { firebaseAuth } from 'utils/firebase';
 import { getGithubUserInfo } from 'utils/github';
 import { path } from 'ramda'
-import { resetEnv } from 'relay/RelayEnvironment';
+import { resetEnv, addUserPresence } from 'relay/RelayEnvironment';
 import { createUserMutation, addUserProviderMutation } from 'relay';
-import { getUserName } from './userFetch';
+import { getUser } from './userFetch';
 import { getUserProvider } from './userProviderFetch';
 
 export function* createUserWithEmailPassword({ payload }) {
@@ -17,33 +17,39 @@ export function* createUserWithEmailPassword({ payload }) {
 
   const provider = 'firebase-email';
   const userPayload = fireBaseUserToPayload(user, provider);
+  const firebaseId = userPayload.firebaseId
   yield call(resetEnv, 'firebase', userPayload.token);
 
   yield call(createUserMutation, {
     userName,
-    firebaseId: user.uid,
+    userId: user.uid,
     emailAddress: email,
     password,
     provider,
+    firebaseId,
   });
 
-  return { user: userPayload, userName };
+  return { user: userPayload, userName, isInvisible: false };
 }
 
-export function* signIn({ payload: { authProvider, getNameAndCreateUser } }) {
+export function* signIn({ payload: { authProvider, sendCreateUser } }) {
   const { user } = yield call(
     [firebaseAuth, firebaseAuth.signInWithPopup],
     authProvider
   )
 
   if (user) {
+    const { data: { viewer: { userProvider } } } = yield call(
+      getUserProvider, user.uid
+    )
+
     const provider = `firebase-${user.providerData[0].providerId}`
-    const userPayload = fireBaseUserToPayload(user, provider);
+    const userPayload = fireBaseUserToPayload(
+      user, provider, userProvider ? userProvider.userName : null
+    );
+    const firebaseId = userPayload.firebaseId;
 
     yield call(resetEnv, 'firebase', userPayload.token);
-    const { data: { viewer: { userProvider } } } = yield call(
-      getUserProvider, userPayload.providerId, provider, userPayload.firebaseId
-    )
 
     if (!userProvider) {
       let photoUrl = userPayload.photoUrl;
@@ -65,23 +71,31 @@ export function* signIn({ payload: { authProvider, getNameAndCreateUser } }) {
         emailAddress,
         provider,
         providerId: userPayload.providerId,
-        firebaseId: userPayload.firebaseId,
+        firebaseId,
         token: userPayload.token,
         displayName: userPayload.displayName,
       };
+
       try {
-        const userName = yield call(getNameAndCreateUser, userPayload)
-        localStorage.setItem('providerAuthEmail', userName)
-        return { user: retUserPayload, userName };
+        const { data: { createUser: { user: { userName, isInvisible } } } } = yield call(
+          sendCreateUser, userPayload
+        )
+        if (!isInvisible) {
+          yield call(addUserPresence, userName)
+        }
+        return { user: retUserPayload, userName, isInvisible };
       } catch (ex) {
         throw new Error({ message: 'Cannot login' })
       }
     }
 
-    const userInfo = yield call(getUserName, userProvider.userId)
-    const userName = path(['user', 'userName'], userInfo.data.viewer);
-    if (userName) {
-      return { user: userPayload, userName };
+    const { data: { viewer } } = yield call(getUser, firebaseId)
+    if (viewer.user) {
+      const { userName, isInvisible } = viewer.user
+      if (!isInvisible) {
+        yield call(addUserPresence, userName)
+      }
+      return { user: userPayload, userName, isInvisible };
     }
 
     throw new Error({ message: 'Cannot login' })
@@ -99,18 +113,23 @@ export function* signInWithEmailPassword({ payload: { email, password } }) {
 
   const provider = 'firebase-email';
   const userPayload = fireBaseUserToPayload(user, provider);
+  const firebaseId = userPayload.firebaseId;
 
   const { data: { viewer: { userProvider } } } = yield call(
-    getUserProvider, null, provider, user.uid
+    getUserProvider, user.uid
   );
 
   if (userProvider) {
-    const userInfo = yield call(getUserName, userProvider.userId)
+    const userInfo = yield call(getUser, firebaseId)
     const userName = path(['user', 'userName'], userInfo.data.viewer);
+    const isInvisible = path(['user', 'isInvisible'], userInfo.data.viewer);
 
     if (userName) {
       yield call(resetEnv, 'firebase', userPayload.token);
-      return { user: userPayload, userName };
+      if (!isInvisible) {
+        yield call(addUserPresence, userName)
+      }
+      return { user: userPayload, userName, isInvisible };
     }
   }
 
@@ -128,7 +147,6 @@ export function* addFirebaseProvider({
   if (user) {
     const providerId = user.providerData[0].uid
     const provider = `firebase-${user.providerData[0].providerId}`
-    const firebaseId = user.uid
 
     let userName = user.displayName
     if (provider === 'firebase-github.com') {
@@ -144,7 +162,7 @@ export function* addFirebaseProvider({
       userName,
       provider,
       providerId,
-      firebaseId,
+      firebaseId: user.uid,
     });
 
     if (callback) callback(providerId)
@@ -154,11 +172,11 @@ export function* addFirebaseProvider({
   throw new Error({ message: 'Cannot login to provider' })
 }
 
-const fireBaseUserToPayload = (user, provider) => {
+const fireBaseUserToPayload = (user, provider, name = null) => {
   const token = user._lat // eslint-disable-line
   const providerId = user.providerData[0].uid;
   const firebaseId = user.uid;
-  const fullName = user.displayName;
+  const fullName = name || user.displayName;
   const photoUrl = user.photoURL;
   const emailAddress = user.email;
 

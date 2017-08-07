@@ -18,9 +18,9 @@ export const getBranchPath = props =>
     props.branchHead ? shortBranchName(props.branchHead) : 'master'
   );
 
-export const getTreeEntryPath = (props, vars) => path.join(
+export const getTreeEntryPath = props => path.join(
     getBranchPath(props),
-    vars.type === 'tree' ? 'tree' : 'blob'
+    props.type === 'tree' ? 'tree' : 'blob'
   );
 
 export const getCommitPath = props =>

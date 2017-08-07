@@ -18,7 +18,7 @@ const AlignerItem = styled.div`
 const LoadingIndicator = () => (
   <Aligner>
     <AlignerItem>
-      <Spinner fadeIn="quarter" name="line-scale" color="goldenrod" />
+      <Spinner fadeIn="half" name="line-scale" color="goldenrod" />
     </AlignerItem>
   </Aligner>
 );
