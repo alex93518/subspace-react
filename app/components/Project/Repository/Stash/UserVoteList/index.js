@@ -1,9 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { createFragmentContainer, graphql } from 'react-relay';
-import { LinkUserName } from 'components/shared/Links';
 import Separator from 'components/shared/Separator';
-import { DivTitle, DivUser, UserPhoto, SpanPoint } from './styles';
+import { DivTitle, DivUser, UserPhoto, UserName, SpanPoint } from './styles';
 
 const UserVoteList = ({ userVoteList, title }) => (
   <div>
@@ -13,21 +12,21 @@ const UserVoteList = ({ userVoteList, title }) => (
     {
       userVoteList.totalCount < 1 ?
         <div>None yet</div> :
-        userVoteList.edges.map(({ node }) =>
-          (<DivUser key={node.id}>
+        userVoteList.edges.map(({ node }) => (
+          <DivUser key={node.id}>
             <UserPhoto
               width={20}
               height={20}
               user={node.owner}
             />
-            <LinkUserName userName={node.owner.userName} />
+            <UserName userName={node.owner.userName} />
             <SpanPoint
               data-votePoint={node.isVoteUp ? node.votePoint : -node.votePoint}
             >
               {node.isVoteUp ? node.votePoint : -node.votePoint}
             </SpanPoint>
-          </DivUser>)
-        )
+          </DivUser>
+        ))
     }
     <Separator />
   </div>

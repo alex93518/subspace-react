@@ -5,22 +5,32 @@ import { compose, withHandlers } from 'recompose';
 import withRelayFragment from 'relay/withRelayFragment';
 import { Button } from 'react-bootstrap';
 import { setStashIsOnlineMutation } from 'relay';
+import { connect } from 'react-redux';
+import { submit } from 'redux-form';
 
-const Footer = ({ publishStash }) => (
+const Footer = ({ pendingStashItem: { id }, publishStash, dispatch }) => (
   <div style={{ textAlign: 'right' }}>
-    <Button style={{ marginRight: '10px' }}>Update</Button>
+    <Button
+      style={{ marginRight: '10px' }}
+      onClick={() => dispatch(submit(`stashForm${id}`))}
+    >
+      Update
+    </Button>
     <Button onClick={publishStash}>Publish</Button>
   </div>
 )
 
 Footer.propTypes = {
+  pendingStashItem: PropTypes.object.isRequired,
   publishStash: PropTypes.func.isRequired,
+  dispatch: PropTypes.func.isRequired,
 }
 
 export default compose(
   withRelayFragment({
     pendingStashItem: graphql`
       fragment Footer_pendingStashItem on Ref {
+        id
         stash {
           rawId
         }
@@ -34,5 +44,6 @@ export default compose(
         isOnline: true,
       })
     },
-  })
+  }),
+  connect()
 )(Footer)

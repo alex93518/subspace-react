@@ -15,7 +15,7 @@ const Comment = ({
 }) => (
   <MainDiv>
     <DivLinkPhoto>
-      <LinkUserPhoto user={owner} width={40} height={40} />
+      <LinkUserPhoto user={owner} width={32} height={32} />
     </DivLinkPhoto>
     <PanelComment
       data-isOwnerVoteUp={isOwnerVoteUp}

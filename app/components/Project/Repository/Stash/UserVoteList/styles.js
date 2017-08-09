@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { LinkUserPhoto } from 'components/shared/Links';
+import { LinkUserPhoto, LinkUserName } from 'components/shared/Links';
 
 export const DivTitle = styled.div`
   color: #586069;
@@ -10,7 +10,6 @@ export const DivTitle = styled.div`
 `
 
 export const UserPhoto = styled(LinkUserPhoto)`
-  margin-right: 7px;
 `
 
 export const SpanPoint = styled.span`
@@ -20,4 +19,8 @@ export const SpanPoint = styled.span`
 
 export const DivUser = styled.div`
   margin: 10px 0;
+`
+
+export const UserName = styled(LinkUserName)`
+  margin-left: 8px;
 `

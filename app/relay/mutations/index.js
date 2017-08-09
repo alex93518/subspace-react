@@ -5,3 +5,4 @@ export * from './stash/mergeStash';
 export * from './stash/voteStash';
 export * from './stash/voteStashComment';
 export * from './stash/setStashIsOnline';
+export * from './stash/updateStashMeta';

@@ -1,39 +1,84 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { createFragmentContainer, graphql } from 'react-relay';
+import { graphql } from 'react-relay';
+import withRelayFragment from 'relay/withRelayFragment';
+import { compose, mapProps, withState } from 'recompose';
+import R from 'ramda';
+import { Col } from 'react-bootstrap';
 import PendingStashItem from './PendingStashItem';
+import {
+  TitleDiv, MainRow, DivRepoName,
+} from './styles';
 
 const PendingStashList = ({
-  viewer: { pendingStashes: { edges } },
+  repoNameList, stashByRepo, selectedRepo, updateSelectedRepo,
 }) => (
+  selectedRepo && repoNameList && repoNameList.length > 0 &&
   <div>
-    {
-      edges && edges.length > 0 &&
-      <h3>Pending stashes</h3>
-    }
-    {
-      edges && edges.map(({ node }) =>
-        <PendingStashItem key={node.id} gitRef={node} />
-      )
-    }
+    <TitleDiv>Review pending pushes</TitleDiv>
+    <MainRow>
+      <Col md={3}>
+        {selectedRepo &&
+          repoNameList.map(name =>
+            (<DivRepoName
+              role="link"
+              data-isActive={name === selectedRepo}
+              key={`repoName${name}`}
+              onClick={() => updateSelectedRepo(name)}
+            >
+              {name}
+            </DivRepoName>)
+            )
+        }
+      </Col>
+      <Col md={9}>
+        {stashByRepo[selectedRepo] && stashByRepo[selectedRepo].map(({ node }) =>
+          <PendingStashItem key={`stashItem${node.id}`} gitRef={node} />
+        )}
+      </Col>
+    </MainRow>
   </div>
 )
 
 PendingStashList.propTypes = {
-  viewer: PropTypes.object.isRequired,
+  stashByRepo: PropTypes.object.isRequired,
+  repoNameList: PropTypes.array.isRequired,
+  selectedRepo: PropTypes.string,
+  updateSelectedRepo: PropTypes.func.isRequired,
 }
 
-export default createFragmentContainer(PendingStashList, {
-  viewer: graphql`
-    fragment PendingStashList_viewer on Viewer {
-      pendingStashes: stashes(first: 99, isOnline: false){
-        edges {
-          node {
-            id
-            ...PendingStashItem_gitRef
+export default compose(
+  withRelayFragment({
+    viewer: graphql`
+      fragment PendingStashList_viewer on Viewer {
+        pendingStashes: stashes(first: 99, isOnline: false){
+          edges {
+            node {
+              repository {
+                id
+                name
+              }            
+              id
+              ...PendingStashItem_gitRef
+            }
           }
         }
       }
+    `,
+  }),
+  mapProps(props => {
+    const groupByRepoName = R.groupBy(edge =>
+      edge.node.repository.name
+    )(props.viewer.pendingStashes.edges)
+    return {
+      stashByRepo: groupByRepoName,
+      repoNameList: R.keys(groupByRepoName) || [],
+      ...props,
     }
-  `,
-})
+  }),
+  withState(
+    'selectedRepo',
+    'updateSelectedRepo',
+    props => props.repoNameList.length ? props.repoNameList[0] : null
+  )
+)(PendingStashList)
