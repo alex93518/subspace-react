@@ -2,13 +2,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { createFragmentContainer, graphql } from 'react-relay';
 import Commit from 'components/Project/Repository/Commits/CommitList/Commit';
-import { CommitsHead, TableCommit } from './styles';
+import { TableCommit } from './styles';
 
 const StashCommitStatus = ({
   stashCommitStatus: { history },
 }) => (
   <div>
-    <CommitsHead>Commits</CommitsHead>
     <TableCommit>
       <tbody>
         {

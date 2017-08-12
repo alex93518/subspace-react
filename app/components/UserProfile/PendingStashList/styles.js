@@ -10,13 +10,15 @@ export const TitleDiv = styled.div`
 `
 
 export const MainRow = styled(Row)`
+  font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif;
   margin: 0px;
   padding: 15px 0px;
-  border: 1px solid #ddd;
 `
 
 export const DivRepoName = styled.div`
   cursor: pointer;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 500;
   padding: 10px 15px;
   border-radius: 5px;
   color: ${props => props['data-isActive'] ? '#fff' : '#333'};

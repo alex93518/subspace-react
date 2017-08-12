@@ -5,78 +5,94 @@ import { compose, withState, withHandlers } from 'recompose';
 import FlipMove from 'react-flip-move';
 import withRelayFragment from 'relay/withRelayFragment';
 import StashCommitStatus from 'components/Project/Repository/Stash/CommitStatus';
+import { Card, CardHeader } from 'material-ui/Card';
+import Paper from 'material-ui/Paper';
 import Header from './Header';
+import HeadSub from './HeadSub';
 import Footer from './Footer';
 import Form from './Form';
 import { PendingStashPanel, ContentDiv, CommitDiv } from './styles';
 
 const PendingStashItem = ({
-  gitRef, isShowContent, toggleShowContent, isClear,
-  // handleSubmit, pristine, reset, submitting,
+  gitRef, isShowContent, toggleShowContent,
 }) => (
-  <PendingStashPanel
-    header={
-      <Header
-        pendingStashItem={gitRef}
-        isShowContent={isShowContent}
-        toggleShowContent={toggleShowContent}
-        isClear={isClear}
-      />
-    }
-    footer={
-      isShowContent &&
-      <Footer pendingStashItem={gitRef} />
-    }
-  >
-    <FlipMove
-      duration={100}
-      easing="ease"
-      staggerDurationBy={10}
-      staggerDelayBy={15}
-      enterAnimation={'accordionVertical'}
-      leaveAnimation={'accordionVertical'}
-    >
-      {
+  !gitRef.stash.isOnline &&
+  <Card expanded={isShowContent} onExpandChange={toggleShowContent}>
+    <CardHeader
+      title={<Header pendingStashItem={gitRef} createdAt={gitRef.stash.createdAt} />}
+      subtitle={<HeadSub stash={gitRef.stash} />}
+      actAsExpander
+      showExpandableButton
+    />
+    <PendingStashPanel
+      footer={
         isShowContent &&
-        <div key={`reviewPendingPushContent${gitRef.id}`}>
-          <ContentDiv>
-            <Form formId={gitRef.id} stashId={gitRef.stash.rawId} />
-            <CommitDiv>
-              <StashCommitStatus stashCommitStatus={gitRef.target} />
-            </CommitDiv>
-          </ContentDiv>
-        </div>
+        <Footer pendingStashItem={gitRef} />
       }
-    </FlipMove>
-  </PendingStashPanel>
+    >
+      <FlipMove
+        duration={100}
+        easing="ease"
+        staggerDurationBy={10}
+        staggerDelayBy={15}
+        enterAnimation={'accordionVertical'}
+        leaveAnimation={'none'}
+      >
+        {
+          isShowContent &&
+          <div key={`reviewPendingPushContent${gitRef.id}`}>
+            <ContentDiv>
+              <Form
+                form={`stashForm${gitRef.id}`}
+                stashId={gitRef.stash.rawId}
+                initialValues={{
+                  stashTitle: gitRef.stash.title || '',
+                  stashDescription: gitRef.stash.description || '',
+                }}
+              />
+              <Paper zDepth={1}>
+                <CommitDiv>
+                  <StashCommitStatus stashCommitStatus={gitRef.target} />
+                </CommitDiv>
+              </Paper>
+            </ContentDiv>
+          </div>
+        }
+      </FlipMove>
+    </PendingStashPanel>
+  </Card>
 )
 
 PendingStashItem.propTypes = {
   gitRef: PropTypes.object.isRequired,
   isShowContent: PropTypes.bool.isRequired,
   toggleShowContent: PropTypes.func.isRequired,
-  isClear: PropTypes.bool.isRequired,
 }
 
 export default compose(
   withRelayFragment({
     gitRef: graphql`
       fragment PendingStashItem_gitRef on Ref {
-        ...Header_pendingStashItem
-        ...Footer_pendingStashItem
+        id
+        name
         repository {
           name
         }
         stash {
+          isOnline
           rawId
+          createdAt
+          title
+          description
+          ...HeadSub_stash
         }
-        id
-        name
         target {
           ... on Commit {
             ...CommitStatus_stashCommitStatus
           }
         }      
+        ...Header_pendingStashItem
+        ...Footer_pendingStashItem
       }
     `,
   }),

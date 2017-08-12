@@ -13,24 +13,27 @@ import {
 } from './styles'
 
 const StashListItem = ({
-  user, stashNum, totalCommit, totalComments,
+  title, description, user, stashNum, totalCommit, totalComments,
   totalVotePoints, voteTreshold, acceptVotes, rejectVotes, votePercentage,
 }) => (
   <Row>
-    <Col md={12}>
+    <Col mdOffset={1} md={10}>
       <PanelHead>
         <LinkStash to={stashNum}>
           <H2Head>
-            <SpanStashNum>Stash #{stashNum}</SpanStashNum>
+            <SpanStashNum>{title || `Stash #${stashNum}`}</SpanStashNum>
           </H2Head>
         </LinkStash>
-        <span>
+        <div>
           <LinkUserName userName={user.userName} /> wants to push {totalCommit} commits into
           {' '}
           <LinkProject to={'master'}>
             <StashLabel>master</StashLabel>
           </LinkProject>
-        </span>
+        </div>
+        { description &&
+          <div>{description}</div>
+        }
         <RowVoteStats>
           <Col md={12}>
             <Media>
@@ -72,6 +75,8 @@ const StashListItem = ({
 )
 
 StashListItem.propTypes = {
+  title: PropTypes.string,
+  description: PropTypes.string,
   user: PropTypes.object.isRequired,
   stashNum: PropTypes.string.isRequired,
   totalCommit: PropTypes.number.isRequired,
@@ -88,6 +93,8 @@ export default compose(
     stashListItem: graphql`
       fragment StashListItem_stashListItem on Ref {
         stash {
+          title
+          description
           stashNum
           voteTreshold
           votes (first: 9999) {
@@ -124,6 +131,8 @@ export default compose(
   mapProps(({
     stashListItem: {
       stash: {
+        title,
+        description,
         votes: {
           totalVotePoints,
         },
@@ -142,6 +151,8 @@ export default compose(
       ...rest
     },
   }) => ({
+    title,
+    description,
     totalVotePoints,
     totalCommit: totalCount,
     stashNum: stashNum.toString(),

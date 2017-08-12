@@ -1,6 +1,6 @@
 import { combineReducers } from 'redux-immutable'
 import { routerReducer } from 'react-router-redux'
-import { reducer as formReducer } from 'redux-form'
+import { reducer as formReducer } from 'redux-form/immutable'
 import authReducer from 'redux/auth/reducer'
 
 export default function createReducer(asyncReducers) {

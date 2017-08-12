@@ -2,7 +2,7 @@ import styled from 'styled-components';
 import { Panel } from 'react-bootstrap';
 
 export const PendingStashPanel = styled(Panel)`
-  background: #f9f9f9;
+  background: #eee;
   margin-bottom: 10px;
   & h4 {
     margin-top: 5px;

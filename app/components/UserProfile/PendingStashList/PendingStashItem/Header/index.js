@@ -1,38 +1,31 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { createFragmentContainer, graphql } from 'react-relay';
+import moment from 'moment';
 import { LinkProject } from 'components/shared/Links';
 import { shortBranchName } from 'utils/string';
-import FaCaretRight from 'react-icons/lib/fa/caret-right';
-import FaCaretDown from 'react-icons/lib/fa/caret-down';
-import { MainDiv, IconContainer } from './styles';
+import { TimeSpane } from './styles';
 
 const Header = ({
-  toggleShowContent, isShowContent, isClear,
+  createdAt,
   pendingStashItem: {
     name, repository,
     repository: { owner: { userName } },
   },
 }) => (
-  <MainDiv
-    role="link"
-    data-isClear={isClear}
-    onClick={toggleShowContent}
-  >
+  <span>
     <LinkProject vars={{ userName, projectName: repository.name }}>
       {repository.name}
     </LinkProject> / {shortBranchName(name)}
-    <IconContainer>
-      { isShowContent ? <FaCaretDown /> : <FaCaretRight />}
-    </IconContainer>
-  </MainDiv>
+    <TimeSpane>
+      pushed {moment(createdAt).fromNow()}
+    </TimeSpane>
+  </span>
 )
 
 Header.propTypes = {
   pendingStashItem: PropTypes.object.isRequired,
-  toggleShowContent: PropTypes.func.isRequired,
-  isShowContent: PropTypes.bool.isRequired,
-  isClear: PropTypes.bool.isRequired,
+  createdAt: PropTypes.number.isRequired,
 }
 
 export default createFragmentContainer(Header, {

@@ -219,14 +219,9 @@ export default compose(
   }),
   reduxForm({
     form: 'createProject',
-    initialValues: {
-      repoAccess: 'public',
-      repoPushVote: 'pushVote',
-      isReviewStash: true,
-    },
     enableReinitialize: true,
     onSubmit: async (values, _, { auth, history }) => {
-      const { repoAccess, repoPushVote, isReviewStash, topics, ...repository } = values;
+      const { repoAccess, repoPushVote, isReviewStash, topics, ...repository } = values.toObject();
       if (!repository.name) {
         throw new SubmissionError({ name: 'Project name cannot be empty', _error: 'Empty project name' })
       }
@@ -261,6 +256,6 @@ export default compose(
     },
   }),
   connect(state => ({
-    createProject: state.get('form').createProject.values,
+    createProject: state.get('form').get('createProject').get('values').toObject(),
   }))
 )(CreateProjectForm);

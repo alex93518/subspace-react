@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { graphql } from 'react-relay';
 import withRelayFragment from 'relay/withRelayFragment';
+import Paper from 'material-ui/Paper';
 import { compose, mapProps, withState } from 'recompose';
 import R from 'ramda';
 import { Col } from 'react-bootstrap';
@@ -16,27 +17,29 @@ const PendingStashList = ({
   selectedRepo && repoNameList && repoNameList.length > 0 &&
   <div>
     <TitleDiv>Review pending pushes</TitleDiv>
-    <MainRow>
-      <Col md={3}>
-        {selectedRepo &&
-          repoNameList.map(name =>
-            (<DivRepoName
-              role="link"
-              data-isActive={name === selectedRepo}
-              key={`repoName${name}`}
-              onClick={() => updateSelectedRepo(name)}
-            >
-              {name}
-            </DivRepoName>)
-            )
-        }
-      </Col>
-      <Col md={9}>
-        {stashByRepo[selectedRepo] && stashByRepo[selectedRepo].map(({ node }) =>
-          <PendingStashItem key={`stashItem${node.id}`} gitRef={node} />
-        )}
-      </Col>
-    </MainRow>
+    <Paper zDepth={1}>
+      <MainRow>
+        <Col md={3}>
+          {selectedRepo &&
+            repoNameList.map(name =>
+              (<DivRepoName
+                role="link"
+                data-isActive={name === selectedRepo}
+                key={`repoName${name}`}
+                onClick={() => updateSelectedRepo(name)}
+              >
+                {name}
+              </DivRepoName>)
+              )
+          }
+        </Col>
+        <Col md={9}>
+          {stashByRepo[selectedRepo] && stashByRepo[selectedRepo].map(({ node }) =>
+            <PendingStashItem key={`stashItem${node.id}`} gitRef={node} />
+          )}
+        </Col>
+      </MainRow>
+    </Paper>
   </div>
 )
 
@@ -57,7 +60,7 @@ export default compose(
               repository {
                 id
                 name
-              }            
+              }
               id
               ...PendingStashItem_gitRef
             }

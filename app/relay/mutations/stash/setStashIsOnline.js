@@ -5,6 +5,9 @@ const mutation = graphql`
   mutation setStashIsOnlineMutation($input: SetStashIsOnlineInput!) {
     setStashIsOnline(input: $input) {
       clientMutationId
+      ref {
+        ...PendingStashItem_gitRef
+      }
     }
   }
 `;

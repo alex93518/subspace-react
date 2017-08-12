@@ -29,7 +29,7 @@ const render = () => {
 // this uses the singleton browserHistory provided by react-router
 // Optionally, this could be changed to leverage a created history
 // e.g. `const browserHistory = useRouterHistory(createBrowserHistory)();`
-const persistor = persistStore(store, {}, render)
+const persistor = persistStore(store, { blacklist: ['form'] }, render)
 
 // Install ServiceWorker and AppCache in the end since
 // it's not most important operation and if main code fails,
