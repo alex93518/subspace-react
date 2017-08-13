@@ -17,6 +17,7 @@ const mutation = graphql`
               userName
               provider
               providerId
+              firebaseId
             }
           }
         }
@@ -30,16 +31,17 @@ export const addUserProviderMutation = ({
   provider,
   userName,
   providerId,
-  firebaseId,
   accessToken,
+  firebaseId,
+  ...rest
 }) => {
   const input = {
     userId,
     provider,
     userName,
     providerId: providerId || null,
-    firebaseId: firebaseId || null,
     accessToken: accessToken || null,
+    firebaseId,
   };
 
   return commitMutation(
@@ -47,7 +49,8 @@ export const addUserProviderMutation = ({
     {
       mutation,
       variables: { input },
-      onError: err => console.error(err),
+      onCompleted: rest.onCompleted || (() => null),
+      onError: rest.onError || (err => console.error(err)),
     },
   );
 };

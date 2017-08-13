@@ -10,19 +10,25 @@ import {
   signInWithStackexchangeFn, addStackexchangeProviderFn,
 } from './stackexchange'
 
-export function* getNameAndCreateUser(user) {
+// SignOut moved to RelayEnvironment.js to prevent circular deps
+
+export function* sendCreateUser(user) {
   yield call(redirect, '/login')
   authActions.userNameNotAvail(user.displayName || 'Guest')
   const { payload } = yield take(authActions.addUsername.getType())
   const mutationVariables = {
     ...user,
+    userId: user.firebaseId || null,
     accessToken: user.accessToken || null,
     userName: payload.userName,
     password: payload.password,
+    isNetwork: true,
+    firebaseId: user.firebaseId,
   };
-  yield call(createUserMutation, mutationVariables);
 
-  return payload.userName;
+  const res = yield call(createUserMutation, mutationVariables);
+
+  return res
 }
 
 export const authActions = actionsGenerator({
@@ -38,7 +44,7 @@ export const authActions = actionsGenerator({
 
 export const signInWithGithub = () => authActions.signIn.init({
   authProvider: new firebaseApp.auth.GithubAuthProvider(),
-  getNameAndCreateUser,
+  sendCreateUser,
 });
 
 export const addGithubProvider = (id, userId, callback) =>
@@ -51,7 +57,7 @@ export const addGithubProvider = (id, userId, callback) =>
 
 export const signInWithGoogle = () => authActions.signIn.init({
   authProvider: new firebaseApp.auth.GoogleAuthProvider(),
-  getNameAndCreateUser,
+  sendCreateUser,
 });
 
 export const addGoogleProvider = (id, userId, callback) =>
@@ -64,7 +70,7 @@ export const addGoogleProvider = (id, userId, callback) =>
 
 export const signInWithStackexchange = () =>
   authActions.signInWithStackexchangeFn.init({
-    getNameAndCreateUser,
+    sendCreateUser,
   });
 
 export const addStackexchangeProvider = (id, userId, callback) =>
@@ -73,3 +79,4 @@ export const addStackexchangeProvider = (id, userId, callback) =>
     userId,
     callback,
   })
+

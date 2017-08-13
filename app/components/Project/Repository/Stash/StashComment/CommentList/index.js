@@ -128,7 +128,7 @@ export default compose(
       $stashNum: String!, $isStash: Boolean!
     ) {
       viewer {
-        repository(owner: $userName, name: $projectName) {
+        repository(ownerName: $userName, name: $projectName) {
           refStash: ref(refName: $stashNum) @include(if: $isStash)  {
             stash {
               ...CommentList_commentList

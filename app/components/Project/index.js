@@ -2,9 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { QueryRenderer, graphql } from 'react-relay';
 import { env } from 'relay/RelayEnvironment';
-import LoadingIndicator from 'components/shared/LoadingIndicator';
 import { compose, mapProps } from 'recompose';
 import { withRouter } from 'react-router-dom';
+import LoadingIndicator from 'components/shared/LoadingIndicator';
 import { Grid } from 'react-bootstrap';
 import GoCode from 'react-icons/lib/go/code'
 import GoIssueOpened from 'react-icons/lib/go/issue-opened'
@@ -14,8 +14,7 @@ import RepoLink from 'components/shared/repo/TitleLink'
 import { matchRoute } from 'utils/routeMatcher';
 import Repository from './Repository'
 import {
-  NavLabel, TopContainer, RepoTitle, MainContainer,
-  HeightDiv,
+  NavLabel, TopContainer, RepoTitle, HeightDiv,
 } from './styles'
 
 const getNavConfig = (owner, name) => [
@@ -45,7 +44,7 @@ const Project = ({ vars }) => (
   <QueryRenderer
     environment={env}
     variables={vars}
-    query={query}
+    query={topQuery}
     render={({ error, props }) => {
       if (error) {
         throw error;
@@ -53,36 +52,32 @@ const Project = ({ vars }) => (
         const {
           viewer: {
             repository,
-            repository: {
-              name,
-              owner,
-              isPrivate,
-            },
           },
         } = props;
         return (
+          repository &&
           <HeightDiv>
             <TopContainer>
               <Grid>
                 <RepoTitle>
                   <RepoLink
-                    repoName={name}
-                    isPrivate={isPrivate}
-                    userName={owner.userName}
+                    repoName={repository.name}
+                    isPrivate={repository.isPrivate}
+                    userName={repository.owner.userName}
                   />
                 </RepoTitle>
                 <NavTabs
-                  configActive={getConfigActiveKey(owner.userName, name)}
+                  configActive={
+                    getConfigActiveKey(repository.owner.userName, repository.name)
+                  }
                 />
               </Grid>
             </TopContainer>
-            <MainContainer>
-              <Repository repository={repository} />
-            </MainContainer>
+            <Repository />
           </HeightDiv>
         );
       }
-      return <LoadingIndicator />;
+      return <HeightDiv><LoadingIndicator /></HeightDiv>;
     }}
   />
 );
@@ -92,22 +87,17 @@ Project.propTypes = {
   vars: PropTypes.object.isRequired,
 }
 
-const query = graphql`
+const topQuery = graphql`
   query ProjectQuery(
-    $userName: String!, $projectName: String!, $sort: String!,
-    $branchHead: String!, $splat: String, $commitId: String!, $stashNum: String!,
-    $isMainContainer: Boolean!, $isBranches: Boolean!, $isCommits: Boolean!,
-    $isStash: Boolean!, $isStashes: Boolean!, $isCommit: Boolean!,
-    $isBlob: Boolean!, $isTree: Boolean!
+    $userName: String!, $projectName: String!
   ) {
     viewer {
-      repository(owner: $userName, name: $projectName) {
+      repository(ownerName: $userName, name: $projectName) {
         name
         owner {
           userName
         }
         isPrivate
-        ...Repository_repository
       }
     }
   }
@@ -116,7 +106,6 @@ const query = graphql`
 export default compose(
   withRouter,
   mapProps(({
-    childName,
     location: { pathname },
   }) => {
     const params = matchRoute(pathname).params;
@@ -124,19 +113,6 @@ export default compose(
       vars: {
         userName: params.userName,
         projectName: params.projectName,
-        branchHead: params.branchHead || 'master',
-        commitId: params.commitId || '',
-        stashNum: params.stashNum ? `stash-${params.stashNum}` : 'stash-1',
-        splat: params['0'] || null,
-        sort: 'popular',
-        isMainContainer: childName === 'MainContainer',
-        isTree: childName === 'TreeContainer',
-        isBlob: childName === 'BlobContainer',
-        isCommits: childName === 'Commits',
-        isCommit: childName === 'Commit',
-        isStashes: childName === 'Stashes',
-        isStash: childName === 'Stash',
-        isBranches: childName === 'Branches',
       },
     });
   })

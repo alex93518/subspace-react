@@ -14,7 +14,13 @@ export const CreateProject = () => (
           content: 'Description of CreateProject',
         }]}
       />
-      <CreateProjectForm />
+      <CreateProjectForm
+        initialValues={{
+          repoAccess: 'public',
+          repoPushVote: 'pushVote',
+          isReviewStash: true,
+        }}
+      />
     </FormWidth>
   </MainGrid>
 )

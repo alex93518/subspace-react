@@ -21,6 +21,7 @@ const CloneUrlBox = ({
   cloneUrlBox: { url },
 }) => (
   <OverlayTrigger
+    rootClose
     trigger="click"
     placement="bottom"
     overlay={popoverBottom(url)}

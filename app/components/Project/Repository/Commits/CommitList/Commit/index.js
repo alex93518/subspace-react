@@ -22,6 +22,9 @@ const Commit = ({
     author: {
       user,
     },
+    repository: {
+      name,
+    },
   },
   additions,
   deletions,
@@ -32,7 +35,13 @@ const Commit = ({
     </TdThumb>
     <Td>
       <CommitMessage>
-        <LinkCommitTitle to={oid}>
+        <LinkCommitTitle
+          to={oid}
+          vars={{
+            userName: user.userName,
+            projectName: name,
+          }}
+        >
           {shortMessage}
         </LinkCommitTitle>
       </CommitMessage>
@@ -50,7 +59,13 @@ const Commit = ({
       <ButtonGroup>
         <CopyClipboard text={oid} />
         <ButtonCommit>
-          <LinkCommitGit to={oid}>
+          <LinkCommitGit
+            to={oid}
+            vars={{
+              userName: user.userName,
+              projectName: name,
+            }}
+          >
             {shortId}
           </LinkCommitGit>
         </ButtonCommit>
@@ -78,6 +93,9 @@ export default compose(
             userName
             photoUrl
           }
+        }
+        repository {
+          name
         }
         diff {
           diff

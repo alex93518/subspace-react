@@ -1,6 +1,6 @@
 import { fromJS } from 'immutable';
 import { createReducer } from 'redux-act';
-import { authSignout } from 'relay/RelayEnvironment';
+import { authRelay } from 'relay/RelayEnvironment';
 import { authActions } from './actions';
 
 const initAuthState = fromJS({
@@ -10,16 +10,18 @@ const initAuthState = fromJS({
   user: null,
 });
 
-const loginUser = (state, { user, userName }) => state
+const loginUser = (state, { user, userName, isInvisible }) => state
   .set('authenticated', true)
   .set('showLoginStep', '')
   .set('userName', userName)
+  .set('isInvisible', isInvisible)
   .set('user', user)
 
 const logoutCurrentUser = state => state
   .set('authenticated', false)
   .set('showLoginStep', '')
   .set('userName', undefined)
+  .set('isInvisible', null)
   .set('user', null)
 
 export default createReducer({
@@ -31,8 +33,10 @@ export default createReducer({
   [authActions.signIn.failure]: logoutCurrentUser,
   [authActions.signInWithEmailPassword.failure]: logoutCurrentUser,
   [authActions.signInWithStackexchangeFn.failure]: logoutCurrentUser,
-  [authSignout.signOut.success]: logoutCurrentUser,
+  [authRelay.signOut.success]: logoutCurrentUser,
 
-  [authActions.userNameNotAvail]: (state, payload) => state
-    .set('showLoginStep', payload),
+  [authActions.userNameNotAvail]: (state, payload) =>
+    state.set('showLoginStep', payload),
+  [authRelay.setIsInvisible.success]: (state, payload) =>
+    state.set('isInvisible', payload),
 }, initAuthState);

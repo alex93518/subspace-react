@@ -35,8 +35,8 @@ const CreateProjectForm = ({ handleSubmit, auth, change, createProject }) => (
         <tr>
           <td>
             <LinkUserPhoto
-              width={36}
-              height={36}
+              width={28}
+              height={28}
               user={{
                 userName: auth.userName,
                 photoUrl: auth.user.photoUrl,
@@ -122,7 +122,26 @@ const CreateProjectForm = ({ handleSubmit, auth, change, createProject }) => (
         <AccessDesc onClick={() => change('repoPushVote', 'pushVote')}>
           <DlNoMargin>
             <dt>Vote Pushes</dt>
-            <dd>Pushes should meet certain vote threshold before added to the repository.</dd>
+            <dd>
+              <div>
+                Pushes should meet certain vote threshold before added to the repository.
+              </div>
+              <div>
+                <RadioField
+                  name="isReviewStash"
+                  id="isReviewStash"
+                  component="input"
+                  type="checkbox"
+                />
+                <span
+                  onClick={() => change('isReviewStash', !createProject.isReviewStash)}
+                  role="button"
+                  tabIndex="0"
+                >
+                  Review pushes
+                </span>
+              </div>
+            </dd>
           </DlNoMargin>
         </AccessDesc>
       </DivOptHead>
@@ -200,13 +219,9 @@ export default compose(
   }),
   reduxForm({
     form: 'createProject',
-    initialValues: {
-      repoAccess: 'public',
-      repoPushVote: 'pushVote',
-    },
     enableReinitialize: true,
     onSubmit: async (values, _, { auth, history }) => {
-      const { repoAccess, repoPushVote, topics, ...repository } = values;
+      const { repoAccess, repoPushVote, isReviewStash, topics, ...repository } = values.toObject();
       if (!repository.name) {
         throw new SubmissionError({ name: 'Project name cannot be empty', _error: 'Empty project name' })
       }
@@ -223,6 +238,7 @@ export default compose(
         ...repository,
         isPushVote: repoPushVote !== 'standard',
         isPrivate: repoAccess === 'private',
+        isReviewStash,
         ownerUserName: auth.userName,
 
         // TODO: add array input field to project form
@@ -240,6 +256,6 @@ export default compose(
     },
   }),
   connect(state => ({
-    createProject: state.get('form').createProject.values,
+    createProject: state.get('form').get('createProject').get('values').toObject(),
   }))
 )(CreateProjectForm);

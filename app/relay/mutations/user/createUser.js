@@ -1,10 +1,11 @@
 import { commitMutation, graphql } from 'react-relay';
-import { env } from 'relay/RelayEnvironment';
+import { network, env } from 'relay/RelayEnvironment';
 
 const mutation = graphql`
   mutation createUserMutation($input: CreateUserInput!) {
     createUser(input: $input) {
       clientMutationId,
+      firebaseToken,
       user {
         id
         rawId
@@ -27,33 +28,35 @@ const mutation = graphql`
 
 export const createUserMutation = ({
   userName,
-  fullName,
-  photoUrl,
-  emailAddress,
   password,
   provider,
-  providerId,
+  isNetwork,
   firebaseId,
-  accessToken,
+  ...rest
 }) => {
   const input = {
+    firebaseId,
     userName,
-    fullName: fullName || null,
-    photoUrl: photoUrl || null,
-    emailAddress: emailAddress || null,
+    fullName: rest.fullName || null,
+    photoUrl: rest.photoUrl || null,
+    emailAddress: rest.emailAddress || null,
     password,
     provider,
-    providerId: providerId || null,
-    firebaseId: firebaseId || null,
-    accessToken: accessToken || null,
+    providerId: rest.providerId || null,
+    accessToken: rest.accessToken || null,
   };
+
+  if (isNetwork) {
+    return network.fetch(mutation(), { input });
+  }
 
   return commitMutation(
     env,
     {
       mutation,
       variables: { input },
-      onError: err => console.error(err),
+      onCompleted: rest.onCompleted || (() => null),
+      onError: rest.onError || (err => console.error(err)),
     },
   );
 };

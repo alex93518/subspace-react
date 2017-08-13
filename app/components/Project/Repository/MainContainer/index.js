@@ -69,8 +69,8 @@ MainContainer.propTypes = {
   target: PropTypes.object.isRequired,
   tree: PropTypes.object.isRequired,
   createdAt: PropTypes.number.isRequired,
-  goals: PropTypes.string.isRequired,
-  description: PropTypes.string.isRequired,
+  goals: PropTypes.string,
+  description: PropTypes.string,
 };
 
 export default compose(

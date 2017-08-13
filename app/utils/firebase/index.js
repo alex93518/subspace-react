@@ -1,5 +1,6 @@
 import * as firebase from 'firebase/app';
 import 'firebase/auth';
+import 'firebase/database';
 import { firebaseConfig } from './config';
 
 try {
@@ -14,6 +15,7 @@ try {
 
 export const firebaseApp = firebase;
 export const firebaseAuth = firebase.auth();
+export const firebaseDb = firebase.database();
 
 export const getToken = async () => {
   if (firebaseAuth.currentUser) {

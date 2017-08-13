@@ -11,11 +11,6 @@ export const TopContainer = styled.div`
   background-color: #fafbfc;
   border-bottom: 1px solid #dddddd;
 `
-export const MainContainer = styled.div`
-  background-color: #fff;
-  padding-bottom: 30px;
-`
-
 export const HeightDiv = styled.div`
   height: auto;
   flex: 1;

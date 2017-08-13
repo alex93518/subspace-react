@@ -2,19 +2,17 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { createFragmentContainer, graphql } from 'react-relay';
 import Commit from 'components/Project/Repository/Commits/CommitList/Commit';
-import { CommitsHead, TableCommit } from './styles';
+import { TableCommit } from './styles';
 
 const StashCommitStatus = ({
   stashCommitStatus: { history },
-  relay: { variables },
 }) => (
   <div>
-    <CommitsHead>Commits</CommitsHead>
     <TableCommit>
       <tbody>
         {
           history.edges.map(({ node }) =>
-            <Commit commitItem={node} {...variables} key={node.id} />
+            <Commit commitItem={node} key={node.id} />
           )
         }
       </tbody>
@@ -24,7 +22,6 @@ const StashCommitStatus = ({
 
 StashCommitStatus.propTypes = {
   stashCommitStatus: PropTypes.object.isRequired,
-  relay: PropTypes.object.isRequired,
 }
 
 export default createFragmentContainer(StashCommitStatus, {

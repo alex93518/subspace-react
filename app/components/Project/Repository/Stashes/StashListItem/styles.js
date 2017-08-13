@@ -10,7 +10,7 @@ export const PanelHead = styled(Panel)`
   border-color: #ddd;
 `
 
-export const H2Head = styled.h2`
+export const H2Head = styled.h3`
   display: inline;
   margin-top: 0px;
   margin-right: -10px;

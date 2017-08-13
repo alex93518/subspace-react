@@ -101,7 +101,7 @@ module.exports = options => ({
     new BundleAnalyzerPlugin({
       analyzerMode: 'disabled',
       analyzerHost: '127.0.0.1',
-      analyzerPort: 8888,
+      analyzerPort: 8889,
       reportFilename: 'report.html',
       defaultSizes: 'parsed',
       openAnalyzer: true,

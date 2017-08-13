@@ -1,10 +1,10 @@
 import { call } from 'redux-saga/effects';
 import moment from 'moment';
-import { path } from 'ramda'
 import { addUserProviderMutation } from 'relay';
+import { firebaseAuth } from 'utils/firebase';
 import { stackexchange, stackexchangeConfig } from 'utils/stackexchange';
-import { resetEnv } from 'relay/RelayEnvironment';
-import { getUserName } from './userFetch';
+import { resetEnv, addUserPresence } from 'relay/RelayEnvironment';
+import { getUser } from './userFetch';
 import { getUserProvider } from './userProviderFetch';
 
 const init = () => (
@@ -13,7 +13,7 @@ const init = () => (
       ...stackexchangeConfig,
       channelUrl: process.env.CLIENT_HOST ?
         `${process.env.CLIENT_HOST}/blank.html` :
-        'http://subspace64.net/blank.html',
+        'http://localhost/blank.html',
       complete: resolve,
     })
   })
@@ -29,7 +29,7 @@ const auth = () => (
 )
 
 export function* signInWithStackexchangeFn({
-  payload: { getNameAndCreateUser },
+  payload: { sendCreateUser },
 }) {
   let providerId = '';
   let accessToken = '';
@@ -56,47 +56,63 @@ export function* signInWithStackexchangeFn({
     resetEnv, 'stackexchange',
     JSON.stringify({ token: accessToken, providerId }),
   )
-  const userProvider = yield call(
-    getUserProvider, providerId, 'stackexchange', null
+
+  const firebaseId = `se-${providerId}`
+
+  const { data: { viewer: { userProvider } } } = yield call(
+    getUserProvider, firebaseId
   )
+
+  const userPayload = {
+    displayName,
+    fullName: displayName,
+    photoUrl,
+    email: null,
+    accessToken,
+    provider: 'stackexchange',
+    providerId,
+    firebaseId,
+  }
 
   // User exists
   if (userProvider) {
-    const userInfo = yield call(getUserName, userProvider.userId)
-    const userName = path(['user', 'userName'], userInfo)
-    if (userInfo && userName) {
-      const user = {
-        displayName: path(['user', 'fullName'], userInfo),
-        fullName: path(['user', 'fullName'], userInfo),
-        photoUrl: path(['user', 'photoUrl'], userInfo),
-        email: null,
-        accessToken,
-        provider: 'stackexchange',
-        providerId,
+    const userInfo = yield call(getUser, firebaseId)
+    const { data: { viewer: { user, firebaseToken, isInvisible } } } = userInfo
+    if (user) {
+      if (firebaseToken) {
+        yield call(
+          [firebaseAuth, firebaseAuth.signInWithCustomToken],
+          firebaseToken
+        );
       }
-      return { user, userName }
+      if (!isInvisible) {
+        yield call(addUserPresence, user.userName)
+      }
+      return { user: userPayload, userName: user.userName, isInvisible }
     }
   }
 
   // User not exists, create one.
   try {
-    const user = {
-      displayName,
-      fullName: displayName,
-      photoUrl,
-      email: null,
-      accessToken,
-      provider: 'stackexchange',
-      providerId,
+    const { data: { createUser, createUser: { user: { userName, isInvisible } } } } = yield call(
+      sendCreateUser, userPayload
+    )
+    if (createUser.firebaseToken) {
+      yield call(
+        [firebaseAuth, firebaseAuth.signInWithCustomToken],
+        createUser.firebaseToken
+      );
     }
 
-    const userName = yield call(getNameAndCreateUser, user, 'stackexchange')
     const expire = moment(expirationDate).unix()
     localStorage.setItem('seProviderId', providerId)
     localStorage.setItem('seAccessToken', accessToken)
     localStorage.setItem('seExpire', expire)
 
-    return { user, userName }
+    if (!isInvisible) {
+      yield call(addUserPresence, userName)
+    }
+    return { user: userPayload, userName, isInvisible }
   } catch (ex) {
     localStorage.removeItem('seProviderId')
     localStorage.removeItem('seAccessToken')
@@ -122,6 +138,7 @@ export function* addStackexchangeProviderFn({
       provider,
       providerId,
       accessToken,
+      firebaseId: `se-${providerId}`,
     });
 
     if (callback) callback(providerId)
