@@ -20,8 +20,8 @@ export function* sendCreateUser(user) {
     ...user,
     userId: user.firebaseId || null,
     accessToken: user.accessToken || null,
-    userName: payload.userName,
-    password: payload.password,
+    userName: payload.get('userName'),
+    password: payload.get('password'),
     isNetwork: true,
     firebaseId: user.firebaseId,
   };
