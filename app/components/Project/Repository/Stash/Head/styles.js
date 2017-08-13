@@ -19,7 +19,7 @@ export const StashLabel = styled.span`
   margin-right: 10px;
 `
 
-export const H2Head = styled.h2`
+export const H2Head = styled.h3`
   margin-top: 0px;
 `
 

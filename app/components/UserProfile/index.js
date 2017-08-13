@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Helmet from 'react-helmet';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import injectTapEventPlugin from 'react-tap-event-plugin';
 import { QueryRenderer, graphql } from 'react-relay';
 import MainGrid from 'components/shared/MainGrid';
 import ProjectList from 'components/Projects/ProjectList';
@@ -11,8 +10,6 @@ import LoadingIndicator from 'components/shared/LoadingIndicator';
 import Separator from 'components/shared/Separator';
 import PendingStashList from './PendingStashList';
 import Profile from './Profile';
-
-injectTapEventPlugin();
 
 export const UserProfile = ({ match: { params: { userName } } }) => (
   <MuiThemeProvider>

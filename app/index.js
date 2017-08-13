@@ -3,6 +3,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import { persistStore } from 'redux-persist-immutable';
+import injectTapEventPlugin from 'react-tap-event-plugin';
 import 'sanitize.css/sanitize.css';
 
 // Load the favicon, the manifest.json file and the .htaccess file
@@ -15,6 +16,8 @@ import 'file-loader?name=[name].[ext]!./.htaccess';
 import './global-styles';
 import store from './store';
 import AuthWrapper from './authWrapper'
+
+injectTapEventPlugin();
 
 const render = () => {
   ReactDOM.render(

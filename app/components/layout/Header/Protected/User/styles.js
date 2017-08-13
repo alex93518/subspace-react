@@ -1,12 +1,15 @@
 import styled from 'styled-components';
-import { Button, NavItem, ToggleButton, Popover } from 'react-bootstrap';
+import { Button, NavItem, ToggleButton } from 'react-bootstrap';
 import FaUser from 'react-icons/lib/fa/user';
 import FaAngleDown from 'react-icons/lib/fa/angle-down';
 import Separator from 'components/shared/Separator';
+import Popover from 'material-ui/Popover';
 
 export const NavItemWhite = styled(NavItem)`
   & a {
     padding-top: 9px !important;
+    padding-right: 0px !important;
+    padding-bottom: 12px !important;
     color: rgba(255,255,255,0.75) !important;
   }
 `
@@ -45,9 +48,10 @@ export const OnlineButton = styled(ToggleButton)`
   padding-top: 5px;
   padding-bottom: 5px;
   color: #b9b9b9;
+  background-color: #fff;
   &.active {
-    background-color: #fff !important;
-    color: #139915 !important;
+    background-color: #37a000 !important;
+    color: #fff !important;
     font-weight: 600;
     box-shadow: none !important;
   }
@@ -55,6 +59,8 @@ export const OnlineButton = styled(ToggleButton)`
 
 export const UserPopover = styled(Popover)`
   max-width: 350px;
+  padding: 10px 20px;
+  font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif !important;
 `
 
 export const SpanTitle = styled.span`

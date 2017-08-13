@@ -21,7 +21,7 @@ const StashListItem = ({
       <PanelHead>
         <LinkStash to={stashNum}>
           <H2Head>
-            <SpanStashNum>{title || `Stash #${stashNum}`}</SpanStashNum>
+            <SpanStashNum>{title ? `${title} (Stash #${stashNum})` : `Stash #${stashNum}`}</SpanStashNum>
           </H2Head>
         </LinkStash>
         <div>
@@ -31,9 +31,7 @@ const StashListItem = ({
             <StashLabel>master</StashLabel>
           </LinkProject>
         </div>
-        { description &&
-          <div>{description}</div>
-        }
+        { description && <div>{description}</div> }
         <RowVoteStats>
           <Col md={12}>
             <Media>

@@ -34,9 +34,12 @@ const PendingStashList = ({
           }
         </Col>
         <Col md={9}>
-          {stashByRepo[selectedRepo] && stashByRepo[selectedRepo].map(({ node }) =>
-            <PendingStashItem key={`stashItem${node.id}`} gitRef={node} />
-          )}
+          {
+            stashByRepo[selectedRepo] && stashByRepo[selectedRepo].length ?
+              stashByRepo[selectedRepo].map(({ node }) =>
+                <PendingStashItem key={`stashItem${node.id}`} gitRef={node} />
+              ) : <span>No pending review</span>
+          }
         </Col>
       </MainRow>
     </Paper>

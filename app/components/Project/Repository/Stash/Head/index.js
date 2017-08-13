@@ -17,7 +17,7 @@ import {
 } from './styles';
 
 const StashHead = ({
-  user, stashNum, totalCommit, onVote,
+  user, stashNum, totalCommit, onVote, title, description,
   totalVotePoints, isVotedUp, isVotedDown, voteTreshold,
   acceptVotes, rejectVotes, isMerging, updateIsMerging,
 }) => (
@@ -44,7 +44,7 @@ const StashHead = ({
     </IconCol>
     <ColStatus md={11}>
       <H2Head>
-        <SpanStashNum>Stash #{stashNum}</SpanStashNum>
+        <SpanStashNum>{title ? `${title} (Stash #${stashNum})` : `Stash #${stashNum}`}</SpanStashNum>
       </H2Head>
       <div>
         <LinkUserName userName={user.userName} /> wants to push {totalCommit} commits into
@@ -53,6 +53,7 @@ const StashHead = ({
           <StashLabel>master</StashLabel>
         </LinkProject>
       </div>
+      { description && <div>{description}</div> }
       <RowVoteStats>
         <Col md={12}>
           <div>
@@ -74,6 +75,8 @@ const StashHead = ({
 )
 
 StashHead.propTypes = {
+  title: PropTypes.string,
+  description: PropTypes.string,
   user: PropTypes.object.isRequired,
   stashNum: PropTypes.number.isRequired,
   totalCommit: PropTypes.number.isRequired,
@@ -101,6 +104,8 @@ export default compose(
           id
           rawId
           stashNum
+          title
+          description
           voteTreshold
           votes (first: 9999) {
             totalVotePoints
@@ -136,6 +141,8 @@ export default compose(
     stashHead: {
       stash,
       stash: {
+        title,
+        description,
         votes: {
           totalVotePoints,
         },
@@ -155,6 +162,8 @@ export default compose(
     totalVotePoints,
     totalCommit: totalCount,
     stashNum,
+    title,
+    description,
     user,
     voteTreshold,
     stash,
