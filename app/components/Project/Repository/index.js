@@ -69,6 +69,7 @@ const query = graphql`
         ...BlobContainer_blobContainer
         ...TreeContainer_treeContainer
         ...MainContainer_mainContainer
+        ...PendingContribution_pendingContribution
       }
     }
   }
@@ -102,7 +103,7 @@ export default compose(
         isCommits: childName === 'Commits',
         isCommit: childName === 'Commit',
         isStashes: childName === 'Stashes',
-        isStash: childName === 'Stash',
+        isStash: (childName === 'Stash') || (childName === 'PendingContribution'),
         isBranches: childName === 'Branches',
       },
     });

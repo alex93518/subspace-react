@@ -16,6 +16,7 @@ injectGlobal`
 
   body {
     font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
     color: #696e73;
     font-size: 14px;
   }
@@ -44,6 +45,10 @@ injectGlobal`
     font-weight: bold;
   }
 
+  dt {
+    font-weight: 500;
+  }
+  
   .container {
     height: 100%;
   }
