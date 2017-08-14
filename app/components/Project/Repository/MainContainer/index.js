@@ -21,11 +21,13 @@ const MainContainer = ({
 }) => (
   <MainGrid>
     <Col md={12}>
+      {description &&
       <Row>
         <DescriptionCol md={12}>
           {description}
         </DescriptionCol>
       </Row>
+      }
       <RowSty>
         <Col md={12}>
           <StatusBar
