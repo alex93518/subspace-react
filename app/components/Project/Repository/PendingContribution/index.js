@@ -4,6 +4,7 @@ import { createFragmentContainer, graphql } from 'react-relay';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import Description from './Description';
 import Commits from './Commits';
+import Comments from './Comments';
 import { PendingMainGrid } from './styles';
 
 const PendingContribution = ({ pendingContribution: { pendingRef } }) => (
@@ -11,6 +12,7 @@ const PendingContribution = ({ pendingContribution: { pendingRef } }) => (
     <PendingMainGrid>
       <Description pendingRef={pendingRef} />
       <Commits pendingCommits={pendingRef.target} />
+      <Comments pendingRefStash={pendingRef.stash} />
     </PendingMainGrid>
   </MuiThemeProvider>
 )
@@ -26,6 +28,7 @@ export default createFragmentContainer(PendingContribution, {
         ...Description_pendingRef
         stash {
           id
+          ...Comments_pendingRefStash
         }
         target {
           ... on Commit {

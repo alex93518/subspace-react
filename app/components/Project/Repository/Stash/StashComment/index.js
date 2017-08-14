@@ -8,17 +8,14 @@ import Editor from 'react-quill';
 import { Element, scroller } from 'react-scroll';
 import { addStashCommentMutation } from 'relay';
 import CommentList from './CommentList';
-import { MainDiv, HeadSeparator, DivAddComment } from './styles';
+import { HeadSeparator, DivAddComment } from './styles';
 
 const StashComment = ({
-  stashComment, stashComment: { totalComments: { totalAllCount } },
+  stashComment,
   submitComment, content, handleContentChange,
 }) => (
-  <MainDiv>
-    <Element name={'commentTop'}>
-      <h4>Comments ({totalAllCount || 0})</h4>
-    </Element>
-    <HeadSeparator />
+  <div>
+    <Element name={'commentTop'} />
     <CommentList commentList={stashComment} />
     <HeadSeparator />
     <h4>Leave a comment</h4>
@@ -29,7 +26,7 @@ const StashComment = ({
     <DivAddComment>
       <Button onClick={submitComment}>Comment</Button>
     </DivAddComment>
-  </MainDiv>
+  </div>
 )
 
 StashComment.propTypes = {
@@ -45,9 +42,6 @@ export default compose(
       fragment StashComment_stashComment on Stash {
         id
         rawId
-        totalComments: comments {
-          totalAllCount
-        }
         ...CommentList_commentList
       }
     `,
