@@ -28,11 +28,14 @@ const Commit = ({
   },
   additions,
   deletions,
+  isHideAvatar,
 }) => (
   <Tr>
-    <TdThumb>
-      <LinkUserPhoto user={user} width={36} height={36} />
-    </TdThumb>
+    {!isHideAvatar && (
+      <TdThumb>
+        <LinkUserPhoto user={user} width={36} height={36} />
+      </TdThumb>
+    )}
     <Td>
       <CommitMessage>
         <LinkCommitTitle
@@ -78,6 +81,7 @@ Commit.propTypes = {
   commitItem: PropTypes.object.isRequired,
   additions: PropTypes.number.isRequired,
   deletions: PropTypes.number.isRequired,
+  isHideAvatar: PropTypes.bool,
 };
 
 export default compose(
@@ -103,12 +107,13 @@ export default compose(
       }
     `,
   }),
-  mapProps(({ commitItem }) => {
+  mapProps(({ commitItem, ...rest }) => {
     const diff = parseDiff(commitItem);
     return ({
       commitItem,
       additions: totalHunk('additions', diff),
       deletions: totalHunk('deletions', diff),
+      ...rest,
     })
   })
 )(Commit)

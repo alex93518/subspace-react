@@ -10,10 +10,12 @@ export const Tr = styled.tr`
 export const Td = styled.td`
   vertical-align: middle !important;
   border-top: none !important;
+  padding-left: 20px !important;
 `
 
 export const TdThumb = styled(Td)`
-  padding: 15px !important;
+  padding: 15px 10px !important;
+  padding-right: 0px !important;
   width: 52px;
 `
 
