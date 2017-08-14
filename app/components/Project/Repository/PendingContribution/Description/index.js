@@ -9,7 +9,7 @@ import Avatar from 'material-ui/Avatar';
 import UserPhoto from 'components/shared/UserPhoto';
 
 const Description = ({
-  title,
+  title, children,
   pendingRef: {
     stash: { description, owner, createdAt },
   },
@@ -28,8 +28,18 @@ const Description = ({
           />
         </Avatar>
       )}
+      showExpandableButton
+      actAsExpander
+      style={{
+        backgroundColor: '#0091EA',
+      }}
+      iconStyle={{
+        color: 'rgba(255,255,255,0.9)',
+      }}
+      titleColor={'rgba(255,255,255,0.9)'}
+      subtitleColor={'rgba(255,255,255,0.7)'}
     />
-    <CardText style={{ color: 'rgba(0,0,0,0.78)' }}>
+    <CardText expandable style={{ color: 'rgba(0,0,0,0.78)' }}>
       {description && (
         <dl>
           <dt>Description</dt>
@@ -46,6 +56,7 @@ const Description = ({
         <dt>Contributor Statistics</dt>
         <dd>TODO</dd>
       </dl>
+      {children}
     </CardText>
   </Card>
 )
@@ -53,6 +64,7 @@ const Description = ({
 Description.propTypes = {
   pendingRef: PropTypes.object.isRequired,
   title: PropTypes.string.isRequired,
+  children: PropTypes.node,
 }
 
 export default compose(

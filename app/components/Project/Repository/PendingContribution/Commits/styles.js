@@ -9,11 +9,6 @@ export const TableCommit = styled(Table)`
   color: #777;
 `
 
-export const CommitStatDiv = styled.div`
-  margin-bottom: 15px;
-  font-weight: 400;
-`
-
 export const SpanTotalAdditions = styled.span`
   font-weight: 500;
   color: #2cbe4e;

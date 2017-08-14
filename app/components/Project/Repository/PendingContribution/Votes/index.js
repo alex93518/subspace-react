@@ -57,8 +57,10 @@ const Votes = ({
           />
         </Avatar>
       }
+      showExpandableButton
+      actAsExpander
     />
-    <CardText>
+    <CardText expandable>
       <Paper zDepth={1}>
         <BottomNavigation selectedIndex={rest.voteIndex}>
           <BottomNavigationItem

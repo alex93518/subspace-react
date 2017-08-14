@@ -11,10 +11,11 @@ import { PendingMainGrid } from './styles';
 const PendingContribution = ({ pendingContribution: { pendingRef } }) => (
   <MuiThemeProvider>
     <PendingMainGrid>
-      <Description pendingRef={pendingRef} />
-      <Votes pendingRefStash={pendingRef.stash} />
-      <Commits pendingCommits={pendingRef.target} />
-      <Comments pendingRefStash={pendingRef.stash} />
+      <Description pendingRef={pendingRef}>
+        <Commits pendingCommits={pendingRef.target} />
+        <Comments pendingRefStash={pendingRef.stash} />
+        <Votes pendingRefStash={pendingRef.stash} />
+      </Description>
     </PendingMainGrid>
   </MuiThemeProvider>
 )

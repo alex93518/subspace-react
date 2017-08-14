@@ -22,8 +22,10 @@ const Comments = ({ pendingRefStash, totalAllCount }) => (
         </span>
       )}
       avatar={<MdComment height={32} width={32} />}
+      showExpandableButton
+      actAsExpander
     />
-    <CardText>
+    <CardText expandable>
       <StashComment stashComment={pendingRefStash} />
     </CardText>
   </Card>

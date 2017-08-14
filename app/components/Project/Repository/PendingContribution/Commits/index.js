@@ -4,11 +4,12 @@ import { graphql } from 'react-relay';
 import withRelayFragment from 'relay/withRelayFragment';
 import { compose, mapProps } from 'recompose';
 import pluralize from 'pluralize';
-import { Card, CardText } from 'material-ui/Card';
+import { Card, CardText, CardHeader } from 'material-ui/Card';
 import { parseDiff, totalHunk } from 'utils/diff'
+import GoGitCommit from 'react-icons/lib/go/git-commit';
 import Commit from 'components/Project/Repository/Commits/CommitList/Commit';
 import {
-  TableCommit, CommitStatDiv, SpanTotalAdditions, SpanTotalDeletions,
+  TableCommit, SpanTotalAdditions, SpanTotalDeletions,
 } from './styles';
 
 pluralize.addIrregularRule('is', 'are')
@@ -18,16 +19,24 @@ const Commits = ({
   pendingCommits: { history },
 }) => (
   <Card style={{ marginTop: 10 }}>
-    <CardText>
-      <CommitStatDiv>
-        There{' '}
-        {pluralize('is', totalCommits)}{' '}
-        {pluralize('commit', totalCommits, true)}{' with '}
-        <SpanTotalAdditions>{totalAdditions}</SpanTotalAdditions>{' '}
-        {pluralize('addition', totalAdditions)}{' and '}
-        <SpanTotalDeletions>{totalDeletions}</SpanTotalDeletions>{' '}
-        {pluralize('deletion', totalDeletions)}
-      </CommitStatDiv>
+    <CardHeader
+      title="Commits"
+      subtitle={(
+        <span>
+          There{' '}
+          {pluralize('is', totalCommits)}{' '}
+          {pluralize('commit', totalCommits, true)}{' with '}
+          <SpanTotalAdditions>{totalAdditions}</SpanTotalAdditions>{' '}
+          {pluralize('addition', totalAdditions)}{' and '}
+          <SpanTotalDeletions>{totalDeletions}</SpanTotalDeletions>{' '}
+          {pluralize('deletion', totalDeletions)}
+        </span>
+      )}
+      avatar={<GoGitCommit height={32} width={32} />}
+      showExpandableButton
+      actAsExpander
+    />
+    <CardText expandable>
       <TableCommit>
         <tbody>
           {
