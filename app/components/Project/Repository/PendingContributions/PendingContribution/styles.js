@@ -1,6 +1,6 @@
 import styled from 'styled-components';
-import MainGrid from 'components/shared/MainGrid';
 
-export const PendingMainGrid = styled(MainGrid)`
+export const PendingMainGrid = styled.div`
   font-weight: 400;
+  padding-top: 20px;
 `

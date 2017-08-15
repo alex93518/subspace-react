@@ -20,7 +20,7 @@ const Commits = ({
 }) => (
   <Card style={{ marginTop: 10 }}>
     <CardHeader
-      title="Commits"
+      title="Commits &amp; Diffs"
       subtitle={(
         <span>
           There{' '}
