@@ -4,7 +4,7 @@ import { graphql } from 'react-relay';
 import withRelayFragment from 'relay/withRelayFragment';
 import { compose, mapProps } from 'recompose';
 import pluralize from 'pluralize';
-import { Card, CardText, CardHeader } from 'material-ui/Card';
+import Card, { CardContent, CardHeader } from 'material-ui/Card';
 import { parseDiff, totalHunk } from 'utils/diff'
 import GoGitCommit from 'react-icons/lib/go/git-commit';
 import Commit from 'components/Project/Repository/Commits/CommitList/Commit';
@@ -21,7 +21,7 @@ const Commits = ({
   <Card style={{ marginTop: 10 }}>
     <CardHeader
       title="Commits &amp; Diffs"
-      subtitle={(
+      subheader={(
         <span>
           There{' '}
           {pluralize('is', totalCommits)}{' '}
@@ -33,10 +33,8 @@ const Commits = ({
         </span>
       )}
       avatar={<GoGitCommit height={32} width={32} />}
-      showExpandableButton
-      actAsExpander
     />
-    <CardText expandable>
+    <CardContent>
       <TableCommit>
         <tbody>
           {
@@ -46,7 +44,7 @@ const Commits = ({
           }
         </tbody>
       </TableCommit>
-    </CardText>
+    </CardContent>
   </Card>
 )
 

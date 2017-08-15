@@ -10,12 +10,12 @@ import { redirect } from 'redux/utils';
 import { getProjectPath } from 'utils/path';
 import CircularProgressbar from 'react-circular-progressbar';
 import pluralize from 'pluralize';
-import { Card, CardHeader, CardText } from 'material-ui/Card';
+import Card, { CardHeader, CardContent } from 'material-ui/Card';
 import Avatar from 'material-ui/Avatar';
 import MdCheck from 'react-icons/lib/md/check';
 import MdClear from 'react-icons/lib/md/clear';
 import MdEdit from 'react-icons/lib/md/edit';
-import { BottomNavigation, BottomNavigationItem } from 'material-ui/BottomNavigation';
+import BottomNavigation, { BottomNavigationButton } from 'material-ui/BottomNavigation';
 import Paper from 'material-ui/Paper';
 import { SpanAccept, SpanReject } from './styles';
 
@@ -23,13 +23,13 @@ pluralize.addIrregularRule('is', 'are')
 
 const Votes = ({
   stash: { acceptVotes, rejectVotes },
-  totalCount, votePercentage,
+  totalCount, votePercentage, voteIndex,
   ...rest
 }) => (
   <Card style={{ marginTop: 10 }}>
     <CardHeader
       title="Votes"
-      subtitle={(
+      subheader={(
         <span>
           There{' '}
           {pluralize('is', totalCount)}{' '}
@@ -57,30 +57,28 @@ const Votes = ({
           />
         </Avatar>
       }
-      showExpandableButton
-      actAsExpander
     />
-    <CardText expandable>
-      <Paper zDepth={1}>
-        <BottomNavigation selectedIndex={rest.voteIndex}>
-          <BottomNavigationItem
+    <CardContent>
+      <Paper elevation={1}>
+        <BottomNavigation value={voteIndex}>
+          <BottomNavigationButton
             label="Accept"
             icon={<MdCheck width={24} height={24} />}
-            onTouchTap={() => rest.onVote(true)}
+            onClick={() => rest.onVote(true)}
           />
-          <BottomNavigationItem
+          <BottomNavigationButton
             label="Reject"
             icon={<MdClear width={24} height={24} />}
-            onTouchTap={() => rest.onVote(false)}
+            onClick={() => rest.onVote(false)}
           />
-          <BottomNavigationItem
+          <BottomNavigationButton
             label="After Suggested Changes"
             icon={<MdEdit width={24} height={24} />}
-            onTouchTap={() => ({})}
+            onClick={() => ({})}
           />
         </BottomNavigation>
       </Paper>
-    </CardText>
+    </CardContent>
   </Card>
 )
 
@@ -88,6 +86,7 @@ Votes.propTypes = {
   stash: PropTypes.object.isRequired,
   totalCount: PropTypes.number.isRequired,
   votePercentage: PropTypes.number.isRequired,
+  voteIndex: PropTypes.number,
 }
 
 export default compose(
@@ -127,14 +126,14 @@ export default compose(
     const {
       stash: {
         voteTreshold,
-        votes: { totalCount, totalVotePoints },
+        votes,
       },
       location: { pathname },
       isVotedUp,
       isVotedDown,
     } = props
 
-    let voteIndex = null;
+    let voteIndex = 99;
     if (isVotedUp) {
       voteIndex = 0;
     }
@@ -142,8 +141,10 @@ export default compose(
       voteIndex = 1;
     }
 
+    const totalVotePoints = votes ? votes.totalVotePoints : 0;
+
     return {
-      totalCount: totalCount || 0,
+      totalCount: votes.totalCount || 0,
       votePercentage: totalVotePoints <= 0 ? 0 :
         Math.round((totalVotePoints / voteTreshold) * 100),
       variables: matchRoute(pathname).params,
@@ -189,8 +190,8 @@ export default compose(
           }
 
           const { voteStash: { stash } } = resp;
-          const acceptVotePoints = stash.acceptVotes.totalVotePoints;
-          const rejectVotePoints = stash.rejectVotes.totalVotePoints;
+          const acceptVotePoints = stash.acceptVotes ? stash.acceptVotes.totalVotePoints : 0;
+          const rejectVotePoints = stash.rejectVotes ? stash.rejectVotes.totalVotePoints : 0;
           const totalPoints = acceptVotePoints + rejectVotePoints;
           if (totalPoints >= stash.voteTreshold) {
             props.updateIsMerging(true);

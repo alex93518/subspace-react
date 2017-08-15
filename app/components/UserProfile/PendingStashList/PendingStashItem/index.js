@@ -4,7 +4,7 @@ import { graphql } from 'react-relay';
 import { compose, withState, withHandlers } from 'recompose';
 import FlipMove from 'react-flip-move';
 import withRelayFragment from 'relay/withRelayFragment';
-import { Card, CardHeader } from 'material-ui/Card';
+import Card, { CardHeader } from 'material-ui/Card';
 import Paper from 'material-ui/Paper';
 import CommitStatus from './CommitStatus';
 import Header from './Header';
@@ -14,15 +14,14 @@ import Form from './Form';
 import { PendingStashPanel, ContentDiv, CommitDiv } from './styles';
 
 const PendingStashItem = ({
-  gitRef, isShowContent, toggleShowContent,
+  gitRef, isShowContent,
+  // toggleShowContent,
 }) => (
   !gitRef.stash.isOnline &&
-  <Card expanded={isShowContent} onExpandChange={toggleShowContent}>
+  <Card>
     <CardHeader
       title={<Header pendingStashItem={gitRef} createdAt={gitRef.stash.createdAt} />}
-      subtitle={<HeadSub stash={gitRef.stash} />}
-      actAsExpander
-      showExpandableButton
+      subheader={<HeadSub stash={gitRef.stash} />}
     />
     <PendingStashPanel
       footer={
@@ -50,7 +49,7 @@ const PendingStashItem = ({
                   stashDescription: gitRef.stash.description || '',
                 }}
               />
-              <Paper zDepth={1}>
+              <Paper elevation={1}>
                 <CommitDiv>
                   <CommitStatus commit={gitRef.target} />
                 </CommitDiv>
@@ -96,7 +95,7 @@ export default compose(
       }
     `,
   }),
-  withState('isShowContent', 'updateIsShowContent', false),
+  withState('isShowContent', 'updateIsShowContent', true),
   withState('isClear', 'updateIsClear', false),
   withHandlers({
     toggleShowContent: props => () => {

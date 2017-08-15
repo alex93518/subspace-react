@@ -16,19 +16,22 @@ const FooterDiv = styled.div`
 const Footer = ({ pendingStashItem: { id }, publishStash, dispatch, isFormPristine }) => (
   <FooterDiv>
     <Button
-      primary
+      color="primary"
       raised
       label="Update"
       disabled={isFormPristine}
       style={{ marginRight: '10px' }}
       onClick={() => dispatch(submit(`stashForm${id}`))}
-    />
+    >
+      Update
+    </Button>
     <Button
-      primary
+      color="primary"
       raised
-      label="Publish"
       onClick={publishStash}
-    />
+    >
+      Publish
+    </Button>
   </FooterDiv>
 )
 

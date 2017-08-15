@@ -3,83 +3,71 @@ import PropTypes from 'prop-types';
 import { graphql } from 'react-relay';
 import withRelayFragment from 'relay/withRelayFragment';
 import { compose, mapProps } from 'recompose';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import { Card, CardHeader, CardText } from 'material-ui/Card';
+import Card, { CardHeader, CardContent } from 'material-ui/Card';
 import Avatar from 'material-ui/Avatar';
 import moment from 'moment';
 import UserPhoto from 'components/shared/UserPhoto';
 import Commits from './Commits';
 import Comments from './Comments';
 import Votes from './Votes';
-import { PendingMainGrid, GreyCardText } from './styles';
+import { PendingMainGrid } from './styles';
 
 const PendingContribution = ({
-  title, pendingRef, cardColor,
+  title, pendingRef,
+  // cardColor,
   pendingRef: {
     stash: { description, owner, createdAt },
   },
 }) => (
-  <MuiThemeProvider>
-    <PendingMainGrid>
-      <Card>
-        <CardHeader
-          title={title}
-          subtitle={`pushed ${moment(createdAt).fromNow()}`}
-          avatar={(
-            <Avatar>
-              <UserPhoto
-                userName={owner.userName}
-                photoUrl={owner.photoUrl}
-                width={32}
-                height={32}
-              />
-            </Avatar>
-          )}
-          showExpandableButton
-          actAsExpander
-          style={{
-            backgroundColor: cardColor,
-          }}
-          iconStyle={{
-            color: 'rgba(255,255,255,0.9)',
-          }}
-          titleColor={'rgba(255,255,255,0.9)'}
-          subtitleColor={'rgba(255,255,255,0.7)'}
-        />
-        <GreyCardText expandable>
-          <Card>
-            <CardText>
-              {description && (
-                <dl>
-                  <dt>Description</dt>
-                  <dd>
-                    {description}
-                  </dd>
-                </dl>
-              )}
+  <PendingMainGrid>
+    <Card>
+      <CardHeader
+        title={title}
+        subheader={`pushed ${moment(createdAt).fromNow()}`}
+        avatar={(
+          <Avatar>
+            <UserPhoto
+              userName={owner.userName}
+              photoUrl={owner.photoUrl}
+              width={32}
+              height={32}
+            />
+          </Avatar>
+        )}
+      />
+      <CardContent>
+        <Card>
+          <CardContent>
+            {description && (
               <dl>
-                <dt>Goals &amp; Issues</dt>
-                <dd>TODO</dd>
+                <dt>Description</dt>
+                <dd>
+                  {description}
+                </dd>
               </dl>
-              <dl>
-                <dt>Contributor Statistics</dt>
-                <dd>TODO</dd>
-              </dl>
-            </CardText>
-          </Card>
-          <Commits commit={pendingRef.target} />
-          <Comments stash={pendingRef.stash} />
-          <Votes stash={pendingRef.stash} />
-        </GreyCardText>
-      </Card>
-    </PendingMainGrid>
-  </MuiThemeProvider>
+            )}
+            <dl>
+              <dt>Goals &amp; Issues</dt>
+              <dd>TODO</dd>
+            </dl>
+            <dl>
+              <dt>Contributor Statistics</dt>
+              <dd>TODO</dd>
+            </dl>
+          </CardContent>
+        </Card>
+        <Commits commit={pendingRef.target} />
+        <Comments stash={pendingRef.stash} />
+        <Votes stash={pendingRef.stash} />
+      </CardContent>
+    </Card>
+  </PendingMainGrid>
 )
 
 PendingContribution.propTypes = {
   pendingRef: PropTypes.object.isRequired,
   title: PropTypes.string.isRequired,
-  cardColor: PropTypes.string.isRequired,
+  // cardColor: PropTypes.string.isRequired,
 }
 
 export default compose(

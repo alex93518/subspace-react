@@ -5,7 +5,7 @@ import withRelayFragment from 'relay/withRelayFragment';
 import { compose, mapProps } from 'recompose';
 import MdComment from 'react-icons/lib/md/comment';
 import pluralize from 'pluralize';
-import { Card, CardHeader, CardText } from 'material-ui/Card';
+import Card, { CardHeader, CardContent } from 'material-ui/Card';
 import StashComment from './StashComment';
 
 pluralize.addIrregularRule('is', 'are')
@@ -14,7 +14,7 @@ const Comments = ({ stash, totalAllCount }) => (
   <Card style={{ marginTop: 10 }}>
     <CardHeader
       title="Comments"
-      subtitle={(
+      subheader={(
         <span>
           There{' '}
           {pluralize('is', totalAllCount)}{' '}
@@ -22,12 +22,10 @@ const Comments = ({ stash, totalAllCount }) => (
         </span>
       )}
       avatar={<MdComment height={32} width={32} />}
-      showExpandableButton
-      actAsExpander
     />
-    <CardText expandable>
+    <CardContent>
       <StashComment stash={stash} />
-    </CardText>
+    </CardContent>
   </Card>
 )
 
