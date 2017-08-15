@@ -11,39 +11,39 @@ import CommitList from './CommitList';
 import { DivCommits } from './styles';
 
 const Commits = ({
-  commits: {
+  repository: {
     ref: {
       target,
     },
   },
-  commits, splat,
+  repository, splat,
 }) => (
   <MainGrid>
     <DivCommits>
       <BranchSelect
-        branchSelect={commits}
+        repository={repository}
         suffix={`commits${splat ? `/${splat}` : ''}`}
       />
-      <CommitList commitList={target} />
+      <CommitList commit={target} />
     </DivCommits>
   </MainGrid>
 )
 
 Commits.propTypes = {
-  commits: PropTypes.object.isRequired,
+  repository: PropTypes.object.isRequired,
   splat: PropTypes.string,
 };
 
 export default compose(
   withRouter,
   withRelayFragment({
-    commits: graphql`
-      fragment Commits_commits on Repository {
-        ...BranchSelect_branchSelect
+    repository: graphql`
+      fragment Commits_repository on Repository {
+        ...BranchSelect_repository
         ref(refName: $branchHead) @include(if: $isCommits){
           target {
             ... on Commit {
-              ...CommitList_commitList
+              ...CommitList_commit
             }
           }
         }

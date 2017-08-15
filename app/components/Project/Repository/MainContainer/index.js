@@ -16,7 +16,7 @@ import CloneUrlBox from './CloneUrlBox';
 import { DescriptionCol, RowSty, CloneCol } from './styles';
 
 const MainContainer = ({
-  mainContainer, target, tree,
+  repository, target, tree,
   createdAt, goals, description,
 }) => (
   <MainGrid>
@@ -31,29 +31,29 @@ const MainContainer = ({
       <RowSty>
         <Col md={12}>
           <StatusBar
-            statusBar={mainContainer}
+            repository={repository}
           />
         </Col>
       </RowSty>
       <RowSty>
         <Col md={6}>
           <BranchSelect
-            branchSelect={mainContainer}
+            repository={repository}
           />
         </Col>
         <CloneCol md={6}>
-          <CloneUrlBox cloneUrlBox={mainContainer} />
+          <CloneUrlBox repository={repository} />
         </CloneCol>
       </RowSty>
       <RowSty>
         <Col>
-          <LastCommit lastCommit={target} />
+          <LastCommit commit={target} />
           <Tree tree={tree} />
         </Col>
       </RowSty>
       <Row>
         <Col>
-          <Readme readme={tree} />
+          <Readme tree={tree} />
         </Col>
       </Row>
       <RowSty>
@@ -67,7 +67,7 @@ const MainContainer = ({
 )
 
 MainContainer.propTypes = {
-  mainContainer: PropTypes.object.isRequired,
+  repository: PropTypes.object.isRequired,
   target: PropTypes.object.isRequired,
   tree: PropTypes.object.isRequired,
   createdAt: PropTypes.number.isRequired,
@@ -77,12 +77,12 @@ MainContainer.propTypes = {
 
 export default compose(
   withRelayFragment({
-    mainContainer: graphql`
-      fragment MainContainer_mainContainer on Repository {
-        ...BranchSelect_branchSelect
-        ...StatusBar_statusBar
-        ...CloneUrlBox_cloneUrlBox
-        ...EmptyRepo_emptyRepo
+    repository: graphql`
+      fragment MainContainer_repository on Repository {
+        ...BranchSelect_repository
+        ...StatusBar_repository
+        ...CloneUrlBox_repository
+        ...EmptyRepo_repository
         createdAt @include(if: $isMainContainer)
         project @include(if: $isMainContainer) {
           goals
@@ -91,10 +91,10 @@ export default compose(
         ref(refName: $branchHead) @include(if: $isMainContainer) {
           target {
             ... on Commit {
-              ...LastCommit_lastCommit
+              ...LastCommit_commit
               tree {
                 ...Tree_tree
-                ...Readme_readme
+                ...Readme_tree
               }
             }
           }
@@ -104,13 +104,13 @@ export default compose(
   }),
   mapProps(({
     vars,
-    mainContainer,
-    mainContainer: { ref, project },
+    repository,
+    repository: { ref, project },
   }) => ({
     vars,
-    mainContainer,
+    repository,
     ...project,
-    createdAt: mainContainer.createdAt,
+    createdAt: repository.createdAt,
     target: ref ? ref.target : null,
     tree: ref ? ref.target.tree : null,
   })),
@@ -121,7 +121,7 @@ export default compose(
         <Col md={12}>
           <Row>
             <Col>
-              <EmptyRepo emptyRepo={props.mainContainer} />
+              <EmptyRepo emptyRepo={props.repository} />
             </Col>
           </Row>
         </Col>

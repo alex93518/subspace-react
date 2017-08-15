@@ -35,8 +35,8 @@ CommitDiff.propTypes = {
 
 export default compose(
   withRelayFragment({
-    commitDiff: graphql`
-      fragment Diff_commitDiff on Commit {
+    commit: graphql`
+      fragment Diff_commit on Commit {
         diff {
           changeType
           oldPath
@@ -46,8 +46,8 @@ export default compose(
       }
     `,
   }),
-  mapProps(({ commitDiff }) => {
-    const diff = parseDiff(commitDiff);
+  mapProps(({ commit }) => {
+    const diff = parseDiff(commit);
     return ({
       diff,
       additions: totalHunk('additions', diff),

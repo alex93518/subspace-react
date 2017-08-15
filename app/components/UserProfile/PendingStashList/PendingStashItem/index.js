@@ -4,9 +4,9 @@ import { graphql } from 'react-relay';
 import { compose, withState, withHandlers } from 'recompose';
 import FlipMove from 'react-flip-move';
 import withRelayFragment from 'relay/withRelayFragment';
-import StashCommitStatus from 'components/Project/Repository/Stash/CommitStatus';
 import { Card, CardHeader } from 'material-ui/Card';
 import Paper from 'material-ui/Paper';
+import CommitStatus from './CommitStatus';
 import Header from './Header';
 import HeadSub from './HeadSub';
 import Footer from './Footer';
@@ -52,7 +52,7 @@ const PendingStashItem = ({
               />
               <Paper zDepth={1}>
                 <CommitDiv>
-                  <StashCommitStatus stashCommitStatus={gitRef.target} />
+                  <CommitStatus commit={gitRef.target} />
                 </CommitDiv>
               </Paper>
             </ContentDiv>
@@ -88,7 +88,7 @@ export default compose(
         }
         target {
           ... on Commit {
-            ...CommitStatus_stashCommitStatus
+            ...CommitStatus_commit
           }
         }      
         ...Header_pendingStashItem

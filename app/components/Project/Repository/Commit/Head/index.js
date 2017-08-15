@@ -9,7 +9,7 @@ import { matchRoute } from 'utils/routeMatcher';
 import { Td, CommitTitle, LinkBranchSty } from './styles';
 
 const CommitHead = ({
-  commitHead: { fullMessage }, branchHead,
+  commit: { fullMessage }, branchHead,
 }) => (
   <tr>
     <Td>
@@ -27,15 +27,15 @@ const CommitHead = ({
 );
 
 CommitHead.propTypes = {
-  commitHead: PropTypes.object.isRequired,
+  commit: PropTypes.object.isRequired,
   branchHead: PropTypes.string,
 }
 
 export default compose(
   withRouter,
   withRelayFragment({
-    commitHead: graphql`
-      fragment Head_commitHead on Commit {
+    commit: graphql`
+      fragment Head_commit on Commit {
         fullMessage
       }
     `,

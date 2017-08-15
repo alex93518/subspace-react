@@ -10,9 +10,9 @@ import { DivCommitStatus } from './styles';
 const CommitStatus = ({ commit, history }) => (
   <DivCommitStatus>
     <div>
-      <LastCommit lastCommit={commit} />
+      <LastCommit commit={commit} />
     </div>
-    <Contributors contributors={history} />
+    <Contributors commitConnection={history} />
   </DivCommitStatus>
 )
 
@@ -23,13 +23,13 @@ CommitStatus.propTypes = {
 
 export default compose(
   withRelayFragment({
-    commitStatus: graphql`
-      fragment CommitStatus_commitStatus on TreeEntry {
+    treeEntry: graphql`
+      fragment CommitStatus_treeEntry on TreeEntry {
         history(first: 1, refName: $branchHead) {
-          ...Contributors_contributors
+          ...Contributors_commitConnection
           edges {
             node {
-              ...LastCommit_lastCommit
+              ...LastCommit_commit
             }
           }
         }
@@ -37,7 +37,7 @@ export default compose(
     `,
   }),
   mapProps(({
-    commitStatus: { history },
+    treeEntry: { history },
   }) => ({
     commit: history.edges[0].node,
     history,

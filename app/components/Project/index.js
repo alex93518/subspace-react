@@ -53,7 +53,7 @@ const getNavConfig = ({ owner: { userName }, name, stashes: { totalCount } }) =>
     ),
   },
   {
-    link: `/${userName}/${name}/master/stashes`,
+    link: `/${userName}/${name}/master/pendingcontributions`,
     label: (
       <NavLabel>
         <Icon><GoRepoPush /></Icon> { totalCount } Pending Contributions

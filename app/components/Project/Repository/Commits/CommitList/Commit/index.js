@@ -14,7 +14,7 @@ import {
 } from './styles';
 
 const Commit = ({
-  commitItem: {
+  commit: {
     oid,
     shortId,
     shortMessage,
@@ -78,7 +78,7 @@ const Commit = ({
 );
 
 Commit.propTypes = {
-  commitItem: PropTypes.object.isRequired,
+  commit: PropTypes.object.isRequired,
   additions: PropTypes.number.isRequired,
   deletions: PropTypes.number.isRequired,
   isHideAvatar: PropTypes.bool,
@@ -86,8 +86,8 @@ Commit.propTypes = {
 
 export default compose(
   withRelayFragment({
-    commitItem: graphql`
-      fragment Commit_commitItem on Commit {
+    commit: graphql`
+      fragment Commit_commit on Commit {
         oid
         shortId
         shortMessage
@@ -107,10 +107,10 @@ export default compose(
       }
     `,
   }),
-  mapProps(({ commitItem, ...rest }) => {
-    const diff = parseDiff(commitItem);
+  mapProps(({ commit, ...rest }) => {
+    const diff = parseDiff(commit);
     return ({
-      commitItem,
+      commit,
       additions: totalHunk('additions', diff),
       deletions: totalHunk('deletions', diff),
       ...rest,

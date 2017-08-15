@@ -7,31 +7,31 @@ import CommitDiff from './Diff';
 import { MainDiv, TableHead } from './styles'
 
 const Commit = ({
-  commit: { ref: { commit } },
+  repository: { ref: { commit } },
 }) => (
   <MainDiv>
     <TableHead>
       <tbody>
-        <CommitHead commitHead={commit} />
-        <CommitStatus commitStatus={commit} />
+        <CommitHead commit={commit} />
+        <CommitStatus commit={commit} />
       </tbody>
     </TableHead>
-    <CommitDiff commitDiff={commit} />
+    <CommitDiff commit={commit} />
   </MainDiv>
 )
 
 Commit.propTypes = {
-  commit: PropTypes.object.isRequired,
+  repository: PropTypes.object.isRequired,
 }
 
 export default createFragmentContainer(Commit, {
-  commit: graphql`
-    fragment Commit_commit on Repository {
+  repository: graphql`
+    fragment Commit_repository on Repository {
       ref(refName: $branchHead) @include(if: $isCommit) {
         commit(commitId: $commitId) {
-          ...Head_commitHead
-          ...Status_commitStatus
-          ...Diff_commitDiff
+          ...Head_commit
+          ...Status_commit
+          ...Diff_commit
         }
       }
     }

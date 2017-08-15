@@ -6,7 +6,8 @@ const mutation = graphql`
     addStashComment(input: $input) {
       clientMutationId
       stash {
-        ...StashComment_stashComment
+        ...StashComment_stash
+        ...Comments_stash
       }
     }
   }

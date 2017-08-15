@@ -8,7 +8,7 @@ import GoOrganization from 'react-icons/lib/go/organization';
 import { RowSty, ColSty, Icon } from './styles';
 
 const StatusBar = ({
-  statusBar: {
+  repository: {
     refs: { branchTotal },
     ref: {
       target: {
@@ -43,12 +43,12 @@ const StatusBar = ({
 )
 
 StatusBar.propTypes = {
-  statusBar: PropTypes.object.isRequired,
+  repository: PropTypes.object.isRequired,
 }
 
 export default createFragmentContainer(StatusBar, {
-  statusBar: graphql`
-    fragment StatusBar_statusBar on Repository {
+  repository: graphql`
+    fragment StatusBar_repository on Repository {
       refs(first: 99) @include(if: $isMainContainer){
         branchTotal: totalCount
       }

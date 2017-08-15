@@ -7,7 +7,7 @@ import { timeFromNow } from 'utils/string';
 import { Td, UserName, ColCommitId } from './styles';
 
 const CommitStatus = ({
-  commitStatus: {
+  commit: {
     oid,
     commitTime,
     author: {
@@ -33,12 +33,12 @@ const CommitStatus = ({
 )
 
 CommitStatus.propTypes = {
-  commitStatus: PropTypes.object.isRequired,
+  commit: PropTypes.object.isRequired,
 };
 
 export default createFragmentContainer(CommitStatus, {
-  commitStatus: graphql`
-    fragment Status_commitStatus on Commit {
+  commit: graphql`
+    fragment Status_commit on Commit {
       oid
       commitTime
       author {

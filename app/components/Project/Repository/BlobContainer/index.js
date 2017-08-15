@@ -13,18 +13,18 @@ import CommitStatus from './CommitStatus';
 import FileStatus from './FileStatus';
 import { RowSty } from './styles';
 
-const BlobContiner = ({ blobContainer, treeEntry, splat }) => (
+const BlobContiner = ({ repository, treeEntry, splat }) => (
   <MainGrid>
     <Col md={12}>
       <RowSty>
         <Col>
           <BranchSelect
-            branchSelect={blobContainer}
+            repository={repository}
             suffix={splat ? `blob/${splat}` : null}
           />
-          <CommitStatus commitStatus={treeEntry} />
-          <FileStatus fileStatus={treeEntry} />
-          <Blob blob={treeEntry} />
+          <CommitStatus treeEntry={treeEntry} />
+          <FileStatus treeEntry={treeEntry} />
+          <Blob treeEntry={treeEntry} />
         </Col>
       </RowSty>
     </Col>
@@ -32,7 +32,7 @@ const BlobContiner = ({ blobContainer, treeEntry, splat }) => (
 );
 
 BlobContiner.propTypes = {
-  blobContainer: PropTypes.object.isRequired,
+  repository: PropTypes.object.isRequired,
   treeEntry: PropTypes.object.isRequired,
   splat: PropTypes.string,
 };
@@ -40,17 +40,17 @@ BlobContiner.propTypes = {
 export default compose(
   withRouter,
   withRelayFragment({
-    blobContainer: graphql`
-      fragment BlobContainer_blobContainer on Repository {
-        ...BranchSelect_branchSelect
+    repository: graphql`
+      fragment BlobContainer_repository on Repository {
+        ...BranchSelect_repository
         ref(refName: $branchHead) @include(if: $isBlob) {
           target {
             ... on Commit {
               tree {
                 entries(path: $splat) {
-                  ...CommitStatus_commitStatus
-                  ...FileStatus_fileStatus
-                  ...Blob_blob
+                  ...CommitStatus_treeEntry
+                  ...FileStatus_treeEntry
+                  ...Blob_treeEntry
                 }
               }
             }
@@ -60,12 +60,12 @@ export default compose(
     `,
   }),
   branch(
-    props => props.blobContainer.ref.target.tree.entries.length === 0,
+    props => props.repository.ref.target.tree.entries.length === 0,
     renderComponent(() => <div>File Not Found</div>)
   ),
-  mapProps(({ blobContainer, location: { pathname } }) => ({
-    blobContainer,
-    treeEntry: blobContainer.ref.target.tree.entries[0],
+  mapProps(({ repository, location: { pathname } }) => ({
+    repository,
+    treeEntry: repository.ref.target.tree.entries[0],
     splat: matchRoute(pathname).params['0'] || null,
   }))
 )(BlobContiner);

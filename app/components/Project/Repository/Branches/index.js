@@ -14,7 +14,7 @@ const Branches = ({ edges }) => (
         {
           edges.map(({ node, node: { id } }) => (
             <tr key={id}>
-              <Branch branch={node} />
+              <Branch branchRef={node} />
             </tr>
           ))
         }
@@ -29,13 +29,13 @@ Branches.propTypes = {
 
 export default compose(
   withRelayFragment({
-    branches: graphql`
-      fragment Branches_branches on Repository {
+    repository: graphql`
+      fragment Branches_repository on Repository {
         refs(first: 99) @include(if: $isBranches) {
           edges {
             node {
               id
-              ...Branch_branch
+              ...Branch_branchRef
             }
           }
         }
@@ -43,6 +43,6 @@ export default compose(
     `,
   }),
   mapProps(({
-    branches: { refs: { edges } },
+    repository: { refs: { edges } },
   }) => ({ edges }))
 )(Branches)

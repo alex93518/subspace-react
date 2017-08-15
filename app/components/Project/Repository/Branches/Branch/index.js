@@ -31,8 +31,8 @@ Branch.propTypes = {
 
 export default compose(
   withRelayFragment({
-    branch: graphql`
-      fragment Branch_branch on Ref {
+    branchRef: graphql`
+      fragment Branch_branchRef on Ref {
         name
         target {
           ... on Commit {
@@ -48,12 +48,12 @@ export default compose(
     `,
   }),
   mapProps(({
-    branch,
-    branch: {
+    branchRef,
+    branchRef: {
       target,
       target: {
         author: { user },
       },
     },
-  }) => ({ ...branch, ...target, user })),
+  }) => ({ ...branchRef, ...target, user })),
 )(Branch)

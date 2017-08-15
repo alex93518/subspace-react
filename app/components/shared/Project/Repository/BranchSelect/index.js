@@ -49,8 +49,8 @@ BranchSelect.propTypes = {
 export default compose(
   withRouter,
   withRelayFragment({
-    branchSelect: graphql`
-      fragment BranchSelect_branchSelect on Repository {
+    repository: graphql`
+      fragment BranchSelect_repository on Repository {
         refBranches: refs(first: 99) @skip(if: $isStashes) {
           edges {
             node {
@@ -70,7 +70,7 @@ export default compose(
   }),
   mapProps(({
     location: { pathname },
-    branchSelect: {
+    repository: {
       refBranches, stashBranches,
     },
     ...rest

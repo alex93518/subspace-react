@@ -47,8 +47,8 @@ FileStatus.propTypes = {
 export default compose(
   withRouter,
   withRelayFragment({
-    fileStatus: graphql`
-      fragment FileStatus_fileStatus on TreeEntry {
+    treeEntry: graphql`
+      fragment FileStatus_treeEntry on TreeEntry {
         object {
           ... on Blob {
             text
@@ -59,7 +59,7 @@ export default compose(
     `,
   }),
   mapProps(({
-    fileStatus: { object },
+    treeEntry: { object },
     location: { pathname },
   }) => ({
     ...object,

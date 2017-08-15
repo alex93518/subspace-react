@@ -11,7 +11,7 @@ const commitsByDate = R.groupBy(commit =>
 )
 
 const CommitList = ({
-  commitList: {
+  commit: {
     commitListHistory: {
       edges,
     },
@@ -31,7 +31,7 @@ const CommitList = ({
               {timeEdge[1].map(({ node }) =>
                 (<Commit
                   key={node.id}
-                  commitItem={node}
+                  commit={node}
                 />)
               )}
             </tbody>
@@ -43,18 +43,18 @@ const CommitList = ({
 )
 
 CommitList.propTypes = {
-  commitList: PropTypes.object.isRequired,
+  commit: PropTypes.object.isRequired,
 }
 
 export default createFragmentContainer(CommitList, {
-  commitList: graphql`
-    fragment CommitList_commitList on Commit {
+  commit: graphql`
+    fragment CommitList_commit on Commit {
       commitListHistory: history(first: 20, path: $splat) {
         edges {
           node {
             id,
             commitTime,
-            ...Commit_commitItem
+            ...Commit_commit
           }
         }
       }

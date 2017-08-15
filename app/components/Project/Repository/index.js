@@ -30,9 +30,7 @@ const Repository = ({ vars }) => (
               {codeRoute.map((route, index) => {
                 // eslint-disable-next-line
                 const Component = asyncComponent(() => import(`./${route.name}/index`));
-                const variables = {
-                  [route.name.charAt(0).toLowerCase() + route.name.slice(1)]: repository,
-                };
+                const variables = { repository };
                 return (
                   <Route
                     key={`codeComponent${index}`} // eslint-disable-line
@@ -53,23 +51,20 @@ const Repository = ({ vars }) => (
 const query = graphql`
   query RepositoryQuery(
     $userName: String!, $projectName: String!, $sort: String!,
-    $branchHead: String!, $splat: String, $commitId: String!, $stashNum: String!,
+    $branchHead: String!, $splat: String, $commitId: String!,
     $isMainContainer: Boolean!, $isBranches: Boolean!, $isCommits: Boolean!,
-    $isStash: Boolean!, $isStashes: Boolean!, $isCommit: Boolean!,
-    $isBlob: Boolean!, $isTree: Boolean!
+    $isStashes: Boolean!, $isCommit: Boolean!, $isBlob: Boolean!, $isTree: Boolean!
   ) {
     viewer {
       repository(ownerName: $userName, name: $projectName) {
         id
-        ...Stash_stash
-        ...Stashes_stashes
-        ...Commit_commit
-        ...Commits_commits
-        ...Branches_branches
-        ...BlobContainer_blobContainer
-        ...TreeContainer_treeContainer
-        ...MainContainer_mainContainer
-        ...PendingContribution_pendingContribution
+        ...Commit_repository
+        ...Commits_repository
+        ...Branches_repository
+        ...BlobContainer_repository
+        ...TreeContainer_repository
+        ...MainContainer_repository
+        ...PendingContributions_repository
       }
     }
   }
@@ -94,7 +89,6 @@ export default compose(
         projectName: params.projectName,
         branchHead: params.branchHead || 'master',
         commitId: params.commitId || '',
-        stashNum: params.stashNum ? `stash-${params.stashNum}` : 'stash-1',
         splat: params['0'] || null,
         sort: 'popular',
         isMainContainer: childName === 'MainContainer',
@@ -102,8 +96,7 @@ export default compose(
         isBlob: childName === 'BlobContainer',
         isCommits: childName === 'Commits',
         isCommit: childName === 'Commit',
-        isStashes: childName === 'Stashes',
-        isStash: (childName === 'Stash') || (childName === 'PendingContribution'),
+        isStashes: childName === 'PendingContributions',
         isBranches: childName === 'Branches',
       },
     });

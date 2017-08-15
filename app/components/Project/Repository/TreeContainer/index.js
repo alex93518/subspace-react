@@ -9,8 +9,8 @@ import MainGrid from 'components/shared/MainGrid';
 import { RowSty } from './styles';
 
 const TreeContainer = ({
-  treeContainer,
-  treeContainer: {
+  repository,
+  repository: {
     ref: {
       target: { treeHistory: { edges } },
     },
@@ -21,17 +21,17 @@ const TreeContainer = ({
       <RowSty>
         <Col>
           <BranchSelect
-            branchSelect={treeContainer}
+            repository={repository}
           />
         </Col>
       </RowSty>
       <RowSty>
         <Col>
           <LastCommit
-            lastCommit={edges[0].node}
+            commit={edges[0].node}
           />
           <Tree
-            tree={treeContainer.ref.target.tree}
+            tree={repository.ref.target.tree}
           />
         </Col>
       </RowSty>
@@ -40,20 +40,20 @@ const TreeContainer = ({
 )
 
 TreeContainer.propTypes = {
-  treeContainer: PropTypes.object.isRequired,
+  repository: PropTypes.object.isRequired,
 };
 
 export default createFragmentContainer(TreeContainer, {
-  treeContainer: graphql`
-    fragment TreeContainer_treeContainer on Repository {
-      ...BranchSelect_branchSelect
+  repository: graphql`
+    fragment TreeContainer_repository on Repository {
+      ...BranchSelect_repository
       ref(refName: $branchHead) @include(if: $isTree) {
         target {
           ... on Commit {
             treeHistory: history(first: 1) {
               edges {
                 node {
-                  ...LastCommit_lastCommit
+                  ...LastCommit_commit
                 }
               }
             }
