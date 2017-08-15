@@ -3,80 +3,79 @@ import PropTypes from 'prop-types';
 import { ToggleButtonGroup } from 'react-bootstrap';
 import { authRelay } from 'relay/RelayEnvironment';
 import { connect } from 'react-redux';
-import { compose, withHandlers, mapProps, withState } from 'recompose';
+import { compose, withHandlers, mapProps } from 'recompose';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import Tooltip from 'rc-tooltip';
+import 'rc-tooltip/assets/bootstrap_white.css';
 import UserPhoto from 'components/shared/UserPhoto';
 import FaCog from 'react-icons/lib/fa/cog';
 import FaSignOut from 'react-icons/lib/fa/sign-out';
 import { redirect } from 'redux/utils'
 import {
   NavItemWhite, SpanName, OnlineButton, SpanTitle, UserNameDiv,
-  AngleDownName, UserSeparator, UserPopover, SignOutDiv,
+  AngleDownName, UserSeparator, SignOutDiv, UserPopover,
 } from './styles';
 
 const User = ({
-  handleTouchTap, isUserWidgetOpen, anchorEl, handleRequestClose,
   handleOnProfileClick, user, userName, isInvisibleIdx, setIsInvisible,
 }) => (
   <MuiThemeProvider>
-    <NavItemWhite
-      eventKey={3}
-      onClick={handleTouchTap}
+    <Tooltip
+      placement="bottomRight"
+      trigger="click"
+      overlay={(
+        <UserPopover>
+          <ToggleButtonGroup
+            type="radio"
+            name="options"
+            value={isInvisibleIdx}
+            onChange={setIsInvisible}
+          >
+            <OnlineButton value={0}>Online</OnlineButton>
+            <OnlineButton value={1}>Invisible</OnlineButton>
+          </ToggleButtonGroup>
+          <UserSeparator />
+          <div
+            role="button"
+            tabIndex={0}
+            onClick={handleOnProfileClick}
+          >
+            <UserPhoto
+              userName={userName}
+              photoUrl={user.photoUrl}
+              width={24}
+              height={24}
+            />
+            <SpanTitle>View my profile</SpanTitle>
+          </div>
+          <UserSeparator />
+          <div role="button">
+            <FaCog width={26} height={26} /><SpanTitle>Settings</SpanTitle>
+          </div>
+          <UserSeparator />
+          <SignOutDiv role="button" onClick={authRelay.signOut.init}>
+            <FaSignOut width={26} height={26} /><SpanTitle>Logout</SpanTitle>
+            <UserNameDiv>
+              {userName}
+            </UserNameDiv>
+          </SignOutDiv>
+        </UserPopover>
+        )}
     >
-      <UserPhoto
-        photoUrl={user.photoUrl}
-        userName={userName}
-        width={22}
-        height={22}
-      />
-      <SpanName>
-        {user.displayName}
-      </SpanName><AngleDownName />
-      <UserPopover
-        open={isUserWidgetOpen}
-        anchorEl={anchorEl}
-        anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-        targetOrigin={{ horizontal: 'right', vertical: 'top' }}
-        onRequestClose={handleRequestClose}
-        useLayerForClickAway={false}
-        style={{ color: 'inherit' }}
+      <NavItemWhite
+        eventKey={3}
       >
-        <ToggleButtonGroup
-          type="radio"
-          name="options"
-          value={isInvisibleIdx}
-          onChange={setIsInvisible}
-        >
-          <OnlineButton value={0}>Online</OnlineButton>
-          <OnlineButton value={1}>Invisible</OnlineButton>
-        </ToggleButtonGroup>
-        <UserSeparator />
-        <div
-          role="button"
-          tabIndex={0}
-          onClick={handleOnProfileClick}
-        >
-          <UserPhoto
-            userName={userName}
-            photoUrl={user.photoUrl}
-            width={24}
-            height={24}
-          />
-          <SpanTitle>View my profile</SpanTitle>
-        </div>
-        <UserSeparator />
-        <div role="button">
-          <FaCog width={26} height={26} /><SpanTitle>Settings</SpanTitle>
-        </div>
-        <UserSeparator />
-        <SignOutDiv role="button" onClick={authRelay.signOut.init}>
-          <FaSignOut width={26} height={26} /><SpanTitle>Logout</SpanTitle>
-          <UserNameDiv>
-            {userName}
-          </UserNameDiv>
-        </SignOutDiv>
-      </UserPopover>
-    </NavItemWhite>
+        <UserPhoto
+          photoUrl={user.photoUrl}
+          userName={userName}
+          width={22}
+          height={22}
+        />
+        <SpanName>
+          {user.displayName}
+        </SpanName><AngleDownName />
+      </NavItemWhite>
+    </Tooltip>
   </MuiThemeProvider>
 );
 
@@ -85,16 +84,10 @@ User.propTypes = {
   userName: PropTypes.string.isRequired,
   isInvisibleIdx: PropTypes.number.isRequired,
   setIsInvisible: PropTypes.func.isRequired,
-  handleTouchTap: PropTypes.func.isRequired,
-  isUserWidgetOpen: PropTypes.bool.isRequired,
-  handleRequestClose: PropTypes.func.isRequired,
   handleOnProfileClick: PropTypes.func.isRequired,
-  anchorEl: PropTypes.object,
 }
 
 export default compose(
-  withState('isUserWidgetOpen', 'setIsUserWidgetOpen', false),
-  withState('anchorEl', 'setAnchorEl', null),
   connect(state => ({
     isInvisible: state.get('auth').get('isInvisible'),
   })),
@@ -109,14 +102,6 @@ export default compose(
       } else {
         authRelay.setIsInvisible.init(false)
       }
-    },
-    handleTouchTap: props => event => {
-      event.preventDefault();
-      props.setIsUserWidgetOpen(!props.isUserWidgetOpen);
-      props.setAnchorEl(event.currentTarget);
-    },
-    handleRequestClose: props => () => {
-      props.setIsUserWidgetOpen(false);
     },
     handleOnProfileClick: props => () => {
       redirect(`/profile/${props.userName}`);

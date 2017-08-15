@@ -3,7 +3,6 @@ import { Button, NavItem, ToggleButton } from 'react-bootstrap';
 import FaUser from 'react-icons/lib/fa/user';
 import FaAngleDown from 'react-icons/lib/fa/angle-down';
 import Separator from 'components/shared/Separator';
-import Popover from 'material-ui/Popover';
 
 export const NavItemWhite = styled(NavItem)`
   & a {
@@ -57,10 +56,12 @@ export const OnlineButton = styled(ToggleButton)`
   }
 `
 
-export const UserPopover = styled(Popover)`
+export const UserPopover = styled.div`
   max-width: 350px;
-  padding: 10px 20px;
+  padding: 5px 10px;
   font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif !important;
+  background-color: #fff;
+  font-size: 14px;
 `
 
 export const SpanTitle = styled.span`

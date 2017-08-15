@@ -11,10 +11,10 @@ import UserPhoto from 'components/shared/UserPhoto';
 import Commits from './Commits';
 import Comments from './Comments';
 import Votes from './Votes';
-import { PendingMainGrid } from './styles';
+import { PendingMainGrid, GreyCardText } from './styles';
 
 const PendingContribution = ({
-  title, pendingRef,
+  title, pendingRef, cardColor,
   pendingRef: {
     stash: { description, owner, createdAt },
   },
@@ -38,7 +38,7 @@ const PendingContribution = ({
           showExpandableButton
           actAsExpander
           style={{
-            backgroundColor: '#039BE5',
+            backgroundColor: cardColor,
           }}
           iconStyle={{
             color: 'rgba(255,255,255,0.9)',
@@ -46,10 +46,7 @@ const PendingContribution = ({
           titleColor={'rgba(255,255,255,0.9)'}
           subtitleColor={'rgba(255,255,255,0.7)'}
         />
-        <CardText
-          expandable
-          style={{ backgroundColor: '#E0E0E0' }}
-        >
+        <GreyCardText expandable>
           <Card>
             <CardText>
               {description && (
@@ -73,7 +70,7 @@ const PendingContribution = ({
           <Commits commit={pendingRef.target} />
           <Comments stash={pendingRef.stash} />
           <Votes stash={pendingRef.stash} />
-        </CardText>
+        </GreyCardText>
       </Card>
     </PendingMainGrid>
   </MuiThemeProvider>
@@ -82,6 +79,7 @@ const PendingContribution = ({
 PendingContribution.propTypes = {
   pendingRef: PropTypes.object.isRequired,
   title: PropTypes.string.isRequired,
+  cardColor: PropTypes.string.isRequired,
 }
 
 export default compose(
@@ -99,6 +97,7 @@ export default compose(
             userName
             photoUrl
           }
+          isUserVoted
           ...Comments_stash
           ...Votes_stash
         }
@@ -111,12 +110,23 @@ export default compose(
     `,
   }),
   mapProps(({
-    pendingRef: { stash: { stashNum, title } },
+    pendingRef: { stash: { stashNum, title, isUserVoted } },
     pendingRef, ...rest
-  }) => ({
-    title: title ?
-      `${title} (Stash #${stashNum})` : `Stash #${stashNum}`,
-    pendingRef,
-    ...rest,
-  }))
+  }) => {
+    let cardColor = '#039BE5'
+    if (isUserVoted !== null) {
+      if (isUserVoted) {
+        cardColor = '#43A047'
+      } else {
+        cardColor = '#EF5350'
+      }
+    }
+    return {
+      title: title ?
+        `${title} (Stash #${stashNum})` : `Stash #${stashNum}`,
+      pendingRef,
+      cardColor,
+      ...rest,
+    }
+  })
 )(PendingContribution)
