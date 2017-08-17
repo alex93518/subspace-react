@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { createFragmentContainer, graphql } from 'react-relay';
+import { graphql } from 'react-relay';
+import RepositoryQueryRenderer from 'relay/RepositoryQueryRenderer';
 import MainGrid from 'components/shared/MainGrid';
 import PendingContribution from './PendingContribution';
 
@@ -19,20 +20,36 @@ const Stashes = ({
 )
 
 Stashes.propTypes = {
-  repository: PropTypes.object.isRequired,
+  repository: PropTypes.object,
 }
 
-export default createFragmentContainer(Stashes, {
-  repository: graphql`
-    fragment PendingContributions_repository on Repository {
-      stashes(first: 99) @include(if: $isStashes){
-        edges {
-          node {
-            id
-            ...PendingContribution_pendingRef
+const PendingContributions = ({ vars }) => (
+  <RepositoryQueryRenderer vars={vars} query={query}>
+    <Stashes />
+  </RepositoryQueryRenderer>
+)
+
+PendingContributions.propTypes = {
+  vars: PropTypes.object.isRequired,
+};
+
+const query = graphql`
+  query PendingContributionsQuery(
+    $userName: String!, $projectName: String!, $sort: String!
+  ) {
+    viewer {
+      repository(ownerName: $userName, name: $projectName) {
+        stashes(first: 99){
+          edges {
+            node {
+              id
+              ...PendingContribution_pendingRef
+            }
           }
         }
       }
     }
-  `,
-})
+  }
+`;
+
+export default PendingContributions;

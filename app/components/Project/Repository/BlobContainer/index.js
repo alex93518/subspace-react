@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { graphql } from 'react-relay';
-import withRelayFragment from 'relay/withRelayFragment';
+import RepositoryQueryRenderer from 'relay/RepositoryQueryRenderer';
 import { withRouter } from 'react-router-dom';
 import { Col } from 'react-bootstrap';
 import { compose, branch, mapProps, renderComponent } from 'recompose';
@@ -13,7 +13,7 @@ import CommitStatus from './CommitStatus';
 import FileStatus from './FileStatus';
 import { RowSty } from './styles';
 
-const BlobContiner = ({ repository, treeEntry, splat }) => (
+const BlobContainer = ({ repository, treeEntry, splat }) => (
   <MainGrid>
     <Col md={12}>
       <RowSty>
@@ -31,19 +31,44 @@ const BlobContiner = ({ repository, treeEntry, splat }) => (
   </MainGrid>
 );
 
-BlobContiner.propTypes = {
-  repository: PropTypes.object.isRequired,
+BlobContainer.propTypes = {
+  repository: PropTypes.object,
   treeEntry: PropTypes.object.isRequired,
   splat: PropTypes.string,
 };
 
-export default compose(
+const ComposeBlobContainer = compose(
   withRouter,
-  withRelayFragment({
-    repository: graphql`
-      fragment BlobContainer_repository on Repository {
+  branch(
+    props => props.repository.ref.target.tree.entries.length === 0,
+    renderComponent(() => <div>File Not Found</div>)
+  ),
+  mapProps(({ repository, location: { pathname } }) => ({
+    repository,
+    treeEntry: repository.ref.target.tree.entries[0],
+    splat: matchRoute(pathname).params['0'] || null,
+  }))
+)(BlobContainer);
+
+const BlobContainerQuery = ({ vars }) => (
+  <RepositoryQueryRenderer vars={vars} query={query}>
+    <ComposeBlobContainer />
+  </RepositoryQueryRenderer>
+)
+
+BlobContainerQuery.propTypes = {
+  vars: PropTypes.object.isRequired,
+};
+
+const query = graphql`
+  query BlobContainerQuery(
+    $userName: String!, $projectName: String!,
+    $branchHead: String!, $splat: String, $isStashes: Boolean!
+  ) {
+    viewer {
+      repository(ownerName: $userName, name: $projectName) {
         ...BranchSelect_repository
-        ref(refName: $branchHead) @include(if: $isBlob) {
+        ref(refName: $branchHead) {
           target {
             ... on Commit {
               tree {
@@ -57,15 +82,9 @@ export default compose(
           }
         }
       }
-    `,
-  }),
-  branch(
-    props => props.repository.ref.target.tree.entries.length === 0,
-    renderComponent(() => <div>File Not Found</div>)
-  ),
-  mapProps(({ repository, location: { pathname } }) => ({
-    repository,
-    treeEntry: repository.ref.target.tree.entries[0],
-    splat: matchRoute(pathname).params['0'] || null,
-  }))
-)(BlobContiner);
+    }
+  }
+`;
+
+export default BlobContainerQuery;
+

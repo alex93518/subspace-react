@@ -49,10 +49,10 @@ StatusBar.propTypes = {
 export default createFragmentContainer(StatusBar, {
   repository: graphql`
     fragment StatusBar_repository on Repository {
-      refs(first: 99) @include(if: $isMainContainer){
+      refs(first: 99){
         branchTotal: totalCount
       }
-      ref(refName: $branchHead) @include(if: $isMainContainer){
+      ref(refName: $branchHead){
         target {
           ... on Commit {
             history {

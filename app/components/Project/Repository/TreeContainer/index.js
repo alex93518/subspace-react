@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { createFragmentContainer, graphql } from 'react-relay';
+import { graphql } from 'react-relay';
+import RepositoryQueryRenderer from 'relay/RepositoryQueryRenderer';
 import { Col } from 'react-bootstrap';
 import Tree from 'components/shared/Project/Repository/Tree';
 import BranchSelect from 'components/shared/Project/Repository/BranchSelect';
@@ -40,29 +41,46 @@ const TreeContainer = ({
 )
 
 TreeContainer.propTypes = {
-  repository: PropTypes.object.isRequired,
+  repository: PropTypes.object,
 };
 
-export default createFragmentContainer(TreeContainer, {
-  repository: graphql`
-    fragment TreeContainer_repository on Repository {
+const TreeContainerQuery = ({ vars }) => (
+  <RepositoryQueryRenderer vars={vars} query={query}>
+    <TreeContainer />
+  </RepositoryQueryRenderer>
+)
+
+TreeContainerQuery.propTypes = {
+  vars: PropTypes.object.isRequired,
+};
+
+const query = graphql`
+  query TreeContainerQuery(
+    $userName: String!, $projectName: String!,
+    $branchHead: String!, $splat: String, $isStashes: Boolean!
+  ) {
+    viewer {
+      repository(ownerName: $userName, name: $projectName) {
       ...BranchSelect_repository
-      ref(refName: $branchHead) @include(if: $isTree) {
-        target {
-          ... on Commit {
-            treeHistory: history(first: 1) {
-              edges {
-                node {
-                  ...LastCommit_commit
+        ref(refName: $branchHead) {
+          target {
+            ... on Commit {
+              treeHistory: history(first: 1) {
+                edges {
+                  node {
+                    ...LastCommit_commit
+                  }
                 }
               }
-            }
-            tree {
-              ...Tree_tree
+              tree {
+                ...Tree_tree
+              }
             }
           }
         }
       }
     }
-  `,
-})
+  }
+`;
+
+export default TreeContainerQuery;

@@ -41,7 +41,7 @@ CloneUrlBox.propTypes = {
 export default createFragmentContainer(CloneUrlBox, {
   repository: graphql`
     fragment CloneUrlBox_repository on Repository {
-      url @include(if: $isMainContainer)
+      url
     }
   `,
 })
