@@ -8,7 +8,7 @@ export const AddMetaDiv = styled.div`
 `
 
 export const ReadyPublishDiv = styled.div`
-  color: '#4CAF50';
+  color: #4CAF50;
 `
 
 export const IconWarning = styled(MdWarning)`

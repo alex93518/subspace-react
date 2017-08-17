@@ -14,10 +14,12 @@ import MdHome from 'react-icons/lib/md/home';
 import NavTabs from 'components/shared/NavTabs';
 import RepoLink from 'components/shared/repo/TitleLink'
 import { matchRoute } from 'utils/routeMatcher';
+import Particles from 'react-particles-js';
 import Repository from './Repository'
 import {
   NavLabel, TopContainer, RepoTitle, HeightDiv, Icon,
 } from './styles'
+import { particles } from './particles'
 
 const getNavConfig = ({ owner: { userName }, name, stashes: { totalCount } }) => [
   {
@@ -88,8 +90,16 @@ const Project = ({ vars }) => (
           repository &&
           <HeightDiv>
             <TopContainer>
+              <div style={{ position: 'absolute', zIndex: 0 }}>
+                <Particles
+                  params={particles}
+                  style={{ background: 'linear-gradient(159deg, rgba(53, 97, 191, 0.04) -26%, rgba(0, 168, 203, 0.03) 88%)' }}
+                  height={114}
+                  width={'100vw'}
+                />
+              </div>
               <Grid>
-                <RepoTitle>
+                <RepoTitle style={{ position: 'relative' }}>
                   <RepoLink
                     repoName={repository.name}
                     isPrivate={repository.isPrivate}

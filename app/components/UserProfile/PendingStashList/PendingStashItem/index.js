@@ -4,14 +4,16 @@ import { graphql } from 'react-relay';
 import { compose, withState, withHandlers } from 'recompose';
 import FlipMove from 'react-flip-move';
 import withRelayFragment from 'relay/withRelayFragment';
-import Card, { CardHeader, CardContent } from 'components/shared/Card';
+import Card, { CardContent } from 'components/shared/Card';
 import Paper from 'material-ui/Paper';
 import CommitStatus from './CommitStatus';
 import Header from './Header';
 import HeadSub from './HeadSub';
 import Footer from './Footer';
 import Form from './Form';
-import { PendingStashPanel, ContentDiv, CommitDiv } from './styles';
+import {
+  PendingStashPanel, ContentDiv, CommitDiv, MainCardHeader,
+} from './styles';
 
 const PendingStashItem = ({
   gitRef, isShowContent,
@@ -19,7 +21,8 @@ const PendingStashItem = ({
 }) => (
   !gitRef.stash.isOnline &&
   <Card>
-    <CardHeader
+    <MainCardHeader
+      classes={{ title: 'title' }}
       title={<Header pendingStashItem={gitRef} createdAt={gitRef.stash.createdAt} />}
       subheader={<HeadSub stash={gitRef.stash} />}
     />

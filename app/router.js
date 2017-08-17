@@ -27,7 +27,23 @@ const CreateProject = asyncComponent(() => import('components/CreateProject'));
 const Router = () =>
   (
     <ConnectedRouter history={history}>
-      <Scrollbars autoHeight autoHeightMin={'100vh'}>
+      <Scrollbars
+        autoHeight
+        autoHeightMin={'100vh'}
+        renderThumbVertical={({ style, ...props }) => (
+          <div
+            style={{
+              ...style,
+              backgroundColor: '#000',
+              width: 20,
+              opacity: 0.2,
+              borderRadius: 6,
+              zIndex: 99,
+            }}
+            {...props}
+          />
+        )}
+      >
         <FlexContainer>
           <Header />
           <Switch>

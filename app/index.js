@@ -8,6 +8,8 @@ import createPalette from 'material-ui/styles/palette';
 import { MuiThemeProvider } from 'material-ui/styles';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 import 'sanitize.css/sanitize.css';
+import blue from 'material-ui/colors/blue';
+import orange from 'material-ui/colors/orange';
 
 // Load the favicon, the manifest.json file and the .htaccess file
 /* eslint-disable import/no-unresolved, import/extensions */
@@ -23,6 +25,8 @@ import AuthWrapper from './authWrapper'
 injectTapEventPlugin();
 const theme = createMuiTheme({
   palette: createPalette({
+    primary: blue,
+    accent: orange,
     type: 'light',
   }),
 });

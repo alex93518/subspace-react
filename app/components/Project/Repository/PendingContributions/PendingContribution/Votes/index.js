@@ -59,19 +59,22 @@ const Votes = ({
       }
     />
     <CardContent>
-      <Paper elevation={1}>
+      <Paper elevation={2}>
         <BottomNavigation value={voteIndex}>
           <BottomNavigationButton
+            showLabel
             label="Accept"
             icon={<MdCheck width={24} height={24} />}
             onClick={() => rest.onVote(true)}
           />
           <BottomNavigationButton
+            showLabel
             label="Reject"
             icon={<MdClear width={24} height={24} />}
             onClick={() => rest.onVote(false)}
           />
           <BottomNavigationButton
+            showLabel
             label="After Suggested Changes"
             icon={<MdEdit width={24} height={24} />}
             onClick={() => ({})}
