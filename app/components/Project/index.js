@@ -107,7 +107,7 @@ const Project = ({ vars }) => (
           </HeightDiv>
         );
       }
-      return <HeightDiv><LoadingIndicator /></HeightDiv>;
+      return <LoadingIndicator />;
     }}
   />
 );

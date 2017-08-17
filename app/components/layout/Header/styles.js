@@ -6,7 +6,6 @@ import { Link } from 'react-router-dom'
 export const TopNavbar = styled(Navbar)`
   margin-bottom: 0px;
   background: #333b43;
-  min-height: 50px;
   padding-top: 3px;
   border-radius: 0px;
   color: rgba(255,255,255,0.75);

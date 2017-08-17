@@ -14,9 +14,10 @@ export const TopContainer = styled.div`
   border-bottom: 1px solid #dddddd;
 `
 export const HeightDiv = styled.div`
-  height: auto;
   flex: 1;
   background-color: #fff;
+  display: flex;
+  flex-direction: column;
 `
 
 export const Icon = styled.span`

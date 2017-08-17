@@ -1,5 +1,5 @@
 import React from 'react';
-import MainGrid from 'components/shared/MainGrid';
+import LoadingIndicator from 'components/shared/LoadingIndicator';
 
 export default function asyncComponent(getComponent) {
   return class AsyncComponent extends React.Component {
@@ -19,7 +19,7 @@ export default function asyncComponent(getComponent) {
       if (Component) {
         return <Component {...this.props} />
       }
-      return <MainGrid />
+      return <LoadingIndicator />
     }
   }
 }

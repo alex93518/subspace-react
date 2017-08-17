@@ -3,6 +3,9 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import { persistStore } from 'redux-persist-immutable';
+import createMuiTheme from 'material-ui/styles/theme';
+import createPalette from 'material-ui/styles/palette';
+import { MuiThemeProvider } from 'material-ui/styles';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 import 'sanitize.css/sanitize.css';
 
@@ -18,11 +21,18 @@ import store from './store';
 import AuthWrapper from './authWrapper'
 
 injectTapEventPlugin();
+const theme = createMuiTheme({
+  palette: createPalette({
+    type: 'light',
+  }),
+});
 
 const render = () => {
   ReactDOM.render(
     <Provider store={store} persistor={persistor}>
-      <AuthWrapper />
+      <MuiThemeProvider theme={theme}>
+        <AuthWrapper />
+      </MuiThemeProvider>
     </Provider>,
     document.getElementById('app')
   )

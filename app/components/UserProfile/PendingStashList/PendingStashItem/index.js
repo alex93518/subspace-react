@@ -4,7 +4,7 @@ import { graphql } from 'react-relay';
 import { compose, withState, withHandlers } from 'recompose';
 import FlipMove from 'react-flip-move';
 import withRelayFragment from 'relay/withRelayFragment';
-import Card, { CardHeader } from 'material-ui/Card';
+import Card, { CardHeader, CardContent } from 'components/shared/Card';
 import Paper from 'material-ui/Paper';
 import CommitStatus from './CommitStatus';
 import Header from './Header';
@@ -18,47 +18,49 @@ const PendingStashItem = ({
   // toggleShowContent,
 }) => (
   !gitRef.stash.isOnline &&
-  <Card>
+  <Card keyVal={`pendingStash-${gitRef.id}`}>
     <CardHeader
       title={<Header pendingStashItem={gitRef} createdAt={gitRef.stash.createdAt} />}
       subheader={<HeadSub stash={gitRef.stash} />}
     />
-    <PendingStashPanel
-      footer={
-        isShowContent &&
-        <Footer pendingStashItem={gitRef} />
-      }
-    >
-      <FlipMove
-        duration={100}
-        easing="ease"
-        staggerDurationBy={10}
-        staggerDelayBy={15}
-        enterAnimation={'accordionVertical'}
-        leaveAnimation={'none'}
-      >
-        {
+    <CardContent>
+      <PendingStashPanel
+        footer={
           isShowContent &&
-          <div key={`reviewPendingPushContent${gitRef.id}`}>
-            <ContentDiv>
-              <Form
-                form={`stashForm${gitRef.id}`}
-                stashId={gitRef.stash.rawId}
-                initialValues={{
-                  stashTitle: gitRef.stash.title || '',
-                  stashDescription: gitRef.stash.description || '',
-                }}
-              />
-              <Paper elevation={1}>
-                <CommitDiv>
-                  <CommitStatus commit={gitRef.target} />
-                </CommitDiv>
-              </Paper>
-            </ContentDiv>
-          </div>
+          <Footer pendingStashItem={gitRef} />
         }
-      </FlipMove>
-    </PendingStashPanel>
+      >
+        <FlipMove
+          duration={100}
+          easing="ease"
+          staggerDurationBy={10}
+          staggerDelayBy={15}
+          enterAnimation={'accordionVertical'}
+          leaveAnimation={'none'}
+        >
+          {
+            isShowContent &&
+            <div key={`reviewPendingPushContent${gitRef.id}`}>
+              <ContentDiv>
+                <Form
+                  form={`stashForm${gitRef.id}`}
+                  stashId={gitRef.stash.rawId}
+                  initialValues={{
+                    stashTitle: gitRef.stash.title || '',
+                    stashDescription: gitRef.stash.description || '',
+                  }}
+                />
+                <Paper elevation={1}>
+                  <CommitDiv>
+                    <CommitStatus commit={gitRef.target} />
+                  </CommitDiv>
+                </Paper>
+              </ContentDiv>
+            </div>
+          }
+        </FlipMove>
+      </PendingStashPanel>
+    </CardContent>
   </Card>
 )
 

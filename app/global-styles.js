@@ -10,8 +10,8 @@ injectGlobal`
 
   html,
   body {
-    height: 100%;
-    width: 100%;
+    display: flex;
+    flex-direction: column;
   }
 
   body {
@@ -28,12 +28,14 @@ injectGlobal`
 
   #app {
     background-color: #fafafa;
-    height: 100%;
-    min-height: 100%;
-    min-width: 100%;
+    display: flex;
+    flex-direction: column;
   }
 
-  #app > [data-reactroot] { height: 100%; }
+  #app > [data-reactroot] { 
+    display: flex;
+    flex-direction: column;
+  }
 
   p,
   label {

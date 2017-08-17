@@ -8,7 +8,7 @@ import asyncComponent from 'utils/asyncComponent';
 import { withRouter, Switch, Route } from 'react-router-dom';
 import { matchRoute, matchName } from 'utils/routeMatcher';
 import { codeRoute } from './routes';
-import { MainContainer, HeightDiv, LoadingDiv } from './styles'
+import { MainContainer } from './styles'
 
 const Repository = ({ vars }) => (
   <QueryRenderer
@@ -43,7 +43,7 @@ const Repository = ({ vars }) => (
           </MainContainer>
         );
       }
-      return <HeightDiv><LoadingDiv><LoadingIndicator /></LoadingDiv></HeightDiv>;
+      return <LoadingIndicator />;
     }}
   />
 );

@@ -4,7 +4,9 @@ import styled from 'styled-components';
 import { Grid } from 'react-bootstrap';
 
 const MainContainer = styled.div`
+  display: flex;
   flex: 1;
+  flex-direction: column;
   background-color: #fff;
   padding-top: 20px;
   padding-bottom: 30px;

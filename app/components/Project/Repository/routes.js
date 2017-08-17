@@ -4,8 +4,6 @@ export const codeRoute = [
   { path: '/:userName/:projectName/:branchHead/blob/*', name: 'BlobContainer' },
   { path: '/:userName/:projectName/:branchHead/commits', name: 'Commits' },
   { path: '/:userName/:projectName/:branchHead/commits/*', name: 'Commits' },
-  { path: '/:userName/:projectName/:branchHead/stashes', name: 'Stashes' },
-  { path: '/:userName/:projectName/:branchHead/stash/:stashNum', name: 'Stash' },
   { path: '/:userName/:projectName/:branchHead/pendingcontributions', name: 'PendingContributions' },
   { path: '/:userName/:projectName/branches', name: 'Branches' },
   { path: '/:userName/:projectName/:branchHead', name: 'MainContainer' },

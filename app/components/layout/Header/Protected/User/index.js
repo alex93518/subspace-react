@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { ToggleButtonGroup } from 'react-bootstrap';
 import { authRelay } from 'relay/RelayEnvironment';
 import { connect } from 'react-redux';
-import { compose, withHandlers, mapProps } from 'recompose';
+import { compose, withHandlers, mapProps, withState } from 'recompose';
 import Tooltip from 'rc-tooltip';
 import 'rc-tooltip/assets/bootstrap_white.css';
 import UserPhoto from 'components/shared/UserPhoto';
@@ -16,11 +16,15 @@ import {
 } from './styles';
 
 const User = ({
-  handleOnProfileClick, user, userName, isInvisibleIdx, setIsInvisible,
+  handleOnProfileClick, user, userName, isInvisibleIdx,
+  setIsInvisible, isTooltipVisible, setIsTooltipVisible,
 }) => (
   <Tooltip
     placement="bottomRight"
     trigger="click"
+    visible={isTooltipVisible}
+    onVisibleChange={setIsTooltipVisible}
+    overlayStyle={{ opacity: 1 }}
     overlay={(
       <UserPopover>
         <ToggleButtonGroup
@@ -82,9 +86,12 @@ User.propTypes = {
   isInvisibleIdx: PropTypes.number.isRequired,
   setIsInvisible: PropTypes.func.isRequired,
   handleOnProfileClick: PropTypes.func.isRequired,
+  isTooltipVisible: PropTypes.bool.isRequired,
+  setIsTooltipVisible: PropTypes.func.isRequired,
 }
 
 export default compose(
+  withState('isTooltipVisible', 'setIsTooltipVisible', false),
   connect(state => ({
     isInvisible: state.get('auth').get('isInvisible'),
   })),
@@ -102,7 +109,7 @@ export default compose(
     },
     handleOnProfileClick: props => () => {
       redirect(`/profile/${props.userName}`);
-      props.setIsUserWidgetOpen(false)
+      props.setIsTooltipVisible(false);
     },
   })
 )(User);

@@ -7,8 +7,6 @@ const Aligner = styled.div`
   flex: 1;
   align-items: center;
   justify-content: center;
-  height: 100%;
-  width: 100%
 `
 
 const AlignerItem = styled.div`

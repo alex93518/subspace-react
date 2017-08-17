@@ -8,31 +8,33 @@ import LoadingIndicator from 'components/shared/LoadingIndicator';
 import ProjectList from './ProjectList'
 
 const Projects = () => (
-  <MainGrid>
-    <Helmet
-      title="Projects"
-      meta={[
-        { name: 'description', content: 'Description of Projects' },
-      ]}
-    />
-    <QueryRenderer
-      environment={env}
-      variables={{ owner: null }}
-      query={graphql`
-        query ProjectsQuery($owner: String) {
-          viewer {
-            ...ProjectList_viewer
-          }
+  <QueryRenderer
+    environment={env}
+    variables={{ owner: null }}
+    query={graphql`
+      query ProjectsQuery($owner: String) {
+        viewer {
+          ...ProjectList_viewer
         }
-      `}
-      render={({ props }) => {
-        if (props) {
-          return <ProjectList viewer={props.viewer} />;
-        }
-        return <LoadingIndicator />;
-      }}
-    />
-  </MainGrid>
+      }
+    `}
+    render={({ props }) => {
+      if (props) {
+        return (
+          <MainGrid>
+            <Helmet
+              title="Projects"
+              meta={[
+                { name: 'description', content: 'Description of Projects' },
+              ]}
+            />
+            <ProjectList viewer={props.viewer} />
+          </MainGrid>
+        )
+      }
+      return <LoadingIndicator />;
+    }}
+  />
 );
 
 Projects.propTypes = {

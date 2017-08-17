@@ -2,6 +2,8 @@ import React from 'react';
 import { Switch, Route } from 'react-router-dom';
 import { ConnectedRouter } from 'react-router-redux';
 import { matchName } from 'utils/routeMatcher';
+import Header from 'components/layout/Header';
+import Footer from 'components/layout/Footer';
 import asyncComponent from 'utils/asyncComponent';
 import styled from 'styled-components';
 import { history } from './store';
@@ -9,8 +11,7 @@ import { history } from './store';
 const FlexContainer = styled.div`
   display: flex;
   flex-direction: column;
-  height: 100%;
-  min-height: 100%;
+  min-height: 100vh;
 `
 
 const HomePage = asyncComponent(() => import('components/HomePage'));
@@ -21,8 +22,6 @@ const Project = asyncComponent(() => import('components/Project'));
 const Login = asyncComponent(() => import('components/Login'));
 const UserProfile = asyncComponent(() => import('components/UserProfile'));
 const CreateProject = asyncComponent(() => import('components/CreateProject'));
-const Header = asyncComponent(() => import('components/layout/Header'));
-const Footer = asyncComponent(() => import('components/layout/Footer'));
 
 const Router = () =>
   (
