@@ -18,7 +18,7 @@ const PendingStashItem = ({
   // toggleShowContent,
 }) => (
   !gitRef.stash.isOnline &&
-  <Card keyVal={`pendingStash-${gitRef.id}`}>
+  <Card>
     <CardHeader
       title={<Header pendingStashItem={gitRef} createdAt={gitRef.stash.createdAt} />}
       subheader={<HeadSub stash={gitRef.stash} />}

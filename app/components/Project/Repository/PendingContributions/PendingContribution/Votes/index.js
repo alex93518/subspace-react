@@ -10,7 +10,7 @@ import { redirect } from 'redux/utils';
 import { getProjectPath } from 'utils/path';
 import CircularProgressbar from 'react-circular-progressbar';
 import pluralize from 'pluralize';
-import Card, { CardHeader, CardContent } from 'material-ui/Card';
+import Card, { CardHeader, CardContent } from 'components/shared/Card';
 import Avatar from 'material-ui/Avatar';
 import MdCheck from 'react-icons/lib/md/check';
 import MdClear from 'react-icons/lib/md/clear';

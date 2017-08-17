@@ -11,39 +11,37 @@ import PendingStashList from './PendingStashList';
 import Profile from './Profile';
 
 export const UserProfile = ({ match: { params: { userName } } }) => (
-  <MainGrid>
-    <QueryRenderer
-      environment={env}
-      variables={{ userName, owner: userName }}
-      query={query}
-      render={({ props }) => {
-        if (props) {
-          const { viewer } = props;
-          return (
-            <div>
-              <Helmet
-                title={viewer.user.fullName}
-                meta={[{
-                  name: 'description',
-                  content: `${viewer.user.fullName} profile`,
-                }]}
-              />
-              <Profile
-                user={viewer.user}
-                accessToken={viewer.accessToken}
-                isOwner={viewer.me ? viewer.me.userName === viewer.user.userName : false}
-              >
-                <PendingStashList viewer={viewer} />
-                <Separator />
-                <ProjectList viewer={viewer} owner={viewer.user.userName} />
-              </Profile>
-            </div>
-          );
-        }
-        return <LoadingIndicator />;
-      }}
-    />
-  </MainGrid>
+  <QueryRenderer
+    environment={env}
+    variables={{ userName, owner: userName }}
+    query={query}
+    render={({ props }) => {
+      if (props) {
+        const { viewer } = props;
+        return (
+          <MainGrid>
+            <Helmet
+              title={viewer.user.fullName}
+              meta={[{
+                name: 'description',
+                content: `${viewer.user.fullName} profile`,
+              }]}
+            />
+            <Profile
+              user={viewer.user}
+              accessToken={viewer.accessToken}
+              isOwner={viewer.me ? viewer.me.userName === viewer.user.userName : false}
+            >
+              <PendingStashList viewer={viewer} />
+              <Separator />
+              <ProjectList viewer={viewer} owner={viewer.user.userName} />
+            </Profile>
+          </MainGrid>
+        );
+      }
+      return <LoadingIndicator />;
+    }}
+  />
 );
 
 UserProfile.propTypes = {

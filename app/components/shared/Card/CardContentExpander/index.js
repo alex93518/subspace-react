@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { CardContent } from 'material-ui/Card';
 
 const CardContentExpander = ({
-  isExpandedVal, keyVal,
+  isExpandedVal,
   onToggleExpander,
   ...rest
 }) => (
@@ -12,7 +12,6 @@ const CardContentExpander = ({
 
 CardContentExpander.propTypes = {
   isExpandedVal: PropTypes.bool,
-  keyVal: PropTypes.string,
   onToggleExpander: PropTypes.func,
   children: PropTypes.node,
 }

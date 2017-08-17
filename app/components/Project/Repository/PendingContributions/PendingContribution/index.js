@@ -3,14 +3,40 @@ import PropTypes from 'prop-types';
 import { graphql } from 'react-relay';
 import withRelayFragment from 'relay/withRelayFragment';
 import { compose, mapProps } from 'recompose';
-import Card, { CardHeader, CardContent } from 'material-ui/Card';
+import Card, { CardHeader, CardContent } from 'components/shared/Card';
+import CardBase, { CardContent as CardContentBase } from 'material-ui/Card';
 import Avatar from 'material-ui/Avatar';
 import moment from 'moment';
 import UserPhoto from 'components/shared/UserPhoto';
+import styled from 'styled-components';
 import Commits from './Commits';
 import Comments from './Comments';
 import Votes from './Votes';
 import { PendingMainGrid } from './styles';
+
+const MainCard = styled(Card)`
+  font-family: "Roboto", sans-serif;
+  & > div > .expandIcon {
+    color: rgba(255,255,255,0.8);
+  }
+`
+
+const MainCardHeader = styled(CardHeader)`
+  background-color: #039BE5;
+`
+
+const MainCardContent = styled(CardContent)`
+  background-color: #E0E0E0;
+`
+
+const TitleDiv = styled.div`
+  color: rgba(255,255,255,1);
+  font-size: 16px;
+`
+
+const SubheaderDiv = styled.div`
+  color: rgba(255,255,255,0.7);
+`
 
 const PendingContribution = ({
   title, pendingRef,
@@ -20,10 +46,14 @@ const PendingContribution = ({
   },
 }) => (
   <PendingMainGrid>
-    <Card>
-      <CardHeader
-        title={title}
-        subheader={`pushed ${moment(createdAt).fromNow()}`}
+    <MainCard>
+      <MainCardHeader
+        title={<TitleDiv>{title}</TitleDiv>}
+        subheader={
+          <SubheaderDiv>
+            {`pushed ${moment(createdAt).fromNow()}`}
+          </SubheaderDiv>
+        }
         avatar={(
           <Avatar>
             <UserPhoto
@@ -35,9 +65,9 @@ const PendingContribution = ({
           </Avatar>
         )}
       />
-      <CardContent>
-        <Card>
-          <CardContent>
+      <MainCardContent>
+        <CardBase>
+          <CardContentBase>
             {description && (
               <dl>
                 <dt>Description</dt>
@@ -54,13 +84,13 @@ const PendingContribution = ({
               <dt>Contributor Statistics</dt>
               <dd>TODO</dd>
             </dl>
-          </CardContent>
-        </Card>
+          </CardContentBase>
+        </CardBase>
         <Commits commit={pendingRef.target} />
         <Comments stash={pendingRef.stash} />
         <Votes stash={pendingRef.stash} />
-      </CardContent>
-    </Card>
+      </MainCardContent>
+    </MainCard>
   </PendingMainGrid>
 )
 

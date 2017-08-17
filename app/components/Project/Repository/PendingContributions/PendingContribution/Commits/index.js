@@ -4,7 +4,7 @@ import { graphql } from 'react-relay';
 import withRelayFragment from 'relay/withRelayFragment';
 import { compose, mapProps } from 'recompose';
 import pluralize from 'pluralize';
-import Card, { CardContent, CardHeader } from 'material-ui/Card';
+import Card, { CardContent, CardHeader } from 'components/shared/Card';
 import { parseDiff, totalHunk } from 'utils/diff'
 import GoGitCommit from 'react-icons/lib/go/git-commit';
 import Commit from 'components/Project/Repository/Commits/CommitList/Commit';

@@ -5,7 +5,7 @@ export const MainCardDiv = styled.div`
 `
 
 export const IconDiv = styled.div`
-  position: absolute;
-  right: 30px;
-  top: 35px;
+  float: right;
+  margin-right: 10px;
+  margin-top: -50px;
 `;

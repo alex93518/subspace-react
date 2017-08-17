@@ -7,14 +7,12 @@ const CardExpander = ({
   children,
   isExpanded,
   setIsExpanded,
-  keyVal,
   ...rest
 }) => (
   <Card {...rest}>
     {React.Children.map(children, child => React.cloneElement(child, {
       onToggleExpander: setIsExpanded,
       isExpandedVal: isExpanded,
-      keyVal,
     }))}
   </Card>
 )
@@ -23,7 +21,6 @@ CardExpander.propTypes = {
   isExpanded: PropTypes.bool.isRequired,
   setIsExpanded: PropTypes.func.isRequired,
   children: PropTypes.node,
-  keyVal: PropTypes.string.isRequired,
 }
 
 export default compose(

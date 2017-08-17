@@ -5,7 +5,7 @@ import withRelayFragment from 'relay/withRelayFragment';
 import { compose, mapProps } from 'recompose';
 import MdComment from 'react-icons/lib/md/comment';
 import pluralize from 'pluralize';
-import Card, { CardHeader, CardContent } from 'material-ui/Card';
+import Card, { CardHeader, CardContent } from 'components/shared/Card';
 import StashComment from './StashComment';
 
 pluralize.addIrregularRule('is', 'are')

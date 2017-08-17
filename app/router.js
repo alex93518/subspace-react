@@ -6,6 +6,7 @@ import Header from 'components/layout/Header';
 import Footer from 'components/layout/Footer';
 import asyncComponent from 'utils/asyncComponent';
 import styled from 'styled-components';
+import { Scrollbars } from 'components/shared/Scrollbars';
 import { history } from './store';
 
 const FlexContainer = styled.div`
@@ -26,25 +27,27 @@ const CreateProject = asyncComponent(() => import('components/CreateProject'));
 const Router = () =>
   (
     <ConnectedRouter history={history}>
-      <FlexContainer>
-        <Header />
-        <Switch>
-          <Route exact path={'/'} render={() => <HomePage />} />
-          <Route exact path="/about" render={() => <About />} />
-          <Route exact path="/howitworks" render={() => <HowItWorks />} />
-          <Route exact path="/projects" render={() => <Projects />} />
-          <Route exact path={'/login'} render={() => <Login />} />
-          <Route exact path={'/profile/:userName'} render={props => <UserProfile {...props} />} />
-          <Route exact path={'/createproject'} render={() => <CreateProject />} />
-          <Route
-            path={'/:userName/:projectName'}
-            render={() =>
-              <Project childName={matchName(history.location.pathname)} />
-            }
-          />
-        </Switch>
-        <Footer />
-      </FlexContainer>
+      <Scrollbars autoHeight autoHeightMin={'100vh'}>
+        <FlexContainer>
+          <Header />
+          <Switch>
+            <Route exact path={'/'} render={() => <HomePage />} />
+            <Route exact path="/about" render={() => <About />} />
+            <Route exact path="/howitworks" render={() => <HowItWorks />} />
+            <Route exact path="/projects" render={() => <Projects />} />
+            <Route exact path={'/login'} render={() => <Login />} />
+            <Route exact path={'/profile/:userName'} render={props => <UserProfile {...props} />} />
+            <Route exact path={'/createproject'} render={() => <CreateProject />} />
+            <Route
+              path={'/:userName/:projectName'}
+              render={() =>
+                <Project childName={matchName(history.location.pathname)} />
+              }
+            />
+          </Switch>
+          <Footer />
+        </FlexContainer>
+      </Scrollbars>
     </ConnectedRouter>
   );
 
