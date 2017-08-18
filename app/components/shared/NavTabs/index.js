@@ -10,11 +10,15 @@ const MainNavTabs = styled(Nav)`
 
 const NavTabs = ({
   configActive: { config, activeKey },
+  onSelect,
   history: { push },
 }) => (
   <MainNavTabs
     bsStyle="tabs"
-    onSelect={url => push(url)}
+    onSelect={url => {
+      onSelect(url)
+      push(url)
+    }}
     activeKey={activeKey || config[0].link}
   >
     {config.map(({ link, label }) => (
@@ -27,6 +31,7 @@ const NavTabs = ({
 
 NavTabs.propTypes = {
   configActive: PropTypes.object.isRequired,
+  onSelect: PropTypes.func.isRequired,
   history: PropTypes.shape({
     push: PropTypes.func.isRequired,
   }).isRequired,

@@ -2,7 +2,7 @@ import { Row, Col } from 'react-bootstrap';
 import styled from 'styled-components';
 
 export const RowSty = styled(Row)`
-  background-color: rgba(3, 155, 229, 0.8);
+  background-color: rgba(3, 155, 229, 0.9);
   border: 1px solid #7cb7d4;
   padding: 10px;
   & a {
