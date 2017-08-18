@@ -8,7 +8,7 @@ export const particles = {
       },
     },
     color: {
-      value: '#8ecff2',
+      value: '#ffffff',
     },
     shape: {
       type: 'circle',
@@ -16,9 +16,17 @@ export const particles = {
         width: 0,
         color: '#000',
       },
+      polygon: {
+        nb_sides: 7,
+      },
+      image: {
+        src: 'img/github.svg',
+        width: 100,
+        height: 100,
+      },
     },
     opacity: {
-      value: 0.1,
+      value: 0.22,
       random: true,
       anim: {
         enable: false,
@@ -28,7 +36,7 @@ export const particles = {
       },
     },
     size: {
-      value: 86.81035095057337,
+      value: 70,
       random: false,
       anim: {
         enable: true,
@@ -46,7 +54,7 @@ export const particles = {
     },
     move: {
       enable: true,
-      speed: 3,
+      speed: 4,
       direction: 'none',
       random: false,
       straight: false,

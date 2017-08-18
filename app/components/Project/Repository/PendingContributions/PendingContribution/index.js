@@ -22,7 +22,7 @@ const MainCard = styled(Card)`
 `
 
 const MainCardHeader = styled(CardHeader)`
-  background-color: #039BE5;
+  background-color: ${props => props['data-color']};
 `
 
 const MainCardContent = styled(CardContent)`
@@ -40,7 +40,7 @@ const SubheaderDiv = styled.div`
 
 const PendingContribution = ({
   title, pendingRef,
-  // cardColor,
+  cardColor,
   pendingRef: {
     stash: { description, owner, createdAt },
   },
@@ -49,6 +49,7 @@ const PendingContribution = ({
     <MainCard>
       <MainCardHeader
         title={<TitleDiv>{title}</TitleDiv>}
+        data-color={cardColor}
         subheader={
           <SubheaderDiv>
             {`pushed ${moment(createdAt).fromNow()}`}
@@ -97,7 +98,7 @@ const PendingContribution = ({
 PendingContribution.propTypes = {
   pendingRef: PropTypes.object.isRequired,
   title: PropTypes.string.isRequired,
-  // cardColor: PropTypes.string.isRequired,
+  cardColor: PropTypes.string.isRequired,
 }
 
 export default compose(

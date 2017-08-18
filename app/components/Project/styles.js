@@ -3,7 +3,7 @@ import styled from 'styled-components'
 export const NavLabel = styled.span`
   font-family: 'Roboto', sans-serif;
   font-weight: 400;
-  color: #198cb1;
+  color: #fff;
 `
 
 export const RepoTitle = styled.h3`
@@ -22,6 +22,6 @@ export const HeightDiv = styled.div`
 
 export const Icon = styled.span`
   font-size: 18px;
-  color: #64727a;
+  color: #fff;
   margin-right: 5px;
 `

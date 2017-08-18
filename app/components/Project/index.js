@@ -20,6 +20,7 @@ import {
   NavLabel, TopContainer, RepoTitle, HeightDiv, Icon,
 } from './styles'
 import { particles } from './particles'
+import TopAppBar from './TopAppBar'
 
 const getNavConfig = ({ owner: { userName }, name, stashes: { totalCount } }) => [
   {
@@ -89,11 +90,12 @@ const Project = ({ vars }) => (
         return (
           repository &&
           <HeightDiv>
+            <TopAppBar />
             <TopContainer>
               <div style={{ position: 'absolute', zIndex: 0 }}>
                 <Particles
                   params={particles}
-                  style={{ background: 'linear-gradient(159deg, rgba(53, 97, 191, 0.04) -26%, rgba(0, 168, 203, 0.03) 88%)' }}
+                  style={{ background: 'linear-gradient(159deg,#3561bf -26%,#00a8cb 79%)' }}
                   height={114}
                   width={'100vw'}
                 />
@@ -104,6 +106,7 @@ const Project = ({ vars }) => (
                     repoName={repository.name}
                     isPrivate={repository.isPrivate}
                     userName={repository.owner.userName}
+                    isWhite
                   />
                 </RepoTitle>
                 <NavTabs
