@@ -84,6 +84,7 @@ const TopContainer = ({
           isPrivate={isPrivate}
           userName={owner.userName}
           isWhite
+          isHead
         />
       </RepoTitle>
       <MainNavTabs

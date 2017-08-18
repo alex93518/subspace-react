@@ -145,8 +145,9 @@ injectGlobal`
 
   .CircularProgressbar .CircularProgressbar-text {
     fill: #3e98c7;
-    font-size: 20px;
+    font-size: 28px;
     dominant-baseline: middle;
     text-anchor: middle;
+    font-weight: 600;
   }  
 `;

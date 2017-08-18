@@ -16,8 +16,8 @@ import MdCheck from 'react-icons/lib/md/check';
 import MdClear from 'react-icons/lib/md/clear';
 import MdEdit from 'react-icons/lib/md/edit';
 import BottomNavigation, { BottomNavigationButton } from 'material-ui/BottomNavigation';
-import Paper from 'material-ui/Paper';
-import { SpanAccept, SpanReject } from './styles';
+import UserVoteList from './UserVoteList';
+import { SpanAccept, SpanReject, Divider } from './styles';
 
 pluralize.addIrregularRule('is', 'are')
 
@@ -53,34 +53,43 @@ const Votes = ({
       avatar={
         <Avatar style={{ backgroundColor: 'inherit' }}>
           <CircularProgressbar
+            strokeWidth={12}
             percentage={votePercentage}
           />
         </Avatar>
       }
     />
     <CardContent>
-      <Paper elevation={2}>
-        <BottomNavigation value={voteIndex}>
-          <BottomNavigationButton
-            showLabel
-            label="Accept"
-            icon={<MdCheck width={24} height={24} />}
-            onClick={() => rest.onVote(true)}
-          />
-          <BottomNavigationButton
-            showLabel
-            label="Reject"
-            icon={<MdClear width={24} height={24} />}
-            onClick={() => rest.onVote(false)}
-          />
-          <BottomNavigationButton
-            showLabel
-            label="After Suggested Changes"
-            icon={<MdEdit width={24} height={24} />}
-            onClick={() => ({})}
-          />
-        </BottomNavigation>
-      </Paper>
+      <BottomNavigation value={voteIndex}>
+        <BottomNavigationButton
+          showLabel
+          label="Accept"
+          icon={<MdCheck width={24} height={24} />}
+          onClick={() => rest.onVote(true)}
+        />
+        <BottomNavigationButton
+          showLabel
+          label="Reject"
+          icon={<MdClear width={24} height={24} />}
+          onClick={() => rest.onVote(false)}
+        />
+        <BottomNavigationButton
+          showLabel
+          label="Review After Changes"
+          icon={<MdEdit width={24} height={24} />}
+          onClick={() => ({})}
+        />
+      </BottomNavigation>
+      <Divider />
+      <UserVoteList
+        stashVoteConnection={acceptVotes}
+        title={'Accepted by'}
+      />
+      <Divider />
+      <UserVoteList
+        stashVoteConnection={rejectVotes}
+        title={'Rejected by'}
+      />
     </CardContent>
   </Card>
 )
@@ -105,9 +114,11 @@ export default compose(
         isUserVoted
         acceptVotes {
           totalVotePoints
+          ...UserVoteList_stashVoteConnection
         }
         rejectVotes {
           totalVotePoints
+          ...UserVoteList_stashVoteConnection
         }
       }
     `,

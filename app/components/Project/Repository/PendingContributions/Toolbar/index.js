@@ -60,7 +60,7 @@ export default compose(
         <Tab
           label={(
             <span>
-              Review Later <Badge
+              Review After Changes <Badge
                 badgeContent={'n'}
                 data-color="#607D8B"
               ><span /></Badge>

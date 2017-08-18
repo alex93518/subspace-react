@@ -5,7 +5,7 @@ import styled from 'styled-components'
 import { Glyphicon } from 'react-bootstrap';
 
 const Container = styled.span`
-  font-size: 16px;
+  font-size: ${props => typeof props['data-isHead'] === 'undefined' ? '16' : '22'}px;
   margin-right: 15px;
   ${props => typeof props['data-isWhite'] !== 'undefined' ? 'color: #fff;' : ''}
 `
@@ -24,11 +24,11 @@ const Link = styled(LinkBase)`
 `
 
 // eslint-disable-next-line
-const TitleLink = ({ userName, repoName, isPrivate, isWhite }) => (
-  <Container data-isWhite={isWhite}>
-    <Link to={`/profile/${userName}`} data-isWhite={isWhite}>{userName}</Link>
+const TitleLink = ({ userName, repoName, isPrivate, isWhite, isHead }) => (
+  <Container data-isWhite={isWhite} data-isHead={isHead}>
+    <Link to={`/profile/${userName}`} data-isWhite={isWhite} data-isHead={isHead}>{userName}</Link>
     <Separator>/</Separator>
-    <Link to={`/${userName}/${repoName}`} data-isWhite={isWhite}>{repoName}</Link>
+    <Link to={`/${userName}/${repoName}`} data-isWhite={isWhite} data-isHead={isHead}>{repoName}</Link>
     {
       typeof isPrivate !== 'undefined' &&
       <AccessIcon glyph={isPrivate ? 'flash' : 'lock'} />
