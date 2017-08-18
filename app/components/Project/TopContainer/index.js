@@ -14,7 +14,9 @@ import MdHome from 'react-icons/lib/md/home';
 import { withRouter } from 'react-router-dom';
 import R from 'ramda';
 import { particles } from './particles'
-import { RepoTitle, NavLabel, Icon, MainNavTabs, NavItem } from './styles';
+import {
+  RepoTitle, NavLabel, Icon, MainNavTabs, NavItem, Badge,
+} from './styles';
 
 const getNavConfig = ({ owner: { userName }, name, stashes: { totalCount } }) => [
   {
@@ -53,7 +55,10 @@ const getNavConfig = ({ owner: { userName }, name, stashes: { totalCount } }) =>
     link: `/${userName}/${name}/master/pendingcontributions`,
     label: (
       <NavLabel>
-        <Icon><GoRepoPush /></Icon> { totalCount } Pending Contributions
+        <Icon><GoRepoPush /></Icon> Pending Contributions
+        <Badge badgeContent={totalCount} color="accent">
+          <span />
+        </Badge>
       </NavLabel>
     ),
   },

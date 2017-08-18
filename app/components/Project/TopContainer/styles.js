@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { Nav, NavItem as NavItemBase } from 'react-bootstrap';
+import BadgeBase from 'material-ui/Badge';
 
 export const NavLabel = styled.span`
   font-family: 'Roboto', sans-serif;
@@ -36,4 +37,14 @@ export const NavItem = styled(NavItemBase)`
   & a:hover {
     color: #777 !important;
   }
+`
+
+export const Badge = styled(BadgeBase)`
+  & span {
+    position: relative !important;
+    top: 0px !important;
+    right: 0px !important;
+    color: #fff !important;
+  }
+  margin-left: 5px;
 `

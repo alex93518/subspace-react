@@ -4,11 +4,15 @@ import { graphql } from 'react-relay';
 import RepositoryQueryRenderer from 'relay/RepositoryQueryRenderer';
 import MainGrid from 'components/shared/MainGrid';
 import PendingContribution from './PendingContribution';
+import Toolbar from './Toolbar';
 
 const Stashes = ({
-  repository: { stashes: { edges } },
+  repository: { stashes, stashes: { edges } },
 }) => (
   <MainGrid>
+    <div>
+      <Toolbar refConnection={stashes} />
+    </div>
     <div>
       {
         edges && edges.map(({ node, node: { id } }) =>
@@ -40,6 +44,7 @@ const query = graphql`
     viewer {
       repository(ownerName: $userName, name: $projectName) {
         stashes(first: 99){
+          ...Toolbar_refConnection
           edges {
             node {
               id
