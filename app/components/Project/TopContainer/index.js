@@ -13,6 +13,7 @@ import FaObjectGroup from 'react-icons/lib/fa/object-group';
 import MdHome from 'react-icons/lib/md/home';
 import { withRouter } from 'react-router-dom';
 import R from 'ramda';
+import Granim from 'granim';
 import { particles } from './particles'
 import {
   RepoTitle, NavLabel, Icon, MainNavTabs, NavItem, Badge,
@@ -26,6 +27,7 @@ const getNavConfig = ({ owner: { userName }, name, stashes: { totalCount } }) =>
         <Icon><MdHome /></Icon> Home
       </NavLabel>
     ),
+    gradients: [['#333b43', '#626b74']],
   },
   {
     link: `/${userName}/${name}`,
@@ -34,6 +36,7 @@ const getNavConfig = ({ owner: { userName }, name, stashes: { totalCount } }) =>
         <Icon><GoCode /></Icon> Code
       </NavLabel>
     ),
+    gradients: [['#333b43', '#626b74']],
   },
   {
     link: `/${userName}/${name}#issues`,
@@ -42,6 +45,7 @@ const getNavConfig = ({ owner: { userName }, name, stashes: { totalCount } }) =>
         <Icon><GoIssueOpened /></Icon> Goals &amp; Issues
       </NavLabel>
     ),
+    gradients: [['#333b43', '#626b74']],
   },
   {
     link: `/${userName}/${name}#metaspace`,
@@ -50,6 +54,7 @@ const getNavConfig = ({ owner: { userName }, name, stashes: { totalCount } }) =>
         <Icon><FaObjectGroup /></Icon> Metaspace
       </NavLabel>
     ),
+    gradients: [['#333b43', '#626b74']],
   },
   {
     link: `/${userName}/${name}/master/pendingcontributions`,
@@ -61,55 +66,97 @@ const getNavConfig = ({ owner: { userName }, name, stashes: { totalCount } }) =>
         </Badge>
       </NavLabel>
     ),
+    gradients: [['#3561bf', '#00a8cb']],
   },
 ]
 
-const TopContainer = ({
-  activeKey, handleSelect, arrayNavs,
-  repository: { name, owner, isPrivate },
-}) => (
-  <div>
-    <div style={{ position: 'absolute', zIndex: 0 }}>
-      <Particles
-        params={particles}
-        style={{ background: 'linear-gradient(159deg,#3561bf -26%,#00a8cb 79%)' }}
-        height={114}
-        width={'100vw'}
-      />
-    </div>
-    <Grid>
-      <RepoTitle style={{ position: 'relative' }}>
-        <RepoLink
-          repoName={name}
-          isPrivate={isPrivate}
-          userName={owner.userName}
-          isWhite
-          isHead
-        />
-      </RepoTitle>
-      <MainNavTabs
-        bsStyle="tabs"
-        onSelect={handleSelect}
-        activeKey={
-          R.filter(R.propEq('link', activeKey))(arrayNavs) ?
-            activeKey : `/${owner.userName}/${name}`
-        }
-      >
-        {arrayNavs.map(({ link, label }) => (
-          <NavItem key={link} eventKey={link}>
-            {label}
-          </NavItem>
-        ))}
-      </MainNavTabs>
-    </Grid>
-  </div>
-)
+class TopContainer extends React.Component { // eslint-disable-line react/prefer-stateless-function
+  componentDidMount() {
+    if (this.granimCanvas) {
+      const gradientStates = R.mergeAll(this.props.arrayNavs.map(nav => ({
+        [nav.link]: {
+          gradients: nav.gradients,
+          loop: false,
+        },
+      })))
+
+      this.props.setGranimInstance(new Granim({
+        element: this.granimCanvas,
+        name: 'basic-gradient',
+        direction: 'diagonal',
+        opacity: [1, 1],
+        isPausedWhenNotInView: true,
+        stateTransitionSpeed: 500,
+        states: {
+          'default-state': {
+            gradients: gradientStates[this.props.activeKey].gradients,
+            loop: false,
+          },
+          ...gradientStates,
+        },
+      }))
+    }
+  }
+
+  render() {
+    const {
+      activeKey, handleSelect, arrayNavs,
+      repository: { name, owner, isPrivate },
+    } = this.props
+    return (
+      <div>
+        <canvas
+          ref={el => { this.granimCanvas = el }}
+          style={{
+            position: 'absolute',
+            zIndex: 0,
+            width: '100vw',
+            height: 114,
+          }}
+        ></canvas>
+        <div style={{ position: 'absolute', zIndex: 0 }}>
+          <Particles
+            params={particles}
+            height={114}
+            width={'100vw'}
+          />
+        </div>
+        <Grid>
+          <RepoTitle style={{ position: 'relative' }}>
+            <RepoLink
+              repoName={name}
+              isPrivate={isPrivate}
+              userName={owner.userName}
+              isWhite
+              isHead
+            />
+          </RepoTitle>
+          <MainNavTabs
+            bsStyle="tabs"
+            onSelect={handleSelect}
+            activeKey={
+              R.filter(R.propEq('link', activeKey))(arrayNavs) ?
+                activeKey : `/${owner.userName}/${name}`
+            }
+          >
+            {arrayNavs.map(({ link, label }) => (
+              <NavItem key={link} eventKey={link}>
+                {label}
+              </NavItem>
+            ))}
+          </MainNavTabs>
+        </Grid>
+      </div>
+    )
+  }
+}
 
 TopContainer.propTypes = {
   repository: PropTypes.object.isRequired,
   activeKey: PropTypes.string,
   handleSelect: PropTypes.func.isRequired,
   arrayNavs: PropTypes.array.isRequired,
+  setGranimInstance: PropTypes.func.isRequired,
 }
 
 export default compose(
@@ -131,10 +178,14 @@ export default compose(
   withState('activeKey', 'setActiveKey',
     props => props.history.location.pathname
   ),
+  withState('granimInstance', 'setGranimInstance', null),
   withHandlers({
     handleSelect: props => link => {
       props.setActiveKey(link)
       props.history.push(link)
+      if (props.granimInstance) {
+        props.granimInstance.changeState(link)
+      }
     },
   }),
   mapProps(props => {
@@ -145,5 +196,5 @@ export default compose(
       arrayNavs,
       ...props,
     }
-  })
+  }),
 )(TopContainer);
