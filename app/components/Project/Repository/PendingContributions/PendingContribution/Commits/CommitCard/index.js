@@ -10,9 +10,11 @@ import { LinkCommit, LinkUserName } from 'components/shared/Links';
 import { ButtonGit } from 'components/shared/ButtonGit'
 import { parseDiff, totalHunk } from 'utils/diff'
 import { timeFromNow } from 'utils/string';
+import CommitDiff from 'components/Project/Repository/Commit/Diff';
 import { Card, CardHeader } from './styles';
 
 const CommitCard = ({
+  commit,
   commit: {
     oid,
     shortId,
@@ -70,8 +72,8 @@ const CommitCard = ({
       }}
       data-iconTop={-43}
     />
-    <CardContent>
-      diff
+    <CardContent style={{ background: '#fff' }}>
+      <CommitDiff commit={commit} />
     </CardContent>
   </Card>
 )
@@ -102,6 +104,7 @@ export default compose(
         diff {
           diff
         }
+        ...Diff_commit
       }
     `,
   }),

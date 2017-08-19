@@ -29,7 +29,7 @@ export const CardHeader = styled(CardHeaderBase)`
 export const Card = styled(CardBase)`
   margin-bottom: 5px;
   border-radius: 10px !important;
-  background: #78909C !important;
+  background: #607D8B !important;
   & div > .expandIcon {
     color: #fff !important;
   }

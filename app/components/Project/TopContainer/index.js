@@ -73,12 +73,19 @@ const getNavConfig = ({ owner: { userName }, name, stashes: { totalCount } }) =>
 class TopContainer extends React.Component { // eslint-disable-line react/prefer-stateless-function
   componentDidMount() {
     if (this.granimCanvas) {
-      const gradientStates = R.mergeAll(this.props.arrayNavs.map(nav => ({
+      const {
+        activeKey, arrayNavs,
+        repository: { name, owner },
+      } = this.props
+      const gradientStates = R.mergeAll(arrayNavs.map(nav => ({
         [nav.link]: {
           gradients: nav.gradients,
           loop: false,
         },
       })))
+
+      const currentActiveKey = arrayNavs[activeKey] ?
+        activeKey : `/${owner.userName}/${name}`
 
       this.props.setGranimInstance(new Granim({
         element: this.granimCanvas,
@@ -89,7 +96,7 @@ class TopContainer extends React.Component { // eslint-disable-line react/prefer
         stateTransitionSpeed: 500,
         states: {
           'default-state': {
-            gradients: gradientStates[this.props.activeKey].gradients,
+            gradients: gradientStates[currentActiveKey].gradients,
             loop: false,
           },
           ...gradientStates,
@@ -100,7 +107,7 @@ class TopContainer extends React.Component { // eslint-disable-line react/prefer
 
   render() {
     const {
-      activeKey, handleSelect, arrayNavs,
+      activeKey, arrayNavsKeys, handleSelect, arrayNavs,
       repository: { name, owner, isPrivate },
     } = this.props
     return (
@@ -135,7 +142,7 @@ class TopContainer extends React.Component { // eslint-disable-line react/prefer
             bsStyle="tabs"
             onSelect={handleSelect}
             activeKey={
-              R.filter(R.propEq('link', activeKey))(arrayNavs) ?
+              arrayNavsKeys[activeKey] ?
                 activeKey : `/${owner.userName}/${name}`
             }
           >
@@ -156,6 +163,7 @@ TopContainer.propTypes = {
   activeKey: PropTypes.string,
   handleSelect: PropTypes.func.isRequired,
   arrayNavs: PropTypes.array.isRequired,
+  arrayNavsKeys: PropTypes.object.isRequired,
   setGranimInstance: PropTypes.func.isRequired,
 }
 
@@ -191,9 +199,10 @@ export default compose(
   mapProps(props => {
     const { owner, name, stashes } = props.repository
     const arrayNavs = getNavConfig({ owner, name, stashes })
-
+    const arrayNavsKeys = R.mergeAll(arrayNavs.map(nav => ({ [nav.link]: true })))
     return {
       arrayNavs,
+      arrayNavsKeys,
       ...props,
     }
   }),
