@@ -7,5 +7,5 @@ export const MainCardDiv = styled.div`
 export const IconDiv = styled.div`
   float: right;
   margin-right: 10px;
-  margin-top: -50px;
+  margin-top: ${props => props['data-iconTop'] || -52}px;
 `;

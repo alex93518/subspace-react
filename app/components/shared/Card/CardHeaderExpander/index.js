@@ -16,7 +16,10 @@ const CardHeaderExpander = ({
     onClick={handleClickExpander}
   >
     <CardHeader {...rest} />
-    <IconDiv className="expandIcon">
+    <IconDiv
+      className="expandIcon"
+      data-iconTop={rest['data-iconTop']}
+    >
       {
         isExpanded ?
           <MdExpandLess width={24} height={24} /> :

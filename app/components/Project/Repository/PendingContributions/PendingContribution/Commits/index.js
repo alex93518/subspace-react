@@ -7,9 +7,9 @@ import pluralize from 'pluralize';
 import Card, { CardContent, CardHeader } from 'components/shared/Card';
 import { parseDiff, totalHunk } from 'utils/diff'
 import GoGitCommit from 'react-icons/lib/go/git-commit';
-import Commit from 'components/Project/Repository/Commits/CommitList/Commit';
+import CommitCard from './CommitCard';
 import {
-  TableCommit, SpanTotalAdditions, SpanTotalDeletions,
+  SpanTotalAdditions, SpanTotalDeletions,
 } from './styles';
 
 pluralize.addIrregularRule('is', 'are')
@@ -35,15 +35,11 @@ const Commits = ({
       avatar={<GoGitCommit height={32} width={32} />}
     />
     <CardContent>
-      <TableCommit>
-        <tbody>
-          {
-            history.edges.map(({ node }) =>
-              <Commit isHideAvatar commit={node} key={node.id} />
-            )
-          }
-        </tbody>
-      </TableCommit>
+      {
+        history.edges.map(({ node }) =>
+          <CommitCard commit={node} key={node.id} />
+        )
+      }
     </CardContent>
   </Card>
 )
@@ -66,7 +62,7 @@ export default compose(
               diff {
                 diff
               }              
-              ...Commit_commit
+              ...CommitCard_commit
             }
           }
         }

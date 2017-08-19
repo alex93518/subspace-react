@@ -11,14 +11,6 @@ import TopContainer from './TopContainer';
 import { HeightDiv } from './styles'
 import TopAppBar from './TopAppBar'
 
-// const getConfigActiveKey = (owner, name) => {
-//   const config = getNavConfig(owner, name)
-//   return {
-//     config,
-//     activeKey: config[1].link,
-//   }
-// }
-
 const Project = ({ vars }) => (
   <QueryRenderer
     environment={env}

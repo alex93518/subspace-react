@@ -21,6 +21,9 @@ const AccessIcon = styled(Glyphicon)`
 
 const Link = styled(LinkBase)`
   ${props => typeof props['data-isWhite'] !== 'undefined' ? 'color: #fff;' : ''}
+  &:hover {
+    ${props => typeof props['data-isWhite'] !== 'undefined' ? 'color: #FFE0B2;' : ''}
+  }
 `
 
 // eslint-disable-next-line
