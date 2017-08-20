@@ -14,7 +14,7 @@ import {
 } from './styles';
 
 const Commit = ({
-  commitItem: {
+  commit: {
     oid,
     shortId,
     shortMessage,
@@ -28,11 +28,14 @@ const Commit = ({
   },
   additions,
   deletions,
+  isHideAvatar,
 }) => (
   <Tr>
-    <TdThumb>
-      <LinkUserPhoto user={user} width={36} height={36} />
-    </TdThumb>
+    {!isHideAvatar && (
+      <TdThumb>
+        <LinkUserPhoto user={user} width={36} height={36} />
+      </TdThumb>
+    )}
     <Td>
       <CommitMessage>
         <LinkCommitTitle
@@ -75,15 +78,16 @@ const Commit = ({
 );
 
 Commit.propTypes = {
-  commitItem: PropTypes.object.isRequired,
+  commit: PropTypes.object.isRequired,
   additions: PropTypes.number.isRequired,
   deletions: PropTypes.number.isRequired,
+  isHideAvatar: PropTypes.bool,
 };
 
 export default compose(
   withRelayFragment({
-    commitItem: graphql`
-      fragment Commit_commitItem on Commit {
+    commit: graphql`
+      fragment Commit_commit on Commit {
         oid
         shortId
         shortMessage
@@ -103,12 +107,13 @@ export default compose(
       }
     `,
   }),
-  mapProps(({ commitItem }) => {
-    const diff = parseDiff(commitItem);
+  mapProps(({ commit, ...rest }) => {
+    const diff = parseDiff(commit);
     return ({
-      commitItem,
+      commit,
       additions: totalHunk('additions', diff),
       deletions: totalHunk('deletions', diff),
+      ...rest,
     })
   })
 )(Commit)

@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { Panel } from 'react-bootstrap';
+import { CardHeader } from 'components/shared/Card';
 
 export const PendingStashPanel = styled(Panel)`
   background: #eee;
@@ -23,4 +24,11 @@ export const ContentDiv = styled.div`
 
 export const CommitDiv = styled.div`
   margin-top: 15px;
+`
+
+export const MainCardHeader = styled(CardHeader)`
+  & .title {
+    font-size: 16px;
+    line-height: 18px;
+  }
 `

@@ -1,16 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { compose, withHandlers } from 'recompose';
-import Divider from 'material-ui/Divider';
 import Paper from 'material-ui/Paper';
 import { Field, reduxForm } from 'redux-form/immutable';
-import { TextField } from 'redux-form-material-ui';
+import { TextField } from '@gfpacheco/redux-form-material-ui';
 import { updateStashMetaMutation } from 'relay';
 import styled from 'styled-components';
-
-const TextInput = styled(TextField)`
-  margin-top: 0px !important;
-`
 
 const MainForm = styled.form`
   padding: 0 20px;
@@ -18,31 +13,21 @@ const MainForm = styled.form`
   background: #fff;
 `
 
-const styles = {
-  fontFamily: 'Roboto, sans-serif',
-  fontWeight: 400,
-}
-
 const Form = ({ handleSubmit }) => (
-  <Paper zDepth={1}>
+  <Paper elevation={1}>
     <MainForm onSubmit={handleSubmit}>
       <Field
         name="stashTitle"
-        component={TextInput}
+        component={TextField}
         fullWidth
-        hintText="Add title"
-        hintStyle={styles}
-        underlineShow={false}
+        label="Add title"
       />
-      <Divider />
       <Field
         name="stashDescription"
-        component={TextInput}
+        component={TextField}
         fullWidth
-        multiLine
-        hintText="Add description"
-        hintStyle={styles}
-        underlineShow={false}
+        multiline
+        label="Add description"
       />
     </MainForm>
   </Paper>

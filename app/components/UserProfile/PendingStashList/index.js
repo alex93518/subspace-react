@@ -17,7 +17,7 @@ const PendingStashList = ({
   selectedRepo && repoNameList && repoNameList.length > 0 &&
   <div>
     <TitleDiv>Review pending pushes</TitleDiv>
-    <Paper zDepth={1}>
+    <Paper elevation={1}>
       <MainRow>
         <Col md={3}>
           {selectedRepo &&

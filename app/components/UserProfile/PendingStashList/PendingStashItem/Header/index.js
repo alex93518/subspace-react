@@ -4,7 +4,7 @@ import { createFragmentContainer, graphql } from 'react-relay';
 import moment from 'moment';
 import { LinkProject } from 'components/shared/Links';
 import { shortBranchName } from 'utils/string';
-import { TimeSpane } from './styles';
+import { MainSpan, TimeSpan } from './styles';
 
 const Header = ({
   createdAt,
@@ -13,14 +13,14 @@ const Header = ({
     repository: { owner: { userName } },
   },
 }) => (
-  <span>
+  <MainSpan>
     <LinkProject vars={{ userName, projectName: repository.name }}>
       {repository.name}
     </LinkProject> / {shortBranchName(name)}
-    <TimeSpane>
+    <TimeSpan>
       pushed {moment(createdAt).fromNow()}
-    </TimeSpane>
-  </span>
+    </TimeSpan>
+  </MainSpan>
 )
 
 Header.propTypes = {

@@ -4,62 +4,66 @@ import { graphql } from 'react-relay';
 import { compose, withState, withHandlers } from 'recompose';
 import FlipMove from 'react-flip-move';
 import withRelayFragment from 'relay/withRelayFragment';
-import StashCommitStatus from 'components/Project/Repository/Stash/CommitStatus';
-import { Card, CardHeader } from 'material-ui/Card';
+import Card, { CardContent } from 'components/shared/Card';
 import Paper from 'material-ui/Paper';
+import CommitStatus from './CommitStatus';
 import Header from './Header';
 import HeadSub from './HeadSub';
 import Footer from './Footer';
 import Form from './Form';
-import { PendingStashPanel, ContentDiv, CommitDiv } from './styles';
+import {
+  PendingStashPanel, ContentDiv, CommitDiv, MainCardHeader,
+} from './styles';
 
 const PendingStashItem = ({
-  gitRef, isShowContent, toggleShowContent,
+  gitRef, isShowContent,
+  // toggleShowContent,
 }) => (
   !gitRef.stash.isOnline &&
-  <Card expanded={isShowContent} onExpandChange={toggleShowContent}>
-    <CardHeader
+  <Card>
+    <MainCardHeader
+      classes={{ title: 'title' }}
       title={<Header pendingStashItem={gitRef} createdAt={gitRef.stash.createdAt} />}
-      subtitle={<HeadSub stash={gitRef.stash} />}
-      actAsExpander
-      showExpandableButton
+      subheader={<HeadSub stash={gitRef.stash} />}
     />
-    <PendingStashPanel
-      footer={
-        isShowContent &&
-        <Footer pendingStashItem={gitRef} />
-      }
-    >
-      <FlipMove
-        duration={100}
-        easing="ease"
-        staggerDurationBy={10}
-        staggerDelayBy={15}
-        enterAnimation={'accordionVertical'}
-        leaveAnimation={'none'}
-      >
-        {
+    <CardContent>
+      <PendingStashPanel
+        footer={
           isShowContent &&
-          <div key={`reviewPendingPushContent${gitRef.id}`}>
-            <ContentDiv>
-              <Form
-                form={`stashForm${gitRef.id}`}
-                stashId={gitRef.stash.rawId}
-                initialValues={{
-                  stashTitle: gitRef.stash.title || '',
-                  stashDescription: gitRef.stash.description || '',
-                }}
-              />
-              <Paper zDepth={1}>
-                <CommitDiv>
-                  <StashCommitStatus stashCommitStatus={gitRef.target} />
-                </CommitDiv>
-              </Paper>
-            </ContentDiv>
-          </div>
+          <Footer pendingStashItem={gitRef} />
         }
-      </FlipMove>
-    </PendingStashPanel>
+      >
+        <FlipMove
+          duration={100}
+          easing="ease"
+          staggerDurationBy={10}
+          staggerDelayBy={15}
+          enterAnimation={'accordionVertical'}
+          leaveAnimation={'none'}
+        >
+          {
+            isShowContent &&
+            <div key={`reviewPendingPushContent${gitRef.id}`}>
+              <ContentDiv>
+                <Form
+                  form={`stashForm${gitRef.id}`}
+                  stashId={gitRef.stash.rawId}
+                  initialValues={{
+                    stashTitle: gitRef.stash.title || '',
+                    stashDescription: gitRef.stash.description || '',
+                  }}
+                />
+                <Paper elevation={1}>
+                  <CommitDiv>
+                    <CommitStatus commit={gitRef.target} />
+                  </CommitDiv>
+                </Paper>
+              </ContentDiv>
+            </div>
+          }
+        </FlipMove>
+      </PendingStashPanel>
+    </CardContent>
   </Card>
 )
 
@@ -88,7 +92,7 @@ export default compose(
         }
         target {
           ... on Commit {
-            ...CommitStatus_stashCommitStatus
+            ...CommitStatus_commit
           }
         }      
         ...Header_pendingStashItem
@@ -96,7 +100,7 @@ export default compose(
       }
     `,
   }),
-  withState('isShowContent', 'updateIsShowContent', false),
+  withState('isShowContent', 'updateIsShowContent', true),
   withState('isClear', 'updateIsClear', false),
   withHandlers({
     toggleShowContent: props => () => {

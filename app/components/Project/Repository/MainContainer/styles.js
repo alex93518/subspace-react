@@ -2,7 +2,7 @@ import styled from 'styled-components';
 import { Row, Col } from 'react-bootstrap';
 
 export const RowSty = styled(Row)`
-  padding-top: 15px;
+  padding-bottom: 15px;
 `
 
 export const CloneCol = styled(Col)`

@@ -4,43 +4,29 @@ import { ToggleButtonGroup } from 'react-bootstrap';
 import { authRelay } from 'relay/RelayEnvironment';
 import { connect } from 'react-redux';
 import { compose, withHandlers, mapProps, withState } from 'recompose';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import Tooltip from 'rc-tooltip';
+import 'rc-tooltip/assets/bootstrap_white.css';
 import UserPhoto from 'components/shared/UserPhoto';
 import FaCog from 'react-icons/lib/fa/cog';
 import FaSignOut from 'react-icons/lib/fa/sign-out';
 import { redirect } from 'redux/utils'
 import {
   NavItemWhite, SpanName, OnlineButton, SpanTitle, UserNameDiv,
-  AngleDownName, UserSeparator, UserPopover, SignOutDiv,
+  AngleDownName, UserSeparator, SignOutDiv, UserPopover,
 } from './styles';
 
 const User = ({
-  handleTouchTap, isUserWidgetOpen, anchorEl, handleRequestClose,
-  handleOnProfileClick, user, userName, isInvisibleIdx, setIsInvisible,
+  handleOnProfileClick, user, userName, isInvisibleIdx,
+  setIsInvisible, isTooltipVisible, setIsTooltipVisible,
 }) => (
-  <MuiThemeProvider>
-    <NavItemWhite
-      eventKey={3}
-      onClick={handleTouchTap}
-    >
-      <UserPhoto
-        photoUrl={user.photoUrl}
-        userName={userName}
-        width={22}
-        height={22}
-      />
-      <SpanName>
-        {user.displayName}
-      </SpanName><AngleDownName />
-      <UserPopover
-        open={isUserWidgetOpen}
-        anchorEl={anchorEl}
-        anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-        targetOrigin={{ horizontal: 'right', vertical: 'top' }}
-        onRequestClose={handleRequestClose}
-        useLayerForClickAway={false}
-        style={{ color: 'inherit' }}
-      >
+  <Tooltip
+    placement="bottomRight"
+    trigger="click"
+    visible={isTooltipVisible}
+    onVisibleChange={setIsTooltipVisible}
+    overlayStyle={{ opacity: 1 }}
+    overlay={(
+      <UserPopover>
         <ToggleButtonGroup
           type="radio"
           name="options"
@@ -76,8 +62,22 @@ const User = ({
           </UserNameDiv>
         </SignOutDiv>
       </UserPopover>
+      )}
+  >
+    <NavItemWhite
+      eventKey={3}
+    >
+      <UserPhoto
+        photoUrl={user.photoUrl}
+        userName={userName}
+        width={22}
+        height={22}
+      />
+      <SpanName>
+        {user.displayName}
+      </SpanName><AngleDownName />
     </NavItemWhite>
-  </MuiThemeProvider>
+  </Tooltip>
 );
 
 User.propTypes = {
@@ -85,16 +85,13 @@ User.propTypes = {
   userName: PropTypes.string.isRequired,
   isInvisibleIdx: PropTypes.number.isRequired,
   setIsInvisible: PropTypes.func.isRequired,
-  handleTouchTap: PropTypes.func.isRequired,
-  isUserWidgetOpen: PropTypes.bool.isRequired,
-  handleRequestClose: PropTypes.func.isRequired,
   handleOnProfileClick: PropTypes.func.isRequired,
-  anchorEl: PropTypes.object,
+  isTooltipVisible: PropTypes.bool.isRequired,
+  setIsTooltipVisible: PropTypes.func.isRequired,
 }
 
 export default compose(
-  withState('isUserWidgetOpen', 'setIsUserWidgetOpen', false),
-  withState('anchorEl', 'setAnchorEl', null),
+  withState('isTooltipVisible', 'setIsTooltipVisible', false),
   connect(state => ({
     isInvisible: state.get('auth').get('isInvisible'),
   })),
@@ -110,17 +107,9 @@ export default compose(
         authRelay.setIsInvisible.init(false)
       }
     },
-    handleTouchTap: props => event => {
-      event.preventDefault();
-      props.setIsUserWidgetOpen(!props.isUserWidgetOpen);
-      props.setAnchorEl(event.currentTarget);
-    },
-    handleRequestClose: props => () => {
-      props.setIsUserWidgetOpen(false);
-    },
     handleOnProfileClick: props => () => {
       redirect(`/profile/${props.userName}`);
-      props.setIsUserWidgetOpen(false)
+      props.setIsTooltipVisible(false);
     },
   })
 )(User);

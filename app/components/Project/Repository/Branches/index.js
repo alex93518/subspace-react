@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { graphql } from 'react-relay';
-import withRelayFragment from 'relay/withRelayFragment';
+import RepositoryQueryRenderer from 'relay/RepositoryQueryRenderer';
 import { compose, mapProps } from 'recompose';
 import MainGrid from 'components/shared/MainGrid';
 import Branch from './Branch';
@@ -14,7 +14,7 @@ const Branches = ({ edges }) => (
         {
           edges.map(({ node, node: { id } }) => (
             <tr key={id}>
-              <Branch branch={node} />
+              <Branch branchRef={node} />
             </tr>
           ))
         }
@@ -27,22 +27,39 @@ Branches.propTypes = {
   edges: PropTypes.array.isRequired,
 }
 
-export default compose(
-  withRelayFragment({
-    branches: graphql`
-      fragment Branches_branches on Repository {
-        refs(first: 99) @include(if: $isBranches) {
+const ComposeBranches = compose(
+  mapProps(({
+    repository: { refs: { edges } },
+  }) => ({ edges }))
+)(Branches)
+
+const BranchesQuery = ({ vars }) => (
+  <RepositoryQueryRenderer vars={vars} query={query}>
+    <ComposeBranches />
+  </RepositoryQueryRenderer>
+)
+
+BranchesQuery.propTypes = {
+  vars: PropTypes.object.isRequired,
+};
+
+const query = graphql`
+  query BranchesQuery(
+    $userName: String!, $projectName: String!,
+  ) {
+    viewer {
+      repository(ownerName: $userName, name: $projectName) {
+        refs(first: 99) {
           edges {
             node {
               id
-              ...Branch_branch
+              ...Branch_branchRef
             }
           }
         }
       }
-    `,
-  }),
-  mapProps(({
-    branches: { refs: { edges } },
-  }) => ({ edges }))
-)(Branches)
+    }
+  }
+`;
+
+export default BranchesQuery;

@@ -20,7 +20,7 @@ const pushExistingInstruction = url => `git remote add origin ${url}
 git push -u origin master
 `
 
-const EmptyRepo = ({ emptyRepo: { url } }) => (
+const EmptyRepo = ({ repository: { url } }) => (
   <Table>
     <tbody>
       <tr>
@@ -68,12 +68,12 @@ const EmptyRepo = ({ emptyRepo: { url } }) => (
 )
 
 EmptyRepo.propTypes = {
-  emptyRepo: PropTypes.object.isRequired,
+  repository: PropTypes.object.isRequired,
 }
 
 export default createFragmentContainer(EmptyRepo, {
-  emptyRepo: graphql`
-    fragment EmptyRepo_emptyRepo on Repository {
+  repository: graphql`
+    fragment EmptyRepo_repository on Repository {
       url
     }
   `,

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { graphql } from 'react-relay';
 import { compose, withHandlers } from 'recompose';
 import withRelayFragment from 'relay/withRelayFragment';
-import RaisedButton from 'material-ui/RaisedButton';
+import Button from 'material-ui/Button';
 import { setStashIsOnlineMutation } from 'relay';
 import { connect } from 'react-redux';
 import { submit, isPristine } from 'redux-form/immutable';
@@ -15,18 +15,23 @@ const FooterDiv = styled.div`
 
 const Footer = ({ pendingStashItem: { id }, publishStash, dispatch, isFormPristine }) => (
   <FooterDiv>
-    <RaisedButton
-      primary
+    <Button
+      color="primary"
+      raised
       label="Update"
       disabled={isFormPristine}
       style={{ marginRight: '10px' }}
       onClick={() => dispatch(submit(`stashForm${id}`))}
-    />
-    <RaisedButton
-      primary
-      label="Publish"
+    >
+      Update
+    </Button>
+    <Button
+      color="primary"
+      raised
       onClick={publishStash}
-    />
+    >
+      Publish
+    </Button>
   </FooterDiv>
 )
 

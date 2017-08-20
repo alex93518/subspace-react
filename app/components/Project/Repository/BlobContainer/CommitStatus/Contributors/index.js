@@ -27,8 +27,8 @@ Contributors.propTypes = {
 
 export default compose(
   withRelayFragment({
-    contributors: graphql`
-      fragment Contributors_contributors on CommitConnection {
+    commitConnection: graphql`
+      fragment Contributors_commitConnection on CommitConnection {
         totalContributors
         contributors {
           userName
@@ -37,5 +37,5 @@ export default compose(
       }
     `,
   }),
-  mapProps(({ contributors }) => ({ ...contributors }))
+  mapProps(({ commitConnection }) => ({ ...commitConnection }))
 )(Contributors)

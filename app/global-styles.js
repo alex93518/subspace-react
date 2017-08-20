@@ -10,12 +10,13 @@ injectGlobal`
 
   html,
   body {
-    height: 100%;
-    width: 100%;
+    display: flex;
+    flex-direction: column;
   }
 
   body {
     font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
     color: #696e73;
     font-size: 14px;
   }
@@ -27,12 +28,14 @@ injectGlobal`
 
   #app {
     background-color: #fafafa;
-    height: 100%;
-    min-height: 100%;
-    min-width: 100%;
+    display: flex;
+    flex-direction: column;
   }
 
-  #app > [data-reactroot] { height: 100%; }
+  #app > [data-reactroot] { 
+    display: flex;
+    flex-direction: column;
+  }
 
   p,
   label {
@@ -44,6 +47,10 @@ injectGlobal`
     font-weight: bold;
   }
 
+  dt {
+    font-weight: 500;
+  }
+  
   .container {
     height: 100%;
   }
@@ -138,8 +145,9 @@ injectGlobal`
 
   .CircularProgressbar .CircularProgressbar-text {
     fill: #3e98c7;
-    font-size: 20px;
+    font-size: 28px;
     dominant-baseline: middle;
     text-anchor: middle;
+    font-weight: 600;
   }  
 `;

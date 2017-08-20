@@ -25,7 +25,7 @@ const Readme = ({ entry }) => (
       </tr>
       <tr>
         <TdBlob>
-          <Blob blob={entry} />
+          <Blob treeEntry={entry} />
         </TdBlob>
       </tr>
     </tbody>
@@ -38,21 +38,21 @@ Readme.propTypes = {
 
 export default compose(
   withRelayFragment({
-    readme: graphql`
-      fragment Readme_readme on Tree {
+    tree: graphql`
+      fragment Readme_tree on Tree {
         treeReadme: entries(path: "README.md") {
           oid
-          ...Blob_blob
+          ...Blob_treeEntry
         }
       }
     `,
   }),
   branch(
-    props => !props.readme.treeReadme.length,
+    props => !props.tree.treeReadme.length,
     renderComponent(NoReadme)
   ),
   mapProps(({
-    readme: { treeReadme },
+    tree: { treeReadme },
   }) => ({
     entry: treeReadme[0],
   })),

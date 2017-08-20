@@ -18,7 +18,7 @@ const popoverBottom = url => (
 );
 
 const CloneUrlBox = ({
-  cloneUrlBox: { url },
+  repository: { url },
 }) => (
   <OverlayTrigger
     rootClose
@@ -35,13 +35,13 @@ const CloneUrlBox = ({
 )
 
 CloneUrlBox.propTypes = {
-  cloneUrlBox: PropTypes.object.isRequired,
+  repository: PropTypes.object.isRequired,
 }
 
 export default createFragmentContainer(CloneUrlBox, {
-  cloneUrlBox: graphql`
-    fragment CloneUrlBox_cloneUrlBox on Repository {
-      url @include(if: $isMainContainer)
+  repository: graphql`
+    fragment CloneUrlBox_repository on Repository {
+      url
     }
   `,
 })

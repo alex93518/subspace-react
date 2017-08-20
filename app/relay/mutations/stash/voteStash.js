@@ -2,27 +2,12 @@ import { commitMutation, graphql } from 'react-relay';
 import { env } from 'relay/RelayEnvironment';
 
 const mutation = graphql`
-  mutation voteStashMutation($input: voteStashInput! $sort: String!) {
+  mutation voteStashMutation($input: voteStashInput!, $sort: String!) {
     voteStash(input: $input) {
       clientMutationId
       stash {
-        voteTreshold
-        votes (first: 9999) {
-          totalVotePoints
-        }
-        acceptVotes {
-          totalVotePoints
-        }
-        rejectVotes {
-          totalVotePoints
-        }
-        stashAcc: acceptVotes (first: 9999) {
-          ...UserVoteList_userVoteList
-        }
-        stashReject: rejectVotes (first: 9999) {
-          ...UserVoteList_userVoteList
-        }        
-        ...StashComment_stashComment
+        ...Votes_stash
+        ...StashComment_stash
       }
     }
   }
