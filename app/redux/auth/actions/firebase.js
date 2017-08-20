@@ -8,7 +8,7 @@ import { getUser } from './userFetch';
 import { getUserProvider } from './userProviderFetch';
 
 export function* createUserWithEmailPassword({ payload }) {
-  const { userName, email, password } = payload
+  const { userName, email, password } = payload.toJS()
   const user = yield call(
     [firebaseAuth, firebaseAuth.createUserWithEmailAndPassword],
     email,
@@ -104,7 +104,8 @@ export function* signIn({ payload: { authProvider, sendCreateUser } }) {
   throw new Error({ message: 'No user' })
 }
 
-export function* signInWithEmailPassword({ payload: { email, password } }) {
+export function* signInWithEmailPassword({ payload }) {
+  const { email, password } = payload.toJS();
   const user = yield call(
     [firebaseAuth, firebaseAuth.signInWithEmailAndPassword],
     email,
