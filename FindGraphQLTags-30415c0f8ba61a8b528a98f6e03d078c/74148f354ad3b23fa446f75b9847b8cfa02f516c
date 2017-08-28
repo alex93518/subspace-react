@@ -1,0 +1,1 @@
+[{"tag":"graphql","template":"\n      fragment TopContainer_repository on Repository {\n        name\n        isPrivate\n        owner {\n          userName\n        }\n        stashes {\n          totalCount\n        }\n      }\n    "}]

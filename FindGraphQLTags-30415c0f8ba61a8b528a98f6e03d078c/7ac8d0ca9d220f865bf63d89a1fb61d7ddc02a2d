@@ -1,0 +1,1 @@
+[{"tag":"graphql","template":"\n  mutation setStashIsOnlineMutation($input: SetStashIsOnlineInput!) {\n    setStashIsOnline(input: $input) {\n      clientMutationId\n      ref {\n        ...PendingStashItem_gitRef\n      }\n    }\n  }\n"}]

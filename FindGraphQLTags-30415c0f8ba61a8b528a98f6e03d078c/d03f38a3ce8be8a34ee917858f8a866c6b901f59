@@ -1,0 +1,1 @@
+[{"tag":"graphql","template":"\n  query ProjectQuery(\n    $userName: String!, $projectName: String!\n  ) {\n    viewer {\n      repository(ownerName: $userName, name: $projectName) {\n        ...TopContainer_repository\n      }\n    }\n  }\n"}]

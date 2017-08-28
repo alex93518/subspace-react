@@ -1,0 +1,1 @@
+[{"tag":"graphql","template":"\n  mutation voteStashCommentMutation($input: voteStashCommentInput!, $sort: String!) {\n    voteStashComment(input: $input) {\n      clientMutationId\n      stash {\n        ...StashComment_stash\n      }\n    }\n  }\n"}]

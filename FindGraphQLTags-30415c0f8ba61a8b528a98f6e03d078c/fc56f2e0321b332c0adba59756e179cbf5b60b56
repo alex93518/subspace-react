@@ -1,0 +1,1 @@
+[{"tag":"graphql","template":"\n    fragment Project_project on Repository {\n      id\n      name\n      isPrivate\n      createdAt\n      owner {\n        userName\n      }\n      project {\n        goals\n        description\n        topics(first: 10) {\n          edges {\n            node {\n              value\n            }\n          }\n        }\n      }\n    }\n  "}]

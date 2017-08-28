@@ -1,0 +1,1 @@
+[{"tag":"graphql","template":"\n      fragment CommitStatus_treeEntry on TreeEntry {\n        history(first: 1, refName: $branchHead) {\n          ...Contributors_commitConnection\n          edges {\n            node {\n              ...LastCommit_commit\n            }\n          }\n        }\n      }\n    "}]

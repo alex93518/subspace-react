@@ -1,0 +1,1 @@
+[{"tag":"graphql","template":"\n      fragment Diff_commit on Commit {\n        diff {\n          changeType\n          oldPath\n          newPath\n          diff\n        }\n      }\n    "}]

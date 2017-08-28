@@ -1,0 +1,1 @@
+[{"tag":"graphql","template":"\n      fragment CommentFooter_stashComment on StashComment {\n        rawId\n        stashId\n        isUserVoted\n        totalUpVotePoints\n        totalDownVotePoints\n      }\n    "}]

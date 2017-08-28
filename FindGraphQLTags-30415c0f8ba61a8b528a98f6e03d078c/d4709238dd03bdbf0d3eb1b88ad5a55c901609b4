@@ -1,0 +1,1 @@
+[{"tag":"graphql","template":"\n      fragment Readme_tree on Tree {\n        treeReadme: entries(path: \"README.md\") {\n          oid\n          ...Blob_treeEntry\n        }\n      }\n    "}]

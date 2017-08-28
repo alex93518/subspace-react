@@ -1,0 +1,1 @@
+[{"tag":"graphql","template":"\n    fragment CommitStatus_commit on Commit {\n      history(first: 99, isStash: true) {\n        edges {\n          node {\n            id\n            ...Commit_commit\n          }\n        }\n      }\n    }\n  "}]

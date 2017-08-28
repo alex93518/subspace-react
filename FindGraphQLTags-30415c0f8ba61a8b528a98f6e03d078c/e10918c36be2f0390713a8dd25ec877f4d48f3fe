@@ -1,0 +1,1 @@
+[{"tag":"graphql","template":"\n    fragment Header_pendingStashItem on Ref {\n      repository {\n        name\n        owner {\n          userName\n        }\n      }\n      name\n    }\n  "}]

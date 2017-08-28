@@ -1,0 +1,1 @@
+[{"tag":"graphql","template":"\n    fragment ProjectList_viewer on Viewer {\n      repositories(first: 10, ownerName: $owner) {\n        edges {\n          node {\n            id\n            createdAt\n            ...Project_project\n          }\n        }\n      }\n    }\n  "}]

@@ -1,0 +1,1 @@
+[{"tag":"graphql","template":"\n    fragment LastCommit_commit on Commit {\n      shortMessage\n      commitTime\n      shortId\n      oid\n      author {\n        user {\n          userName\n          photoUrl\n        }\n      }\n    }\n  "}]

@@ -1,0 +1,1 @@
+[{"tag":"graphql","template":"\n    fragment CommitList_commit on Commit {\n      commitListHistory: history(first: 20, path: $splat) {\n        edges {\n          node {\n            id,\n            commitTime,\n            ...Commit_commit\n          }\n        }\n      }\n    }\n  "}]

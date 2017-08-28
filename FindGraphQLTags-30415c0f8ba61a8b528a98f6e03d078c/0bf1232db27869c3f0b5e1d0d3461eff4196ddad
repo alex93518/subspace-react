@@ -1,0 +1,1 @@
+[{"tag":"graphql","template":"\n  mutation mergeStashMutation($input: MergeStashInput!) {\n    mergeStash(input: $input) {\n      clientMutationId\n    }\n  }\n"}]

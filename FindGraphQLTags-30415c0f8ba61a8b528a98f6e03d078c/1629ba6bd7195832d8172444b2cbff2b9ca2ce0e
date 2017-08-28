@@ -1,0 +1,1 @@
+[{"tag":"graphql","template":"\n    fragment StatusBar_repository on Repository {\n      refs(first: 99){\n        branchTotal: totalCount\n      }\n      ref(refName: $branchHead){\n        target {\n          ... on Commit {\n            history {\n              commitTotal: totalCount\n            }\n          }\n        }\n      }\n    }\n  "}]

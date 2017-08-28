@@ -1,0 +1,1 @@
+[{"tag":"graphql","template":"\n      fragment CommentHeader_stashComment on StashComment {\n        id\n        owner {\n          userName\n        }\n        isOwnerVoteUp\n        createdAt        \n      }\n    "}]

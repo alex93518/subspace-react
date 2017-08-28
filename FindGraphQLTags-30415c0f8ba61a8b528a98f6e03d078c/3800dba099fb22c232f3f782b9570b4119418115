@@ -1,0 +1,1 @@
+[{"tag":"graphql","template":"\n      fragment Tree_tree on Tree {\n        entries(path: $splat) {\n          oid\n          type\n          name\n          ...TreeEntry_treeEntry\n        }\n      }\n    "}]

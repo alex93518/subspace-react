@@ -1,0 +1,1 @@
+[{"tag":"graphql","template":"\n  query UserProfileQuery($userName: String!, $owner: String!) {\n    viewer {\n      user (login: $userName) {\n        fullName\n        userName\n        ...Profile_user\n      }\n      me: user {\n        userName\n      }\n      accessToken\n      ...ProjectList_viewer\n      ...PendingStashList_viewer\n    }\n  }\n"}]

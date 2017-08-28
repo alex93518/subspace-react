@@ -1,0 +1,1 @@
+[{"tag":"graphql","template":"\n      query ProjectsQuery($owner: String) {\n        viewer {\n          ...ProjectList_viewer\n        }\n      }\n    "}]

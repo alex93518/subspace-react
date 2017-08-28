@@ -1,0 +1,1 @@
+[{"tag":"graphql","template":"\n      fragment Profile_user on User {\n        id\n        rawId\n        userName\n        fullName\n        photoUrl\n        providerAccounts(first: 10) {\n          edges {\n            node {\n              userName\n              provider\n              providerId\n            }\n          }\n        }\n      }\n    "}]

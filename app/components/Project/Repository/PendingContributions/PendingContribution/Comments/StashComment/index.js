@@ -4,7 +4,8 @@ import { graphql } from 'react-relay';
 import withRelayFragment from 'relay/withRelayFragment';
 import { compose, withState, withHandlers } from 'recompose';
 import { Button } from 'react-bootstrap';
-import Editor from 'react-quill';
+//import Editor from 'react-quill';
+import Editor from './components/Editor'
 import { Element, scroller } from 'react-scroll';
 import { addStashCommentMutation } from 'relay';
 import CommentList from './CommentList';
@@ -19,10 +20,7 @@ const StashComment = ({
     <CommentList stash={stash} stashNum={stash.stashNum} />
     <HeadSeparator />
     <h4>Leave a comment</h4>
-    <Editor
-      value={content}
-      onChange={handleContentChange}
-    />
+    <Editor/>
     <DivAddComment>
       <Button onClick={submitComment}>Comment</Button>
     </DivAddComment>

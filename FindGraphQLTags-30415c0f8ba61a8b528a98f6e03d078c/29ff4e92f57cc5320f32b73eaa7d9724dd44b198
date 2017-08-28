@@ -1,0 +1,1 @@
+[{"tag":"graphql","template":"\n    fragment TreeEntry_treeEntry on TreeEntry {\n      name\n      type\n      history(first: 1, refName: $branchHead) {\n        edges {\n          node {\n            shortMessage\n            oid\n            commitTime\n          }\n        }\n      }\n      object {\n        ... on Blob {\n          byteSize\n        }\n      }\n    }\n  "}]

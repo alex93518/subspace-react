@@ -28,6 +28,11 @@ const Header = ({ auth: { authenticated, user, userName } }) => (
         <NavItem eventKey={6}>Projects</NavItem>
       </LinkWhite>
     </Nav>
+    <Nav>
+      <LinkWhite to="/documentation">
+        <NavItem eventKey={7}>Documentation</NavItem>
+      </LinkWhite>
+    </Nav>
     {authenticated && <Protected user={user} userName={userName} />}
     {
       !authenticated &&

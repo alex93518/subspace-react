@@ -1,0 +1,1 @@
+[{"tag":"graphql","template":"\n    fragment UserVoteList_stashVoteConnection on StashVoteConnection {\n      totalCount\n      edges {\n        node {\n          id\n          votePoint\n          isVoteUp\n          owner {\n            userName\n            photoUrl\n          }\n        }\n      }\n    }\n  "}]

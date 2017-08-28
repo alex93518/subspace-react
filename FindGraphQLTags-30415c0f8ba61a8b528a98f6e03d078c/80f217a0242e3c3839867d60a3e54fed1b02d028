@@ -1,0 +1,1 @@
+[{"tag":"graphql","template":"\n      fragment Blob_treeEntry on TreeEntry {\n        name\n        object {\n          ... on Blob {\n            text\n          }\n        }\n      }\n    "}]

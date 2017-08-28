@@ -1,0 +1,1 @@
+[{"tag":"graphql","template":"\n    query userProviderFetchQuery(\n      $firebaseId: String\n    ) {\n      viewer {\n        userProvider(\n          firebaseId: $firebaseId\n        ) {\n          userId\n          userName\n          firebaseToken\n        }\n      }\n    }\n  "}]

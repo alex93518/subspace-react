@@ -1,0 +1,1 @@
+[{"tag":"graphql","template":"\n  query BranchesQuery(\n    $userName: String!, $projectName: String!,\n  ) {\n    viewer {\n      repository(ownerName: $userName, name: $projectName) {\n        refs(first: 99) {\n          edges {\n            node {\n              id\n              ...Branch_branchRef\n            }\n          }\n        }\n      }\n    }\n  }\n"}]
