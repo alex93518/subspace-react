@@ -5,8 +5,8 @@ import BuildHtml from './build-html'
 import defaultOptions from './default-options'
 import ParseContent from './parse-content'
 
-
-(function tocbot(root, factory) {
+const tocbot = {}
+module.exports = ((root, factory) => {
   if (typeof define === 'function' && define.amd) {
     define([], factory(root))
   } else if (typeof exports === 'object') {
@@ -14,14 +14,11 @@ import ParseContent from './parse-content'
   } else {
     root.tocbot = factory(root)
   }
-}(typeof global !== 'undefined' ? global : this.window || this.global, root => {
+})(typeof global !== 'undefined' ? global : this.window || this.global, root => {
   // Default options.
   // Object to store current options.
   let options = {}
   // Object for public APIs.
-  const tocbot = {}
-
-
   // Keep these variables at top scope once options are passed in.
   let buildHtml
   let parseContent
@@ -35,15 +32,22 @@ import ParseContent from './parse-content'
 
   // From: https://github.com/Raynos/xtend
   const hasOwnProperty = Object.prototype.hasOwnProperty
-  function extend() {
+  function extend(...args) {
     const target = {}
-    for (let i = 0; i < arguments.length; i += 1) {
-      const source = arguments[i]
-      for (const key in source) {
-        if (hasOwnProperty.call(source, key)) {
-          target[key] = source[key]
+    const source1 = Array.prototype.slice.call(args);
+    for (let i = 0; i < source1.length; i += 1) {
+      const source = source1[i];
+
+      Object.keys(source).forEach(value => {
+        if (hasOwnProperty.call(source, value)) {
+          target[value] = source[value]
         }
-      }
+      });
+      // for (const key of source) {
+      //   if (hasOwnProperty.call(source, key)) {
+      //     target[key] = source[key]
+      //   }
+      // }
     }
     return target
   }
@@ -55,7 +59,7 @@ import ParseContent from './parse-content'
     return () => {
       const context = scope || this
       const now = +new Date()
-      const args = arguments
+      const args = fn;
       if (last && now < last + threshhold) {
         // hold on to it
         clearTimeout(deferTimer)
@@ -165,13 +169,14 @@ import ParseContent from './parse-content'
   /**
    * Refresh tocbot.
    */
+
   tocbot.refresh = function (customOptions) {
     tocbot.destroy()
     tocbot.init(customOptions || this.options)
   }
 
   // Make tocbot available globally.
-  root.tocbot = tocbot
+  root.tocbot = tocbot;
+})
 
-  return tocbot
-}))
+module.exports = tocbot
