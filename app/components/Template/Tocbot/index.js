@@ -1,4 +1,5 @@
 import React from 'react'
+import toc from '../../../utils/toc/index'
 
 const TOCBOT_OPTIONS = {
   tocSelector: '.js-toc',
@@ -14,8 +15,7 @@ const TOCBOT_OPTIONS = {
 
 // Only require tocbot if in browser.
 const tocbot = (typeof window !== 'undefined')
-  ? require('../../../utils/toc/index.js')
-  : null
+  ? toc : null
 
 export default class Tocbot extends React.Component {
   componentDidMount() {
